@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MTNG – Teacher Login</title>
+  <link rel="stylesheet" th:href="@{/css/login.css}" />
+</head>
+<body>
+
+<div class="login-page">
+
+  <!-- ── Logo ──────────────────────────────────────────── -->
+  <div class="login-logo">
+    <span class="login-app-name">MTNG</span>
+    <div class="login-tagline">Meeting Management Platform</div>
+  </div>
+
+  <!-- ── Login Card ────────────────────────────────────── -->
+  <div class="login-card">
+
+    <div class="login-card-title">
+      <span>👨‍🏫</span>
+      <span>Teacher Login</span>
+    </div>
+
+    <!-- Error alert -->
+    <div th:if="${errorMsg}" class="alert-error">
+      ❌ <span th:text="${errorMsg}">Invalid credentials.</span>
+    </div>
+
+    <!-- Logout success alert -->
+    <div th:if="${logoutMsg}" class="alert-success">
+      ✅ <span th:text="${logoutMsg}">Logged out.</span>
+    </div>
+
+    <!-- ── Form – POST handled by Spring Security ────────── -->
+    <form th:action="@{/login}" method="post">
+
+      <!-- Username -->
+      <div class="form-group">
+        <label class="form-label" for="username">
+          <span>👤</span> Username
+        </label>
+        <input id="username"
+               name="username"
+               type="text"
+               class="form-input"
+               placeholder="Enter your username"
+               autocomplete="username"
+               required />
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label class="form-label" for="password">
+          <span>🔒</span> Password
+        </label>
+        <div class="password-wrapper">
+          <input id="password"
+                 name="password"
+                 type="password"
+                 class="form-input"
+                 placeholder="Enter your password"
+                 autocomplete="current-password"
+                 required />
+          <button type="button" class="eye-btn" onclick="togglePassword()" title="Show/hide password">👁</button>
+        </div>
+      </div>
+
+      <!-- Remember Me -->
+      <div class="checkbox-row">
+        <input type="checkbox" id="remember-me" name="remember-me" checked />
+        <label for="remember-me">Remember Me</label>
+      </div>
+
+      <!-- Terms -->
+      <div class="checkbox-row">
+        <input type="checkbox" id="terms" required checked />
+        <label for="terms">
+          Please read our <a href="#" onclick="return false;">Terms and Conditions</a>.
+          You must accept them to sign in.
+        </label>
+      </div>
+
+
+      <!-- Submit -->
+      <button type="submit" class="btn-signin">
+        <span>➡️</span> Sign In
+      </button>
+
+    </form>
+
+    <!-- Hint box with both logins -->
+    <div class="login-hint" style="text-align:left;line-height:1.8">
+      <div style="text-align:center;margin-bottom:6px;font-weight:600;color:var(--orange)">🔑 Demo Credentials</div>
+      <div>
+        <strong style="color:#22C55E">👑 Admin</strong> – Full access (create, edit, delete, block, mute, meeting controls, H2)<br/>
+        &nbsp;&nbsp;&nbsp;Username: <strong>admin</strong> &nbsp;/&nbsp; Password: <strong>admin123</strong>
+      </div>
+      <div style="margin-top:6px">
+        <strong style="color:#60A5FA">👤 User</strong> – View-only (dashboard, chat, students list, recordings – no edits)<br/>
+        &nbsp;&nbsp;&nbsp;Username: <strong>user</strong> &nbsp;/&nbsp; Password: <strong>user123</strong>
+      </div>
+    </div>
+
+    <!-- Links -->
+    <div class="login-divider">
+      <span style="font-size:11px;color:#9CA3AF">🗄 H2 Console: login as <strong>admin</strong> → Settings → H2 Database Console</span>
+      &nbsp;&nbsp;|&nbsp;&nbsp;
+      <a href="/docs">📖 Documentation</a>
+    </div>
+
+  </div><!-- /card -->
+
+  <!-- Footer -->
+  <div class="login-footer">
+    © 2026 <strong>MTNG</strong> – Meeting Management Platform
+  </div>
+
+</div><!-- /page -->
+
+<script>
+  function togglePassword() {
+    const pw  = document.getElementById('password');
+    const btn = document.querySelector('.eye-btn');
+    if (pw.type === 'password') {
+      pw.type  = 'text';
+      btn.textContent = '🙈';
+    } else {
+      pw.type  = 'password';
+      btn.textContent = '👁';
+    }
+  }
+</script>
+</body>
+</html>
+

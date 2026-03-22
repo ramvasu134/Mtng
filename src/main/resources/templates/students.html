@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+                xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MTNG – Students List</title>
+  <link rel="stylesheet" th:href="@{/css/mtng.css}" />
+</head>
+<body>
+
+<div th:replace="~{layout :: header('students')}"></div>
+<div th:replace="~{layout :: nav('students')}"></div>
+
+<main class="main-content">
+
+  <!-- Search bar -->
+  <div class="search-bar">
+    <button class="btn btn-secondary btn-sm" onclick="location.reload()">🔄 Refresh</button>
+    <input class="search-input"
+           type="text"
+           id="searchInput"
+           placeholder="🔍 Search students..."
+           th:value="${searchKeyword}"
+           onkeydown="onSearchKeydown(event)" />
+    <button class="btn btn-primary btn-sm"
+            onclick="searchStudents(document.getElementById('searchInput').value)">Search</button>
+    <a sec:authorize="hasRole('ADMIN')" href="/create-student" class="btn btn-success btn-sm">➕ Add Student</a>
+  </div>
+
+  <!-- Empty state -->
+  <div th:if="${#lists.isEmpty(students)}" class="alert alert-info">
+    🎓 No students found.
+    <a sec:authorize="hasRole('ADMIN')" href="/create-student">Create your first student →</a>
+    <span sec:authorize="hasRole('USER')">Contact an administrator to add students.</span>
+  </div>
+
+  <!-- Student cards -->
+  <div th:each="s : ${students}" th:id="'student-card-' + ${s.id}" class="student-card">
+    <!-- Info -->
+    <div class="student-info">
+      <div class="student-name">
+        <span th:text="${s.name}">Name</span>
+        <span class="student-username" th:text="'(' + ${s.username} + ')'">(@user)</span>
+      </div>
+      <div class="mt-1">
+        <span class="status-dot"
+              th:classappend="${s.status == 'ONLINE'} ? 'status-online' : 'status-offline'"></span>
+        <span class="text-sm" th:text="${s.status}">OFFLINE</span>
+        <span th:if="${s.blocked}"  class="text-sm" style="color:#EF4444;margin-left:8px">🚫 Blocked</span>
+        <span th:if="${s.muted}"    class="text-sm" style="color:#D97706;margin-left:8px">🔇 Muted</span>
+        <span th:if="${s.deviceLock}" class="text-sm" style="color:#60A5FA;margin-left:8px">🔒 Device Lock</span>
+      </div>
+      <div class="student-meta">
+        Created:
+        <span th:text="${s.createdAt != null ? #temporals.format(s.createdAt,'dd/MM/yyyy') : '–'}">–</span>
+        &nbsp;|&nbsp; Last seen:
+        <span th:text="${s.lastSeen != null ? #temporals.format(s.lastSeen,'dd/MM/yyyy, HH:mm:ss') : '–'}">–</span>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="student-actions">
+      <!-- Share: use data-* to safely pass strings (Thymeleaf 3.1 blocks strings in onclick) -->
+      <button class="btn btn-info btn-sm"
+              th:data-id="${s.id}"
+              th:data-name="${s.name}"
+              th:data-username="${s.username}"
+              th:data-password="${s.rawPassword}"
+              onclick="shareWhatsApp(this.dataset.id, this.dataset.name, this.dataset.username, this.dataset.password)"
+              title="Share on WhatsApp">💬 Share</button>
+      <!-- Edit: use data-* for the same reason -->
+      <button sec:authorize="hasRole('ADMIN')" class="btn btn-secondary btn-sm"
+              th:data-id="${s.id}"
+              th:data-name="${s.name}"
+              th:data-device-lock="${s.deviceLock}"
+              th:data-show-rec="${s.showRecordings}"
+              onclick="editStudent(this.dataset.id, this.dataset.name, this.dataset.deviceLock, this.dataset.showRec)">✏️ Edit</button>
+      <button sec:authorize="hasRole('ADMIN')" th:id="'block-btn-' + ${s.id}"
+              class="btn btn-warning btn-sm"
+              th:text="${s.blocked} ? '🔓 Unblock' : '🚫 Block'"
+              th:onclick="|blockStudent(${s.id})|">Block</button>
+      <button sec:authorize="hasRole('ADMIN')" th:id="'mute-btn-' + ${s.id}"
+              class="btn btn-secondary btn-sm"
+              th:text="${s.muted} ? '🔊 Unmute' : '🔇 Mute'"
+              th:onclick="|muteStudent(${s.id})|">Mute</button>
+      <button sec:authorize="hasRole('ADMIN')" class="btn btn-danger btn-sm"
+              th:onclick="|deleteStudent(${s.id})|">🗑 Delete</button>
+    </div>
+  </div>
+
+</main>
+
+<div th:replace="~{layout :: modals}"></div>
+<div th:replace="~{layout :: footer}"></div>
+<script th:src="@{/js/mtng.js}"></script>
+</body>
+</html>
+

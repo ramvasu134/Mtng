@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+                xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MTNG – Recordings</title>
+  <link rel="stylesheet" th:href="@{/css/mtng.css}" />
+</head>
+<body>
+
+<div th:replace="~{layout :: header('recordings')}"></div>
+<div th:replace="~{layout :: nav('recordings')}"></div>
+
+<main class="main-content">
+
+  <!-- Info banner -->
+  <div class="alert alert-info mb-2" style="font-size:12px">
+    ℹ️ All students with recordings are listed below. Click a name to expand and see that student's clips.
+    Recordings are removed after 5 days; delete any you do not need to save space.
+  </div>
+
+  <!-- Toolbar -->
+  <div class="search-bar">
+    <input class="search-input" type="text" placeholder="🔍 Search recordings..."
+           oninput="searchRecordings(this.value)" />
+    <button class="btn btn-secondary btn-sm" onclick="location.reload()">🔄 Refresh</button>
+    <button sec:authorize="hasRole('ADMIN')" class="btn btn-success btn-sm" onclick="promptSaveRecordings()">💾 Save All</button>
+    <button sec:authorize="hasRole('ADMIN')" class="btn btn-danger btn-sm" onclick="clearAllRecordings()">🗑 Clear All</button>
+  </div>
+
+  <!-- Empty state -->
+  <div th:if="${#lists.isEmpty(allRecordings)}" class="alert alert-info">
+    No recordings yet. Start a meeting and students will be recorded automatically when Full Meeting Recording is ON.
+  </div>
+
+  <!-- Group recordings by student -->
+  <div th:each="student : ${students}">
+    <!-- Only show if student has recordings -->
+    <div th:with="recs=${recsByStudent[student.id]}"
+         th:if="${recs != null and not #lists.isEmpty(recs)}"
+         class="card student-recording-group"
+         th:attr="data-name=${student.name}">
+
+      <div class="card-header" style="cursor:pointer"
+           th:data-target="|recs-${student.id}|"
+           onclick="document.getElementById(this.dataset.target).classList.toggle('hidden')">
+        <span class="card-title" th:text="${student.name}">Student</span>
+        <span class="text-muted text-sm" th:text="${#lists.size(recs)} + ' recordings'">0 recordings</span>
+        <span style="color:var(--orange-primary)">▾</span>
+      </div>
+
+      <div th:id="'recs-' + ${student.id}">
+        <div th:each="r,i : ${recs}" th:id="'rec-' + ${r.id}" class="recording-item">
+          <div class="recording-header">
+            <span class="rec-number" th:text="'#' + ${i.count}">#1</span>
+            <span class="rec-type">🎙 Recording</span>
+            <div class="rec-meta">
+              <span th:text="${r.durationSeconds} + 's'">6s</span>
+              <span th:text="${r.recordingDate != null ? #temporals.format(r.recordingDate,'dd/MM/yyyy') : '–'}">–</span>
+              <span th:text="${r.recordingTime != null ? r.recordingTime.toString().substring(0,5) : '–'}">–</span>
+            </div>
+            <div sec:authorize="hasRole('ADMIN')" style="margin-left:auto">
+              <button class="btn btn-danger btn-sm"
+                      th:onclick="|deleteRecording(${r.id})|">🗑</button>
+            </div>
+          </div>
+          <div>
+            <button class="rec-play-btn" th:onclick="|loadAudio(${r.id})|">▶ Load Audio</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div th:replace="~{layout :: modals}"></div>
+<div th:replace="~{layout :: footer}"></div>
+<script th:src="@{/js/mtng.js}"></script>
+</body>
+</html>
+

@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MTNG – User Guide</title>
+  <link rel="stylesheet" th:href="@{/css/mtng.css}" />
+  <style>
+    /* ═══════════════════════════════════════════
+       USER GUIDE – VISUAL EFFECTS STYLES
+       ═══════════════════════════════════════════ */
+
+    /* ── Animated Background ────────────────── */
+    .guide-hero {
+      position: relative;
+      background: linear-gradient(135deg, #1A0A00 0%, #2A1400 40%, #3A1A00 70%, #1A0A00 100%);
+      border: 1px solid var(--dark-border);
+      border-radius: 16px;
+      padding: 50px 40px;
+      margin-bottom: 40px;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .guide-hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(from 0deg, transparent, rgba(255,107,0,0.1), transparent, rgba(255,107,0,0.05), transparent);
+      animation: heroRotate 10s linear infinite;
+    }
+
+    @keyframes heroRotate {
+      to { transform: rotate(360deg); }
+    }
+
+    .guide-hero > * { position: relative; z-index: 1; }
+
+    .guide-hero-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 42px;
+      font-weight: 900;
+      background: linear-gradient(90deg, #FF6B00, #FFAA55, #FF6B00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+      animation: shimmer 3s ease-in-out infinite;
+      background-size: 200%;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { background-position: 0% center; }
+      50% { background-position: 200% center; }
+    }
+
+    .guide-hero-sub {
+      font-size: 18px;
+      color: #E5C9A8;
+      font-weight: 300;
+      margin-bottom: 20px;
+    }
+
+    .guide-hero-badges {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .hero-badge {
+      background: rgba(255,107,0,0.15);
+      border: 1px solid var(--orange-primary);
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--orange-light);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      animation: fadeInUp 0.5s ease-out both;
+    }
+
+    .hero-badge:nth-child(1) { animation-delay: 0.1s; }
+    .hero-badge:nth-child(2) { animation-delay: 0.2s; }
+    .hero-badge:nth-child(3) { animation-delay: 0.3s; }
+    .hero-badge:nth-child(4) { animation-delay: 0.4s; }
+    .hero-badge:nth-child(5) { animation-delay: 0.5s; }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Table of Contents ─────────────────── */
+    .toc-container {
+      background: var(--dark-card);
+      border: 1px solid var(--dark-border);
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 40px;
+    }
+
+    .toc-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 16px;
+      color: var(--orange-primary);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 8px;
+    }
+
+    .toc-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      color: #E5C9A8;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .toc-link:hover {
+      background: rgba(255,107,0,0.1);
+      border-color: var(--dark-border);
+      color: #fff;
+      transform: translateX(4px);
+    }
+
+    .toc-num {
+      background: var(--orange-primary);
+      color: #fff;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ── Section Cards ─────────────────────── */
+    .guide-section {
+      background: var(--dark-card);
+      border: 1px solid var(--dark-border);
+      border-radius: 14px;
+      padding: 30px;
+      margin-bottom: 30px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      scroll-margin-top: 80px;
+    }
+
+    .guide-section:hover {
+      border-color: rgba(255,107,0,0.4);
+      box-shadow: 0 4px 30px rgba(255,107,0,0.08);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--dark-border);
+    }
+
+    .section-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      animation: iconPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes iconPulse {
+      0%, 100% { box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+      50% { box-shadow: 0 4px 25px rgba(255,107,0,0.3); }
+    }
+
+    .icon-blue    { background: linear-gradient(135deg, #3B82F6, #1D4ED8); }
+    .icon-green   { background: linear-gradient(135deg, #22C55E, #16A34A); }
+    .icon-orange  { background: linear-gradient(135deg, #FF6B00, #CC5500); }
+    .icon-purple  { background: linear-gradient(135deg, #8B5CF6, #7C3AED); }
+    .icon-red     { background: linear-gradient(135deg, #EF4444, #DC2626); }
+    .icon-yellow  { background: linear-gradient(135deg, #F59E0B, #D97706); }
+    .icon-teal    { background: linear-gradient(135deg, #14B8A6, #0D9488); }
+    .icon-pink    { background: linear-gradient(135deg, #EC4899, #DB2777); }
+    .icon-cyan    { background: linear-gradient(135deg, #06B6D4, #0891B2); }
+
+    .section-title-text h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 20px;
+      color: var(--orange-primary);
+      margin: 0;
+    }
+
+    .section-title-text p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin: 4px 0 0;
+    }
+
+    /* ── Step Cards ────────────────────────── */
+    .step-flow { display: flex; flex-direction: column; gap: 0; margin: 20px 0; }
+
+    .step-card { display: flex; gap: 16px; padding: 16px 0; position: relative; }
+
+    .step-card:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 52px;
+      bottom: -2px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--orange-primary), rgba(255,107,0,0.1));
+    }
+
+    .step-num {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--orange-primary), var(--orange-dark));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+      flex-shrink: 0;
+      box-shadow: 0 3px 12px rgba(255,107,0,0.4);
+      z-index: 1;
+    }
+
+    .step-body { flex: 1; padding-top: 6px; }
+    .step-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step-desc { font-size: 13px; color: #E5C9A8; line-height: 1.7; }
+
+    /* ── Visual Mockups ────────────────────── */
+    .mockup-container {
+      background: #0D0600;
+      border: 1px solid var(--dark-border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 16px 0;
+    }
+
+    .mockup-titlebar {
+      background: linear-gradient(135deg, #2A1400, #3A1A00);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--dark-border);
+    }
+
+    .mockup-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red    { background: #EF4444; }
+    .dot-yellow { background: #F59E0B; }
+    .dot-green  { background: #22C55E; }
+
+    .mockup-url {
+      flex: 1;
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+
+    .mockup-body { padding: 20px; }
+
+    /* ── Mock UI Elements ──────────────────── */
+    .mock-header {
+      background: linear-gradient(135deg, #2A1400 0%, #3A1A00 100%);
+      border-bottom: 2px solid var(--orange-primary);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    .mock-brand { font-family: 'Orbitron', sans-serif; font-size: 16px; font-weight: 900; color: var(--orange-primary); letter-spacing: 2px; }
+
+    .mock-btn {
+      padding: 5px 12px;
+      border-radius: 14px;
+      font-size: 11px;
+      font-weight: 600;
+      border: none;
+      color: #fff;
+      cursor: default;
+    }
+
+    .mock-btn-start { background: linear-gradient(135deg, var(--orange-primary), var(--orange-light)); }
+    .mock-btn-stop  { background: linear-gradient(135deg, #DC2626, #B91C1C); }
+
+    .mock-tabs { display: flex; background: #2A1400; border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+    .mock-tab { padding: 8px 14px; font-size: 11px; color: var(--text-muted); border-bottom: 2px solid transparent; }
+    .mock-tab.active { color: #fff; border-bottom-color: var(--orange-primary); background: rgba(255,107,0,0.12); }
+
+    .mock-stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+    .mock-stat { background: #2A1400; border: 1px solid var(--dark-border); border-radius: 8px; padding: 10px; text-align: center; }
+    .mock-stat-num { font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 700; color: var(--orange-primary); }
+    .mock-stat-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+    .mock-student-card { background: #2A1400; border: 1px solid var(--dark-border); border-radius: 8px; padding: 10px 14px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
+    .mock-student-info { display: flex; align-items: center; gap: 8px; }
+    .mock-avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--orange-primary), var(--orange-dark)); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; }
+    .mock-name { font-size: 13px; font-weight: 600; color: #fff; }
+    .mock-username { font-size: 10px; color: var(--text-muted); }
+    .mock-actions { display: flex; gap: 4px; }
+    .mock-action-btn { width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--dark-border); background: rgba(255,107,0,0.08); display: flex; align-items: center; justify-content: center; font-size: 11px; cursor: default; }
+
+    .mock-chat-bubble { padding: 8px 12px; border-radius: 12px; margin-bottom: 8px; max-width: 75%; font-size: 12px; }
+    .mock-chat-mine { background: var(--orange-primary); color: #fff; margin-left: auto; border-radius: 12px 12px 2px 12px; }
+    .mock-chat-theirs { background: #2A1400; border: 1px solid var(--dark-border); color: #E5C9A8; border-radius: 12px 12px 12px 2px; }
+    .mock-chat-sender { font-size: 10px; font-weight: 600; color: var(--orange-light); margin-bottom: 2px; }
+
+    /* ── Feature Cards Grid ────────────────── */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin: 16px 0; }
+
+    .feature-card {
+      background: rgba(255,107,0,0.05);
+      border: 1px solid var(--dark-border);
+      border-radius: 10px;
+      padding: 18px;
+      transition: all 0.3s;
+      cursor: default;
+    }
+
+    .feature-card:hover {
+      border-color: var(--orange-primary);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(255,107,0,0.15);
+    }
+
+    .feature-card-icon { font-size: 28px; margin-bottom: 10px; }
+    .feature-card-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .feature-card-desc { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+
+    /* ── Info Callouts ─────────────────────── */
+    .callout { border-radius: 10px; padding: 14px 18px; margin: 14px 0; display: flex; gap: 12px; align-items: flex-start; font-size: 13px; line-height: 1.6; }
+    .callout-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+    .callout-tip { background: rgba(22,163,74,0.1); border: 1px solid rgba(22,163,74,0.3); color: #86EFAC; }
+    .callout-warn { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: #FCD34D; }
+    .callout-danger { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #FCA5A5; }
+    .callout-info { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); color: #93C5FD; }
+
+    kbd { background: rgba(255,107,0,0.15); border: 1px solid rgba(255,107,0,0.3); border-radius: 4px; padding: 2px 6px; font-size: 11px; font-family: monospace; color: var(--orange-light); }
+
+    /* ── Role Badges ───────────────────────── */
+    .role-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .role-admin { background: rgba(239,68,68,0.2); border: 1px solid rgba(239,68,68,0.4); color: #FCA5A5; }
+    .role-user { background: rgba(59,130,246,0.2); border: 1px solid rgba(59,130,246,0.4); color: #93C5FD; }
+    .role-all { background: rgba(22,163,74,0.2); border: 1px solid rgba(22,163,74,0.4); color: #86EFAC; }
+
+    /* ── Credential Cards ──────────────────── */
+    .cred-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin: 14px 0; }
+    .cred-card { background: rgba(255,107,0,0.06); border: 1px solid var(--dark-border); border-radius: 10px; padding: 14px; text-align: center; transition: border-color 0.2s; }
+    .cred-card:hover { border-color: var(--orange-primary); }
+    .cred-role { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .cred-user { font-family: monospace; font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .cred-pass { font-family: monospace; font-size: 13px; color: var(--orange-light); }
+
+    /* ── WhatsApp Preview ──────────────────── */
+    .wa-preview { background: #0B3B2E; border-radius: 12px; padding: 16px; margin: 14px 0; max-width: 340px; border: 1px solid #1A5C47; }
+    .wa-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 12px; color: #86EFAC; font-weight: 600; }
+    .wa-body { font-size: 13px; color: #E5E7EB; line-height: 1.8; white-space: pre-line; }
+    .wa-body strong { color: #fff; }
+
+    /* ── Scroll to top ─────────────────────── */
+    .scroll-top-btn { position: fixed; bottom: 24px; right: 24px; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--orange-primary), var(--orange-dark)); color: #fff; border: none; font-size: 18px; cursor: pointer; box-shadow: 0 4px 16px rgba(255,107,0,0.4); display: none; align-items: center; justify-content: center; z-index: 999; transition: transform 0.2s; }
+    .scroll-top-btn:hover { transform: scale(1.1); }
+    .scroll-top-btn.visible { display: flex; }
+
+    @media (max-width: 640px) {
+      .guide-hero { padding: 30px 20px; }
+      .guide-hero-title { font-size: 28px; }
+      .guide-section { padding: 20px; }
+      .mock-stat-grid { grid-template-columns: repeat(2, 1fr); }
+      .features-grid { grid-template-columns: 1fr; }
+      .toc-grid { grid-template-columns: 1fr; }
+      .cred-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="app-header">
+  <a href="/" class="app-name">MTNG</a>
+  <div class="header-right">
+    <a href="/" class="btn btn-secondary btn-sm">← Dashboard</a>
+    <a href="/docs" class="btn btn-primary btn-sm">📖 API Docs</a>
+  </div>
+</header>
+
+<main class="main-content">
+
+  <!-- ═══════ HERO ═══════ -->
+  <div class="guide-hero">
+    <div class="guide-hero-title">📚 User Guide</div>
+    <div class="guide-hero-sub">Your complete walkthrough for the <strong>MTNG Meeting Management Platform</strong></div>
+    <div class="guide-hero-badges">
+      <span class="hero-badge">🎯 Zoom-like Meetings</span>
+      <span class="hero-badge">👨‍🎓 Student Management</span>
+      <span class="hero-badge">💬 Live Chat</span>
+      <span class="hero-badge">🎙 Audio Recording</span>
+      <span class="hero-badge">📲 WhatsApp Sharing</span>
+    </div>
+  </div>
+
+  <!-- ═══════ TOC ═══════ -->
+  <div class="toc-container">
+    <div class="toc-title">🗂️ TABLE OF CONTENTS</div>
+    <div class="toc-grid">
+      <a href="#getting-started" class="toc-link"><span class="toc-num">1</span> Getting Started</a>
+      <a href="#login" class="toc-link"><span class="toc-num">2</span> Login & Authentication</a>
+      <a href="#dashboard" class="toc-link"><span class="toc-num">3</span> Dashboard Overview</a>
+      <a href="#meetings" class="toc-link"><span class="toc-num">4</span> Meeting Management</a>
+      <a href="#meeting-room" class="toc-link"><span class="toc-num">5</span> Meeting Room</a>
+      <a href="#students" class="toc-link"><span class="toc-num">6</span> Student Management</a>
+      <a href="#chat" class="toc-link"><span class="toc-num">7</span> Chat System</a>
+      <a href="#recordings" class="toc-link"><span class="toc-num">8</span> Recordings</a>
+      <a href="#whatsapp" class="toc-link"><span class="toc-num">9</span> WhatsApp Sharing</a>
+      <a href="#settings" class="toc-link"><span class="toc-num">10</span> Settings & Tools</a>
+      <a href="#roles" class="toc-link"><span class="toc-num">11</span> Roles & Permissions</a>
+      <a href="#faq" class="toc-link"><span class="toc-num">12</span> FAQ & Troubleshooting</a>
+    </div>
+  </div>
+
+  <!-- ═══════ 1. GETTING STARTED ═══════ -->
+  <div id="getting-started" class="guide-section">
+    <div class="section-header">
+      <div class="section-icon icon-green">🚀</div>
+      <div class="section-title-text"><h2>Getting Started</h2><p>Set up and run MTNG in under 2 minutes</p></div>
+    </div>
+    <div class="step-flow">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Start the Application</div>
+          <div class="step-desc">Run with Maven or the startup script:</div>
+          <div class="docs-code" style="margin-top:8px">./mvnw spring-boot:run</div>
+          <div class="step-desc" style="margin-top:4px">Or double-click <code style="color:#FFA040">start-mtng.bat</code> on Windows.</div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Open in Browser</div>
+          <div class="step-desc">Navigate to <strong style="color:#FFA040">http://localhost:8080</strong> — you'll see the login page.</div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Log In with Default Credentials</div>
+          <div class="cred-grid" style="margin-top:10px">
+            <div class="cred-card"><div class="cred-role" style="color:#EF4444">👑 Admin</div><div class="cred-user">admin</div><div class="cred-pass">admin123</div></div>
+            <div class="cred-card"><div class="cred-role" style="color:#3B82F6">👤 User</div><div class="cred-user">user</div><div class="cred-pass">user123</div></div>
+            <div class="cred-card"><div class="cred-role" style="color:#22C55E">🎓 Student</div><div class="cred-user">HARI34</div><div class="cred-pass">pass1234</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">You're Ready! 🎉</div>
+          <div class="step-desc">After login you'll land on the Dashboard. Start a meeting, add students, and go live!</div>
+        </div>
+      </div>
+    </div>
+    <div class="callout callout-tip"><span class="callout-icon">💡</span><div><strong>Tip:</strong> Sample data is auto-seeded on startup — 3 students and 4 recordings are ready to explore.</div></div>
+  </div>
+
+  <!-- ═══════ 2. LOGIN ═══════ -->
+  <div id="login" class="guide-section">
+    <div class="section-header">
+      <div class="section-icon icon-blue">🔐</div>
+      <div class="section-title-text"><h2>Login & Authentication</h2><p>Secure dual-authentication for Teachers and Students</p></div>
+    </div>
+    <p class="docs-text">MTNG uses <strong>Spring Security</strong> with BCrypt password hashing. Both Teachers and Students log in through the same page — the system auto-detects your role.</p>
+    <div class="mockup-container">
+      <div class="mockup-titlebar"><div class="mockup-dot dot-red"></div><div class="mockup-dot dot-yellow"></div><div class="mockup-dot dot-green"></div><div class="mockup-url">localhost:8080/login</div></div>
+      <div class="mockup-body" style="text-align:center;padding:30px">
+        <div style="font-family:'Orbitron',sans-serif;font-size:28px;color:var(--orange-primary);font-weight:900;letter-spacing:3px;margin-bottom:6px">MTNG</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:20px">Meeting Management Platform</div>
+        <div style="background:var(--dark-card);border:1px solid var(--dark-border);border-radius:10px;padding:24px;max-width:300px;margin:0 auto;text-align:left">
+          <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:16px;text-align:center">👨‍🏫 Teacher Login</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">👤 USERNAME</div>
+          <div style="background:rgba(255,107,0,0.07);border:1px solid var(--dark-border);border-radius:6px;padding:8px 10px;color:#6B4C3A;font-size:12px;margin-bottom:12px">Enter your username</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">🔒 PASSWORD</div>
+          <div style="background:rgba(255,107,0,0.07);border:1px solid var(--dark-border);border-radius:6px;padding:8px 10px;color:#6B4C3A;font-size:12px;margin-bottom:16px">••••••••</div>
+          <div style="background:linear-gradient(135deg,var(--orange-primary),var(--orange-light));border-radius:8px;padding:10px;text-align:center;font-weight:700;font-size:13px;color:#fff">🔑 Sign In</div>
+        </div>
+      </div>
+    </div>
+    <div class="callout callout-info"><span class="callout-icon">ℹ️</span><div><strong>How it works:</strong> The system checks the <em>Teachers</em> table first. If not found, it checks <em>Students</em>. Teachers get <span class="role-badge role-admin">Admin</span> or <span class="role-badge role-user">User</span> role; Students always get <span class="role-badge role-user">User</span> role.</div></div>
+  </div>
+
+  <!-- ═══════ 3. DASHBOARD ═══════ -->
+  <div id="dashboard" class="guide-section">
+    <div class="section-header">
+      <div class="section-icon icon-orange">📊</div>
+      <div class="section-title-text"><h2>Dashboard Overview</h2><p>Your command center for managing meetings</p></div>
+    </div>
+    <div class="mockup-container">
+      <div class="mockup-titlebar"><div class="mockup-dot dot-red"></div><div class="mockup-dot dot-yellow"></div><div class="mockup-dot dot-green"></div><div class="mockup-url">localhost:8080/</div></div>
+      <div class="mockup-body">
+        <div class="mock-header">
+          <span class="mock-brand">MTNG</span>
+          <div style="display:flex;gap:8px;align-items:center">
+            <div style="background:rgba(255,107,0,0.15);border:1px solid var(--orange-primary);border-radius:14px;padding:3px 10px;font-size:10px;color:var(--orange-light)"><strong style="color:var(--orange-primary)">3</strong> In Meeting</div>
+            <div style="background:rgba(255,107,0,0.15);border:1px solid var(--orange-primary);border-radius:14px;padding:3px 10px;font-size:10px;color:var(--orange-light)"><strong style="color:var(--orange-primary)">5</strong> Online</div>
+            <span class="mock-btn mock-btn-stop" style="font-size:11px">⏹ Stop Meeting</span>
+            <span style="font-size:11px;color:var(--text-muted)">👤 admin <span style="color:#22C55E;font-weight:700">(Admin)</span></span>
+          </div>
+        </div>
+        <div class="mock-tabs">
+          <span class="mock-tab active">🎙 Meeting Controls</span>
+          <span class="mock-tab">🎤 Meeting Room</span>
+          <span class="mock-tab">💬 Chat</span>
+          <span class="mock-tab">👥 Students List</span>
+          <span class="mock-tab">➕ Create Student</span>
+          <span class="mock-tab">⏺ Recordings</span>
+        </div>
+        <div style="background:rgba(22,163,74,0.15);border:1px solid #16A34A;border-radius:8px;padding:8px 12px;font-size:12px;color:#86EFAC;margin-bottom:12px">✅ Meeting is <strong>LIVE</strong> — Title: <strong>Math Class</strong> — Started: 22/03/2026 10:00</div>
+        <div class="mock-stat-grid">
+          <div class="mock-stat"><div class="mock-stat-num">3</div><div class="mock-stat-label">In Meeting</div></div>
+          <div class="mock-stat"><div class="mock-stat-num">5</div><div class="mock-stat-label">Online</div></div>
+          <div class="mock-stat"><div class="mock-stat-num">12</div><div class="mock-stat-label">Total Students</div></div>
+          <div class="mock-stat"><div class="mock-stat-num">8</div><div class="mock-stat-label">Total Sessions</div></div>
+        </div>
+      </div>
+    </div>
+    <p class="docs-text">The dashboard has <strong>6 tabs</strong> in the navigation bar:</p>
+    <div class="features-grid">
+      <div class="feature-card"><div class="feature-card-icon">🎙</div><div class="feature-card-title">Meeting Controls</div><div class="feature-card-desc">Live stats, session history, quick actions panel</div></div>
+      <div class="feature-card"><div class="feature-card-icon">🎤</div><div class="feature-card-title">Meeting Room</div><div class="feature-card-desc">Jitsi-powered video/audio conferencing room</div></div>
+      <div class="feature-card"><div class="feature-card-icon">💬</div><div class="feature-card-title">Chat</div><div class="feature-card-desc">Real-time messaging during meetings</div></div>
+      <div class="feature-card"><div class="feature-card-icon">👥</div><div class="feature-card-title">Students List</div><div class="feature-card-desc">View, search, edit, block, mute students</div></div>
+      <div class="feature-card"><div class="feature-card-icon">➕</div><div class="feature-card-title">Create Student</div><div class="feature-card-desc">Register new students with credentials</div></div>
+      <div class="feature-card"><div class="feature-card-icon">⏺</div><div class="feature-card-title">Recordings</div><div class="feature-card-desc">Audio recordings per student per meeting</div></div>
+    </div>
+  </div>
+
+  <!-- ═══════ 4. MEETINGS ═══════ -->
+  <div id="meetings" class="guide-section">
+    <div class="section-header">
+      <div class="section-icon icon-purple">🎯</div>
+      <div class="section-title-text"><h2>Meeting Management</h2><p>Start, monitor, and stop meetings with one click</p></div>
+    </div>
+    <div class="step-flow">
+      <div class="step-card"><div class="step-num">1</div><div class="step-body"><div class="step-title">Start a Meeting</div><div class="step-desc">Click <span class="mock-btn mock-btn-start" style="padding:3px 10px;font-size:10px">▶ Start Meeting</span> in the header. A unique Jitsi room is auto-generated.</div></div></div>
+      <div class="step-card"><div class="step-num">2</div><div class="step-body"><div class="step-title">Monitor Live Stats</div><div class="step-desc">Watch real-time counters: <strong>In Meeting</strong>, <strong>Online</strong>, and <strong>Total</strong> students.</div></div></div>
+      <div class="step-card"><div class="step-num">3</div><div class="step-body"><div class="step-title">Enable Full Recording</div><div class="step-desc">Open <strong>⚙ Settings → ⏺ Full Meeting Recording</strong> to auto-save recordings for all participants when the meeting ends.</div></div></div>
+      <div class="step-card"><div class="step-num">4</div><div class="step-body"><div class="step-title">End the Meeting</div><div class="step-desc">Click <span class="mock-btn mock-btn-stop" style="padding:3px 10px;font-size:10px">⏹ Stop Meeting</span>. Recordings auto-save, the session is logged, participant tracking is cleared.</div></div></div>
+    </div>
+    <div class="callout callout-warn"><span class="callout-icon">⚠️</span><div><strong>Important:</strong> Only <strong>one meeting</strong> can be active at a time. Starting a new one automatically stops the previous meeting.</div></div>
+  </div>
+
+  <!-- ═══════ 5. MEETING ROOM ═══════ -->
+  <div id="meeting-room" class="guide-section">
+    <div class="section-header">
+      <div class="section-icon icon-teal">🎤</div>
+      <div class="section-title-text"><h2>Meeting Room</h2><p>Jitsi-powered conferencing with audio controls</p></div>
+    </div>
+    <div class="mockup-container">
+      <div class="mockup-titlebar"><div class="mockup-dot dot-red"></div><div class="mockup-dot dot-yellow"></div><div class="mockup-dot dot-green"></div><div class="mockup-url">localhost:8080/meeting-room</div></div>
+      <div class="mockup-body" style="background:#1a1a1a;padding:0">
+        <div style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);padding:10px 16px;display:flex;justify-content:space-between;align-items:center">
+          <div style="display:flex;align-items:center;gap:14px">
+            <span style="font-size:14px;font-weight:600">BHARATH</span>
+            <span style="background:rgba(0,0,0,0.2);padding:4px 10px;border-radius:14px;font-family:monospace;font-size:13px">🕐 00:05:42</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="background:rgba(0,0,0,0.2);padding:5px 10px;border-radius:4px;font-size:11px"><strong>3</strong> In Meeting / <strong>5</strong> Online / 12 Total</span>
+            <span style="background:#f44336;padding:6px 16px;border-radius:4px;font-size:12px;font-weight:600">End Meeting</span>
+          </div>
+        </div>
+        <div style="height:140px;background:linear-gradient(135deg,#0a2e1a,#1a3a2a);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px">
+          <div style="font-size:32px">🎥</div>
+          <div style="font-size:12px;color:#888">Jitsi Meet Conference Area</div>
+          <div style="font-size:10px;color:#555">All participants share the same room</div>
+        </div>
+        <div style="background:#252525;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #333">
+          <span style="font-size:20px">🔊</span>
+          <div style="background:#f44336;padding:10px 60px;border-radius:6px;font-size:16px">🎤</div>
+          <span style="font-size:20px">🔔</span>
+        </div>
+      </div>
+    </div>
+    <table class="docs-table">
+      <thead><tr><th>Control</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>🕐 Timer</td><td>Elapsed time since meeting started</td></tr>
+        <tr><td>🎤 Mic Toggle</td><td>Mute / unmute your microphone</td></tr>
+        <tr><td>🔊 Volume</td><td>Adjust speaker volume</td></tr>
+        <tr><td>🔔 Alert Bell</td><td>Sound notification alert</td></tr>
+        <tr><td>⏹ End Meeting</td><td>Stop the active meeting (Admin only)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ═══════ 6. STUDENTS ═══════ -->
+  <div id="students" class="guide-section">
+    <div class="section-header">
+      <div class="section-icon icon-yellow">👨‍🎓</div>
+      <div class="section-title-text"><h2>Student Management</h2><p>Create, edit, block, mute, and monitor students</p></div>
+    </div>
+    <div class="mockup-container">
+      <div class="mockup-titlebar"><div class="mockup-dot dot-red"></div><div class="mockup-dot dot-yellow"></div><div class="mockup-dot dot-green"></div><div class="mockup-url">localhost:8080/students</div></div>
+      <div class="mockup-body">
+        <div style="display:flex;gap:8px;margin-bottom:12px"><div style="flex:1;max-width:250px;background:rgba(255,107,0,0.07);border:1px solid var(--dark-border);border-radius:6px;padding:7px 10px;color:#6B4C3A;font-size:11px">🔍 Search students...</div><span class="mock-btn mock-btn-start" style="font-size:10px">Search</span></div>
+        <div class="mock-student-card">
+          <div class="mock-student-info"><div class="mock-avatar">H</div><div><div class="mock-name">Hari <span style="width:6px;height:6px;border-radius:50%;background:#9CA3AF;display:inline-block;margin-left:4px"></span></div><div class="mock-username">@HARI34 · Offline</div></div></div>
+          <div class="mock-actions"><div class="mock-action-btn">📲</div><div class="mock-action-btn">✏️</div><div class="mock-action-btn" style="color:#EF4444">🚫</div><div class="mock-action-btn">🔇</div><div class="mock-action-btn" style="color:#EF4444">🗑</div></div>
+        </div>
+        <div class="mock-student-card">
+          <div class="mock-student-info"><div class="mock-avatar" style="background:linear-gradient(135deg,#22C55E,#16A34A)">P</div><div><div class="mock-name">Priya <span style="width:6px;height:6px;border-radius:50%;background:#22C55E;display:inline-block;margin-left:4px"></span></div><div class="mock-username">@PRIYA01 · Online</div></div></div>
+          <div class="mock-actions"><div class="mock-action-btn">📲</div><div class="mock-action-btn">✏️</div><div class="mock-action-btn" style="color:#EF4444">🚫</div><div class="mock-action-btn">🔇</div><div class="mock-action-btn" style="color:#EF4444">🗑</div></div>
+        </div>
+      </div>
+    </div>
+    <table class="docs-table">
+      <thead><tr><th>Action</th><th>Button</th><th>Description</th><th>Access</th></tr></thead>
+      <tbody>
+        <tr><td>WhatsApp</td><td>📲</td><td>Share credentials via WhatsApp</td><td><span class="role-badge role-admin">Admin</span></td></tr>
+        <tr><td>Edit</td><td>✏️</td><td>Change name, password, settings</td><td><span class="role-badge role-admin">Admin</span></td></tr>
+        <tr><td>Block</td><td>🚫</td><td>Prevent meeting participation</td><td><span class="role-badge role-admin">Admin</span></td></tr>
+        <tr><td>Mute</td><td>🔇</td><td>Disable student microphone</td><td><span class="role-badge role-admin">Admin</span></td></tr>
+        <tr><td>Delete</td><td>🗑</td><td>Remove student permanently</td><td><span class="role-badge role-admin">Admin</span></td></tr>
+        <tr><td>Search</td><td>🔍</td><td>Filter by name or username</td><td><span class="role-badge role-all">All</span></td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-tip"><span class="callout-icon">💡</span><div><strong>Creating:</strong> <strong>➕ Create Student</strong> tab → fill Name, Username (unique), Password → click Create. Student can log in immediately!</div></div>
+  </div>
+
+  <!-- ═══════ 7. CHAT ═══════ -->
+  <div id="chat" class="guide-section">
+    <div class="section-header">
+      <div class="section-icon icon-cyan">💬</div>
+      <div class="section-title-text"><h2>Chat System</h2><p>Real-time messaging during meetings</p></div>
+    </div>
+    <div class="mockup-container">
+      <div class="mockup-titlebar"><div class="mockup-dot dot-red"></div><div class="mockup-dot dot-yellow"></div><div class="mockup-dot dot-green"></div><div class="mockup-url">localhost:8080/chat</div></div>
+      <div class="mockup-body">
+        <div style="background:rgba(0,0,0,0.2);border-radius:8px;padding:16px;min-height:140px;margin-bottom:10px">
+          <div class="mock-chat-bubble mock-chat-theirs"><div class="mock-chat-sender">HARI34</div>Good morning sir! 👋</div>
+          <div class="mock-chat-bubble mock-chat-theirs"><div class="mock-chat-sender">PRIYA01</div>Hello everyone! Ready for class</div>
+          <div class="mock-chat-bubble mock-chat-mine">Welcome all! Let's begin 📖</div>
+          <div class="mock-chat-bubble mock-chat-theirs"><div class="mock-chat-sender">RAM22</div>Yes sir, all set! ✅</div>
+        </div>
+        <div style="display:flex;gap:8px"><div style="flex:1;background:rgba(255,107,0,0.07);border:1px solid var(--dark-border);border-radius:6px;padding:8px 10px;color:#6B4C3A;font-size:12px">Type a message...</div><span class="mock-btn mock-btn-start" style="font-size:11px">Send ➤</span><span class="mock-btn" style="background:var(--btn-danger);font-size:11px">🗑</span></div>
+      </div>
+    </div>
+    <ul style="color:#E5C9A8;line-height:2.2;padding-left:20px;font-size:13px">
+      <li>Type and press <strong>Send ➤</strong> or <kbd>Enter</kbd></li>
+      <li>Your messages: <strong style="color:var(--orange-primary)">right (orange)</strong> · Others: <strong>left</strong></li>
+      <li>Sender <strong>auto-detected</strong> from login session</li>
+      <li>Messages auto-refresh every <strong>3 seconds</strong></li>
+      <li>Admin can <strong>clear all messages</strong> with 🗑</li>
+    </ul>
+  </div>
+
+  <!-- ═══════ 8. RECORDINGS ═══════ -->
+  <div id="recordings" class="guide-section">
+    <div class="section-header">
+      <div class="section-icon icon-red">⏺</div>
+      <div class="section-title-text"><h2>Recordings</h2><p>Track and manage audio recordings per student</p></div>
+    </div>
+    <table class="docs-table">
+      <thead><tr><th>Feature</th><th>Description</th><th>Access</th></tr></thead>
+      <tbody>
+        <tr><td>🔄 Auto Recording</td><td>When Full Recording is ON, recordings save for all participants on meeting stop</td><td><span class="role-badge role-admin">Admin</span></td></tr>
+        <tr><td>➕ Manual Add</td><td>Create a recording entry with custom duration</td><td><span class="role-badge role-admin">Admin</span></td></tr>
+        <tr><td>▶ Play Audio</td><td>Load and play back a recording</td><td><span class="role-badge role-all">All</span></td></tr>
+        <tr><td>🗑 Delete One</td><td>Remove a single recording</td><td><span class="role-badge role-admin">Admin</span></td></tr>
+        <tr><td>🗑 Clear All</td><td>Delete all recordings</td><td><span class="role-badge role-admin">Admin</span></td></tr>
+        <tr><td>💾 Export</td><td>Download recordings metadata as JSON</td><td><span class="role-badge role-all">All</span></td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-info"><span class="callout-icon">ℹ️</span><div>Recordings are grouped by student name. Each entry shows date, time, duration, and meeting ID.</div></div>
+  </div>
+
+  <!-- ═══════ 9. WHATSAPP ═══════ -->
+  <div id="whatsapp" class="guide-section">
+    <div class="section-header">
+      <div class="section-icon icon-green">📲</div>
+      <div class="section-title-text"><h2>WhatsApp Credential Sharing</h2><p>Share student login details instantly via WhatsApp</p></div>
+    </div>
+    <p class="docs-text">Click the <strong>📲</strong> button on a student card. MTNG auto-generates a WhatsApp message with their credentials and your network's real URL.</p>
+    <div class="wa-preview">
+      <div class="wa-header">💬 WhatsApp Message Preview</div>
+      <div class="wa-body">🎓 <strong>MTNG – Meeting App</strong>
+
+Hi Hari!
+
+Your account has been created:
+👤 Username: <strong>HARI34</strong>
+🔑 Password: <strong>pass1234</strong>
+
+🔗 App URL: http://192.168.1.42:8080
+
+Please login and join the meeting. 🙏</div>
+    </div>
+    <div class="callout callout-warn"><span class="callout-icon">⚠️</span><div><strong>Network:</strong> Both teacher and student devices must be on the <strong>same LAN/WiFi</strong> for the shared URL to work.</div></div>
+  </div>
+
+  <!-- ═══════ 10. SETTINGS ═══════ -->
+  <div id="settings" class="guide-section">
+    <div class="section-header">
+      <div class="section-icon icon-purple">⚙️</div>
+      <div class="section-title-text"><h2>Settings & Tools</h2><p>Configuration options and admin tools</p></div>
+    </div>
+    <p class="docs-text">Click the <strong>⚙ gear icon</strong> in the header to open settings:</p>
+    <table class="docs-table">
+      <thead><tr><th>Option</th><th>Description</th><th>Access</th></tr></thead>
+      <tbody>
+        <tr><td>🔑 Change Password</td><td>Update your password (min 4 chars)</td><td><span class="role-badge role-all">All</span></td></tr>
+        <tr><td>📅 Schedule</td><td>Schedule a future meeting</td><td><span class="role-badge role-admin">Admin</span></td></tr>
+        <tr><td>🎨 Themes</td><td>App color theme (Orange default)</td><td><span class="role-badge role-all">All</span></td></tr>
+        <tr><td>⏺ Full Recording</td><td>Toggle full meeting recording</td><td><span class="role-badge role-admin">Admin</span></td></tr>
+        <tr><td>📖 Documentation</td><td>Open API documentation</td><td><span class="role-badge role-all">All</span></td></tr>
+        <tr><td>🗄 H2 Console</td><td>Direct database access</td><td><span class="role-badge role-admin">Admin</span></td></tr>
+        <tr><td>🚪 Logout</td><td>End session and return to login</td><td><span class="role-badge role-all">All</span></td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-info"><span class="callout-icon">🗄</span><div><strong>H2 Console:</strong> <code style="color:#FFA040">/h2-console</code> → JDBC URL: <code style="color:#FFA040">jdbc:h2:mem:mtngdb</code> → User: <code style="color:#FFA040">sa</code> → Password: <em>(blank)</em></div></div>
+  </div>
+
+  <!-- ═══════ 11. ROLES ═══════ -->
+  <div id="roles" class="guide-section">
+    <div class="section-header">
+      <div class="section-icon icon-pink">🛡️</div>
+      <div class="section-title-text"><h2>Roles & Permissions</h2><p>Who can do what in MTNG</p></div>
+    </div>
+    <table class="docs-table">
+      <thead><tr><th>Feature</th><th><span class="role-badge role-admin">Admin</span></th><th><span class="role-badge role-user">User / Student</span></th></tr></thead>
+      <tbody>
+        <tr><td>View Dashboard & Stats</td><td style="color:#22C55E;text-align:center">✅</td><td style="color:#22C55E;text-align:center">✅</td></tr>
+        <tr><td>Start / Stop Meetings</td><td style="color:#22C55E;text-align:center">✅</td><td style="color:#EF4444;text-align:center">❌</td></tr>
+        <tr><td>Join Meeting Room</td><td style="color:#22C55E;text-align:center">✅</td><td style="color:#22C55E;text-align:center">✅</td></tr>
+        <tr><td>Send Chat Messages</td><td style="color:#22C55E;text-align:center">✅</td><td style="color:#22C55E;text-align:center">✅</td></tr>
+        <tr><td>Clear Chat</td><td style="color:#22C55E;text-align:center">✅</td><td style="color:#EF4444;text-align:center">❌</td></tr>
+        <tr><td>Create / Edit / Delete Students</td><td style="color:#22C55E;text-align:center">✅</td><td style="color:#EF4444;text-align:center">❌</td></tr>
+        <tr><td>Block / Mute Students</td><td style="color:#22C55E;text-align:center">✅</td><td style="color:#EF4444;text-align:center">❌</td></tr>
+        <tr><td>View Recordings</td><td style="color:#22C55E;text-align:center">✅</td><td style="color:#22C55E;text-align:center">✅</td></tr>
+        <tr><td>Delete Recordings</td><td style="color:#22C55E;text-align:center">✅</td><td style="color:#EF4444;text-align:center">❌</td></tr>
+        <tr><td>Toggle Full Recording</td><td style="color:#22C55E;text-align:center">✅</td><td style="color:#EF4444;text-align:center">❌</td></tr>
+        <tr><td>Access H2 Console</td><td style="color:#22C55E;text-align:center">✅</td><td style="color:#EF4444;text-align:center">❌</td></tr>
+        <tr><td>Change Own Password</td><td style="color:#22C55E;text-align:center">✅</td><td style="color:#22C55E;text-align:center">✅</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ═══════ 12. FAQ ═══════ -->
+  <div id="faq" class="guide-section">
+    <div class="section-header">
+      <div class="section-icon icon-yellow">❓</div>
+      <div class="section-title-text"><h2>FAQ & Troubleshooting</h2><p>Common questions and solutions</p></div>
+    </div>
+    <div style="margin-bottom:18px"><div class="docs-subtitle">🔸 Why is my data gone after restart?</div><p class="docs-text">H2 is an <strong>in-memory database</strong> with <code style="color:#FFA040">create-drop</code> mode — data resets on restart. For persistence, switch to PostgreSQL/MySQL.</p></div>
+    <div style="margin-bottom:18px"><div class="docs-subtitle">🔸 How do I reset all data?</div><p class="docs-text">Restart the app. <code style="color:#FFA040">DataInitializer</code> re-seeds sample data automatically.</p></div>
+    <div style="margin-bottom:18px"><div class="docs-subtitle">🔸 Can students on other devices access the app?</div><p class="docs-text">Yes! Same network required. Use the WhatsApp feature to share the auto-detected LAN URL.</p></div>
+    <div style="margin-bottom:18px"><div class="docs-subtitle">🔸 "Access Denied" on Create Student?</div><p class="docs-text">You need <span class="role-badge role-admin">Admin</span> role. Log in with <code style="color:#FFA040">admin / admin123</code>.</p></div>
+    <div style="margin-bottom:18px"><div class="docs-subtitle">🔸 Meeting room shows "No students in meeting"?</div><p class="docs-text">Students must navigate to <strong>/meeting-room</strong> and join. Ensure admin has started a meeting.</p></div>
+    <div style="margin-bottom:18px"><div class="docs-subtitle">🔸 How do I run tests?</div><div class="docs-code">./mvnw test</div></div>
+    <div style="margin-bottom:18px"><div class="docs-subtitle">🔸 How do I build a production JAR?</div><div class="docs-code">./mvnw clean package -DskipTests
+java -jar target/Mtng-0.0.1-SNAPSHOT.jar</div></div>
+    <div class="callout callout-danger"><span class="callout-icon">🔴</span><div><strong>Known Limitation:</strong> CSRF is disabled for <code>/api/**</code>. In production, enable CSRF for APIs or use JWT authentication.</div></div>
+  </div>
+
+</main>
+
+<footer class="app-footer">
+  <span>© 2026 <strong class="text-orange">MTNG</strong> – Meeting Management Platform</span>
+  <span><a href="/">Dashboard</a> | <a href="/docs">API Docs</a> | <a href="/h2-console" target="_blank">H2 Console</a></span>
+</footer>
+
+<button class="scroll-top-btn" id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
+
+<script th:src="@{/js/mtng.js}"></script>
+<script>
+  // Show/hide scroll-to-top button
+  window.addEventListener('scroll', function() {
+    var btn = document.getElementById('scrollTopBtn');
+    if (window.scrollY > 400) btn.classList.add('visible');
+    else btn.classList.remove('visible');
+  });
+
+  // Smooth scroll for TOC links
+  document.querySelectorAll('.toc-link').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Animate sections on scroll (fade-in-up effect)
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.guide-section').forEach(function(section) {
+    section.style.opacity = '0';
+    section.style.transform = 'translateY(30px)';
+    section.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+    observer.observe(section);
+  });
+</script>
+</body>
+</html>
+

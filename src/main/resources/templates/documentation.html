@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MTNG – Documentation</title>
+  <link rel="stylesheet" th:href="@{/css/mtng.css}" />
+</head>
+<body>
+
+<header class="app-header">
+  <a href="/" class="app-name">MTNG</a>
+  <div class="header-right">
+    <a href="/" class="btn btn-secondary btn-sm">← Dashboard</a>
+    <a href="/userguide" class="btn btn-primary btn-sm">📚 User Guide</a>
+  </div>
+</header>
+
+<main class="main-content">
+
+  <!-- ── Overview ─────────────────────────────────────────── -->
+  <div class="docs-section">
+    <div class="docs-title">📖 MTNG – Technical Documentation</div>
+    <p class="docs-text">
+      <strong>MTNG</strong> is a Spring Boot 4.x MVP meeting management platform that enables
+      teachers/administrators to manage students, run live sessions, chat, and store recordings.
+      It uses an orange-branded UI with Thymeleaf server-side rendering and REST JSON APIs.
+    </p>
+  </div>
+
+  <!-- ── Architecture ──────────────────────────────────────── -->
+  <div class="docs-section">
+    <div class="docs-title">🏗 Architecture (MVP)</div>
+    <p class="docs-text">The application follows an MVC pattern with a service layer:</p>
+    <div class="docs-code">Controller → Service → Repository → H2 In-Memory DB
+Thymeleaf Templates ← Controller (Model attributes)
+REST API (/api/**) ← JavaScript fetch() calls</div>
+
+    <div class="docs-subtitle">Package Structure</div>
+    <div class="docs-code">com.Mtng.Mtng
+├── config/          DataInitializer, SecurityConfig
+├── controller/      DashboardController, StudentApiController,
+│                    MeetingApiController, ChatApiController, RecordingApiController
+├── model/           Meeting, Student, ChatMessage, Recording
+├── repository/      MeetingRepository, StudentRepository,
+│                    ChatMessageRepository, RecordingRepository
+└── service/         MeetingService, StudentService, ChatService, RecordingService</div>
+  </div>
+
+  <!-- ── Technology Stack ───────────────────────────────────── -->
+  <div class="docs-section">
+    <div class="docs-title">🔧 Technology Stack</div>
+    <table class="docs-table">
+      <thead><tr><th>Component</th><th>Technology</th><th>Version</th></tr></thead>
+      <tbody>
+        <tr><td>Framework</td><td>Spring Boot</td><td>4.0.4</td></tr>
+        <tr><td>Language</td><td>Java</td><td>17</td></tr>
+        <tr><td>Database</td><td>H2 In-Memory</td><td>Runtime</td></tr>
+        <tr><td>ORM</td><td>Spring Data JPA / Hibernate</td><td>–</td></tr>
+        <tr><td>Templating</td><td>Thymeleaf</td><td>3.x</td></tr>
+        <tr><td>Security</td><td>Spring Security (permit-all MVP)</td><td>–</td></tr>
+        <tr><td>Build</td><td>Maven</td><td>3.x</td></tr>
+        <tr><td>Testing</td><td>JUnit 5, Mockito, MockMvc</td><td>–</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── REST API Reference ─────────────────────────────────── -->
+  <div class="docs-section">
+    <div class="docs-title">🔌 REST API Reference</div>
+
+    <div class="docs-subtitle">Student API – /api/students</div>
+    <table class="docs-table">
+      <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>GET</td>   <td>/api/students</td>              <td>List all students</td></tr>
+        <tr><td>GET</td>   <td>/api/students/{id}</td>         <td>Get student by ID</td></tr>
+        <tr><td>POST</td>  <td>/api/students</td>              <td>Create new student (JSON body)</td></tr>
+        <tr><td>PUT</td>   <td>/api/students/{id}</td>         <td>Update student</td></tr>
+        <tr><td>DELETE</td><td>/api/students/{id}</td>         <td>Delete student</td></tr>
+        <tr><td>POST</td>  <td>/api/students/{id}/block</td>   <td>Toggle block status</td></tr>
+        <tr><td>POST</td>  <td>/api/students/{id}/mute</td>    <td>Toggle mute status</td></tr>
+      </tbody>
+    </table>
+
+    <div class="docs-subtitle">Meeting API – /api/meeting</div>
+    <table class="docs-table">
+      <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>GET</td>  <td>/api/meeting/active</td>           <td>Get active meeting</td></tr>
+        <tr><td>POST</td> <td>/api/meeting/start</td>            <td>Start a meeting</td></tr>
+        <tr><td>POST</td> <td>/api/meeting/stop</td>             <td>Stop active meeting</td></tr>
+        <tr><td>POST</td> <td>/api/meeting/toggle-recording</td> <td>Toggle full recording</td></tr>
+      </tbody>
+    </table>
+
+    <div class="docs-subtitle">Chat API – /api/chat</div>
+    <table class="docs-table">
+      <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>GET</td>   <td>/api/chat/messages</td> <td>Get all messages</td></tr>
+        <tr><td>POST</td>  <td>/api/chat/send</td>     <td>Send a message</td></tr>
+        <tr><td>DELETE</td><td>/api/chat/clear</td>    <td>Clear all messages</td></tr>
+      </tbody>
+    </table>
+
+    <div class="docs-subtitle">Recordings API – /api/recordings</div>
+    <table class="docs-table">
+      <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>GET</td>   <td>/api/recordings</td>              <td>List all recordings</td></tr>
+        <tr><td>GET</td>   <td>/api/recordings/student/{id}</td> <td>Recordings for student</td></tr>
+        <tr><td>POST</td>  <td>/api/recordings</td>              <td>Add recording entry</td></tr>
+        <tr><td>DELETE</td><td>/api/recordings/{id}</td>         <td>Delete recording</td></tr>
+        <tr><td>DELETE</td><td>/api/recordings/clear</td>        <td>Clear all recordings</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── Data Models ────────────────────────────────────────── -->
+  <div class="docs-section">
+    <div class="docs-title">🗄 Data Models</div>
+
+    <div class="docs-subtitle">Student</div>
+    <div class="docs-code">{ id, name, username, password, deviceLock, showRecordings,
+  blocked, muted, status (ONLINE|OFFLINE), createdAt, lastSeen }</div>
+
+    <div class="docs-subtitle">Meeting</div>
+    <div class="docs-code">{ id, title, active, fullRecording, inMeetingCount, onlineCount,
+  startTime, endTime }</div>
+
+    <div class="docs-subtitle">ChatMessage</div>
+    <div class="docs-code">{ id, sender, content, sentAt, meetingId }</div>
+
+    <div class="docs-subtitle">Recording</div>
+    <div class="docs-code">{ id, studentId, studentName, durationSeconds,
+  recordingDate, recordingTime, meetingId }</div>
+  </div>
+
+  <!-- ── H2 Console ─────────────────────────────────────────── -->
+  <div class="docs-section">
+    <div class="docs-title">🗄 H2 Database Console</div>
+    <p class="docs-text">Access the H2 console at:
+      <a href="/h2-console" target="_blank" style="color:var(--orange-primary);font-weight:700">/h2-console</a>
+    </p>
+    <div class="docs-code">JDBC URL:  jdbc:h2:mem:mtngdb
+Username:  sa
+Password:  (leave blank)</div>
+    <p class="docs-text">Tables: <code>STUDENTS</code>, <code>MEETINGS</code>, <code>CHAT_MESSAGES</code>, <code>RECORDINGS</code></p>
+  </div>
+
+  <!-- ── Running ────────────────────────────────────────────── -->
+  <div class="docs-section">
+    <div class="docs-title">🚀 Running the Application</div>
+    <div class="docs-code">mvn spring-boot:run
+# or
+./mvnw spring-boot:run
+
+# App starts at: http://localhost:8080
+# H2 Console:    http://localhost:8080/h2-console</div>
+
+    <div class="docs-subtitle">Running Tests</div>
+    <div class="docs-code">mvn test
+# or
+./mvnw test</div>
+  </div>
+
+</main>
+
+<footer class="app-footer">
+  <span>© 2026 <strong class="text-orange">MTNG</strong></span>
+  <span><a href="/">Dashboard</a> | <a href="/userguide">User Guide</a> | <a href="/h2-console" target="_blank">H2 Console</a></span>
+</footer>
+<script th:src="@{/js/mtng.js}"></script>
+</body>
+</html>
+

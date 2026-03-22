@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MTNG – Create Student</title>
+  <link rel="stylesheet" th:href="@{/css/mtng.css}" />
+</head>
+<body>
+
+<div th:replace="~{layout :: header('create')}"></div>
+<div th:replace="~{layout :: nav('create')}"></div>
+
+<main class="main-content">
+  <div class="card" style="max-width:600px">
+    <div class="card-header">
+      <span class="card-title">➕ Create New Student</span>
+    </div>
+
+    <form id="createStudentForm">
+      <!-- Student Name -->
+      <div class="form-group">
+        <label class="form-label">Student Name</label>
+        <input id="studentName" type="text" class="form-control"
+               placeholder="Min 1 Character" required minlength="1" />
+      </div>
+
+      <!-- Username + Password -->
+      <div class="form-row">
+        <div class="form-col">
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <input id="studentUsername" type="text" class="form-control"
+                   placeholder="Min 1 Character" required minlength="1" />
+          </div>
+        </div>
+        <div class="form-col">
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input id="studentPassword" type="password" class="form-control"
+                   placeholder="Min 4 Characters" required minlength="4" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Device Lock -->
+      <label class="option-card">
+        <input type="checkbox" id="deviceLock" />
+        <div>
+          <div class="option-title">🔒 Enable Device Lock</div>
+          <div class="option-desc">When enabled, student can only login from the first device they use after account creation.</div>
+        </div>
+      </label>
+
+      <!-- Show Recordings -->
+      <label class="option-card">
+        <input type="checkbox" id="showRecordings" checked />
+        <div>
+          <div class="option-title">⏺ Show Recordings to Student</div>
+          <div class="option-desc">When enabled, student can view their recordings. When disabled, recordings are still created but only visible to teacher.</div>
+        </div>
+      </label>
+
+      <!-- Submit -->
+      <div class="mt-3">
+        <button type="submit" class="btn btn-primary">➕ Create Student</button>
+        <a href="/students" class="btn btn-secondary" style="margin-left:10px">Cancel</a>
+      </div>
+    </form>
+  </div>
+</main>
+
+<div th:replace="~{layout :: modals}"></div>
+<div th:replace="~{layout :: footer}"></div>
+<script th:src="@{/js/mtng.js}"></script>
+</body>
+</html>
+

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MTNG – Meeting Room</title>
+  <link rel="stylesheet" th:href="@{/css/mtng.css}" />
+  <style>
+    .meeting-container { display: flex; flex-direction: column; height: 100vh; background: #1a1a2e; }
+    .meeting-header { padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: bold; }
+    .meeting-content { flex: 1; display: flex; gap: 20px; padding: 20px; }
+    .video-area { flex: 2; background: #0f3460; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; min-height: 400px; }
+    .video-placeholder { width: 200px; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold; }
+    .participants-list { flex: 1; background: #16213e; border-radius: 10px; padding: 15px; overflow-y: auto; }
+    .participants-title { color: #00d4ff; margin-bottom: 15px; font-weight: bold; border-bottom: 1px solid #00d4ff; padding-bottom: 10px; }
+    .participant-item { background: #0f3460; padding: 10px; margin-bottom: 8px; border-radius: 5px; color: #00d4ff; display: flex; justify-content: space-between; align-items: center; }
+    .participant-status { font-size: 12px; color: #00ff00; }
+    .meeting-controls { display: flex; gap: 10px; justify-content: center; padding: 20px; background: #16213e; }
+    .control-btn { padding: 12px 30px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 16px; }
+    .btn-join { background: #00ff00; color: #000; }
+    .btn-join:hover { background: #00cc00; transform: scale(1.05); }
+    .btn-leave { background: #ff4444; color: white; }
+    .btn-leave:hover { background: #cc0000; transform: scale(1.05); }
+    .btn-mic-on { background: #4CAF50; color: white; }
+    .btn-mic-off { background: #f44336; color: white; }
+    .meeting-info { text-align: center; color: #00d4ff; margin-bottom: 10px; }
+    .no-meeting { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #1a1a2e; color: #00d4ff; gap: 20px; }
+    .no-meeting-icon { font-size: 80px; }
+    .timer { font-size: 32px; color: #00ff00; font-weight: bold; font-family: monospace; }
+    @media (max-width: 768px) {
+      .meeting-content { flex-direction: column; }
+      .video-area { flex: 1; }
+      .participants-list { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<div th:if="${hasActiveMeeting}" class="meeting-container">
+
+  <!-- Incoming Meeting Notification Modal -->
+  <div id="incomingMeetingModal" class="modal-overlay" style="z-index: 2000;">
+    <div class="modal-box" style="text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+      <div style="font-size: 60px; margin-bottom: 20px;">📞</div>
+      <div class="modal-title" style="color: white;">INCOMING MEETING CALL!</div>
+      <div style="font-size: 20px; margin: 20px 0;" th:text="'Meeting: ' + ${meeting.title}">Meeting Starting</div>
+      <div style="font-size: 14px; margin-bottom: 30px; opacity: 0.9;">Click to join and participate in voice & chat</div>
+      <div class="modal-footer" style="justify-content: center; gap: 15px;">
+        <button class="btn btn-success" onclick="acceptMeetingCall()" style="font-size: 18px; padding: 15px 40px;">
+          ✅ ACCEPT & JOIN
+        </button>
+        <button class="btn btn-danger" onclick="rejectMeetingCall()" style="font-size: 18px; padding: 15px 40px;">
+          ❌ REJECT
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div class="meeting-header">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        🎤 MTNG Meeting Room
+        <span style="margin-left: 20px; font-size: 14px;" th:text="'Session: ' + ${meeting.title}"></span>
+      </div>
+      <div class="timer" id="timer">00:00:00</div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="meeting-content">
+
+    <!-- Video/Screen Area -->
+    <div class="video-area">
+      <div class="meeting-info">
+        <div>👥 In Meeting: <span id="inMeetingCount" th:text="${meeting.inMeetingCount}">0</span></div>
+      </div>
+      <div class="video-placeholder">
+        🎥 VIDEO AREA
+        <br/><small>(Voice Chat Active)</small>
+      </div>
+    </div>
+
+    <!-- Participants & Chat -->
+    <div class="participants-list">
+      <div class="participants-title">👥 Online Participants</div>
+      <div id="participantsList">
+        <div class="participant-item">
+          <span>Loading participants...</span>
+        </div>
+      </div>
+
+      <!-- Meeting Chat -->
+      <div style="margin-top: 20px; border-top: 1px solid #00d4ff; padding-top: 15px;">
+        <div class="participants-title">💬 Meeting Chat</div>
+        <div id="meetingChatBox" style="height: 150px; overflow-y: auto; background: #0f3460; border-radius: 5px; padding: 10px; margin-bottom: 10px; font-size: 12px;">
+          <div style="color: #888;">No messages yet...</div>
+        </div>
+        <div style="display: flex; gap: 5px;">
+          <input id="chatInput" type="text" placeholder="Type message..." style="flex: 1; padding: 8px; border-radius: 3px; border: 1px solid #00d4ff; background: #0f3460; color: #00d4ff;" onkeypress="handleChatKeyPress(event)" />
+          <button onclick="sendChatMessage()" style="padding: 8px 15px; background: #00d4ff; color: #000; border: none; border-radius: 3px; cursor: pointer; font-weight: bold;">Send</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Controls -->
+  <div class="meeting-controls">
+    <button id="joinBtn" class="control-btn btn-join" onclick="joinMeeting()">
+      ✅ Join Meeting
+    </button>
+    <button id="leaveBtn" class="control-btn btn-leave" style="display: none;" onclick="leaveMeeting()">
+      ❌ Leave Meeting
+    </button>
+    <button id="micBtn" class="control-btn btn-mic-on" style="display: none;" onclick="toggleMic()">
+      🎙 Mic ON
+    </button>
+  </div>
+
+</div>
+
+<!-- No Active Meeting -->
+<div th:if="!${hasActiveMeeting}" class="no-meeting">
+  <div class="no-meeting-icon">📵</div>
+  <h2>No Active Meeting</h2>
+  <p>Waiting for the instructor to start the meeting...</p>
+  <button class="control-btn btn-join" onclick="location.reload()">
+    🔄 Refresh
+  </button>
+</div>
+
+<script>
+let meetingStartTime = null;
+let isInMeeting = false;
+let isMicOn = false;
+let meetingId = null;
+
+// Initialize timer
+function initTimer() {
+  const startTimeStr = document.querySelector('.meeting-info div:first-child')?.textContent;
+  meetingStartTime = new Date();
+  setInterval(updateTimer, 1000);
+}
+
+function updateTimer() {
+  if (!meetingStartTime) return;
+  const now = new Date();
+  const diff = Math.floor((now - meetingStartTime) / 1000);
+  const hours = String(Math.floor(diff / 3600)).padStart(2, '0');
+  const minutes = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+  const seconds = String(diff % 60).padStart(2, '0');
+  document.getElementById('timer').textContent = `${hours}:${minutes}:${seconds}`;
+}
+
+// Join Meeting
+function joinMeeting() {
+  fetch('/api/meeting/join', { method: 'POST' })
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) {
+        showAlert('❌ ' + data.error, 'error');
+        return;
+      }
+      isInMeeting = true;
+      meetingId = data.meetingId;
+      updateUI();
+      showAlert('✅ Joined meeting! Your mic is ready.', 'success');
+      updateParticipants();
+      initTimer();
+    })
+    .catch(e => showAlert('Error joining meeting: ' + e.message, 'error'));
+}
+
+// Leave Meeting
+function leaveMeeting() {
+  fetch('/api/meeting/leave', { method: 'POST' })
+    .then(r => r.json())
+    .then(data => {
+      isInMeeting = false;
+      isMicOn = false;
+      updateUI();
+      showAlert('✅ Left meeting', 'info');
+      updateParticipants();
+    })
+    .catch(e => showAlert('Error leaving meeting: ' + e.message, 'error'));
+}
+
+// Toggle Mic
+function toggleMic() {
+  isMicOn = !isMicOn;
+  const btn = document.getElementById('micBtn');
+  if (isMicOn) {
+    btn.textContent = '🔊 Mic ON';
+    btn.classList.remove('btn-mic-off');
+    btn.classList.add('btn-mic-on');
+    showAlert('🎙 Microphone is ON', 'success');
+  } else {
+    btn.textContent = '🔇 Mic OFF';
+    btn.classList.remove('btn-mic-on');
+    btn.classList.add('btn-mic-off');
+    showAlert('🔇 Microphone is OFF', 'info');
+  }
+}
+
+// Update UI based on meeting status
+function updateUI() {
+  const joinBtn = document.getElementById('joinBtn');
+  const leaveBtn = document.getElementById('leaveBtn');
+  const micBtn = document.getElementById('micBtn');
+
+  if (isInMeeting) {
+    joinBtn.style.display = 'none';
+    leaveBtn.style.display = 'block';
+    micBtn.style.display = 'block';
+  } else {
+    joinBtn.style.display = 'block';
+    leaveBtn.style.display = 'none';
+    micBtn.style.display = 'none';
+    isMicOn = false;
+  }
+}
+
+// Update participants list
+function updateParticipants() {
+  // Simulating fetching participants from API
+  setTimeout(() => {
+    const list = document.getElementById('participantsList');
+    let html = '';
+    const onlineStudents = [
+      { name: 'HARI34', status: 'In Meeting' },
+      { name: 'PRIYA01', status: 'Online' },
+      { name: 'RAM22', status: 'Online' }
+    ];
+
+    onlineStudents.forEach(student => {
+      html += `<div class="participant-item">
+        <span>${student.name}</span>
+        <span class="participant-status">${student.status}</span>
+      </div>`;
+    });
+
+    list.innerHTML = html || '<div class="participant-item">No participants yet</div>';
+  }, 300);
+}
+
+// Show alert toast
+function showAlert(message, type = 'info') {
+  // Using browser alert for now; can be replaced with toast notifications
+  console.log(`[${type.toUpperCase()}] ${message}`);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+  updateUI();
+  updateParticipants();
+  initTimer();
+
+  // Show incoming call modal for students (non-admin)
+  const isAdmin = document.querySelector('[sec\\:authorize="hasRole(\'ADMIN\')"]');
+  if (!isAdmin) {
+    // Check if meeting is active and student hasn't joined yet
+    if (meetingId === null) {
+      setTimeout(() => {
+        document.getElementById('incomingMeetingModal').style.display = 'flex';
+        // Auto-play notification sound
+        playNotificationSound();
+      }, 500);
+    }
+  }
+
+  // Refresh participants every 5 seconds
+  setInterval(updateParticipants, 5000);
+});
+
+// Accept incoming meeting call
+function acceptMeetingCall() {
+  document.getElementById('incomingMeetingModal').style.display = 'none';
+  joinMeeting();
+}
+
+// Reject incoming meeting call
+function rejectMeetingCall() {
+  document.getElementById('incomingMeetingModal').style.display = 'none';
+  showAlert('You rejected the meeting call', 'info');
+}
+
+// Play notification sound
+function playNotificationSound() {
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+
+  oscillator.connect(gain);
+  gain.connect(audioContext.destination);
+
+  oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+  oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+
+  gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+  gain.gain.setValueAtTime(0, audioContext.currentTime + 0.1);
+
+  oscillator.start(audioContext.currentTime);
+  oscillator.stop(audioContext.currentTime + 0.1);
+}
+
+// Refresh participants every 5 seconds
+setInterval(updateParticipants, 5000);
+
+// Send meeting chat message
+function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  const message = input.value.trim();
+  if (!message) return;
+
+  fetch('/api/chat/send', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: message })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.error) {
+      showAlert('Error sending message', 'error');
+    } else {
+      input.value = '';
+      addChatMessage('You', message, 'mine');
+    }
+  })
+  .catch(e => showAlert('Error sending message', 'error'));
+}
+
+// Handle Enter key in chat input
+function handleChatKeyPress(event) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    sendChatMessage();
+  }
+}
+
+// Add chat message to display
+function addChatMessage(sender, message, type = 'other') {
+  const chatBox = document.getElementById('meetingChatBox');
+  if (chatBox && chatBox.querySelector('[style*="color: #888"]')) {
+    chatBox.innerHTML = ''; // Clear "no messages" text
+  }
+
+  if (!chatBox) return;
+
+  const msgDiv = document.createElement('div');
+  msgDiv.style.marginBottom = '8px';
+  msgDiv.style.padding = '8px';
+  msgDiv.style.borderRadius = '3px';
+  msgDiv.style.background = type === 'mine' ? '#00d4ff1a' : '#0a1e2e';
+  msgDiv.style.borderLeft = type === 'mine' ? '3px solid #00d4ff' : '3px solid #667eea';
+  msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+
+  chatBox.appendChild(msgDiv);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+</script>
+
+</body>
+</html>
+

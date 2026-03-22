@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  # ─── PostgreSQL database ───────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: mtng-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mtngdb
+      POSTGRES_USER: mtng_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD environment variable must be set}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mtng_user -d mtngdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Spring Boot application ───────────────────────────────────────────────
+  app:
+    build: .
+    container_name: mtng-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mtngdb
+      SPRING_DATASOURCE_USERNAME: mtng_user
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD environment variable must be set}
+    ports:
+      - "8080:8080"
+    volumes:
+      - applogs:/opt/mtng/logs
+
+volumes:
+  pgdata:
+  applogs:

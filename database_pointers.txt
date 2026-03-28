@@ -1,0 +1,51 @@
+1. Database Design & Normalization (Long-Term Stability)
+Normalization ensures data integrity and prevents anomalies, making the database easier to maintain as it grows. 
+GeeksforGeeks
+GeeksforGeeks
+ +1
+Normalize to 3NF (Third Normal Form): Ensure every table has a primary key and that non-key attributes depend only on the primary key, removing transitive dependencies.
+Atomicity (1NF): Store only one value per cell. Avoid comma-separated lists in fields, which make searching inefficient.
+Use Surrogate Keys: Use artificial keys (e.g., auto-incrementing integers or UUIDs) as primary keys instead of large, changing natural keys to improve join performance.
+Referential Integrity: Enforce foreign key constraints to ensure relationships between tables remain consistent.
+Controlled Denormalization: Only denormalize intentionally (e.g., using materialized views) for heavy read-performance requirements, not for structural convenience. 
+DB Designer
+DB Designer
+ +4
+2. Performance & Indexing (Query Speed)
+As data grows, unindexed queries lead to slow full-table scans. 
+Stack Overflow
+Stack Overflow
+Strategic Indexing: Index columns used frequently in WHERE, JOIN, and ORDER BY clauses.
+Avoid Over-indexing: Too many indexes slow down writes and updates. Periodically remove unused indexes.
+Covering Indexes: Design indexes that include all required columns to avoid unnecessary table lookups.
+Analyze Execution Plans: Use EXPLAIN or EXPLAIN ANALYZE on your SQL queries to identify table scans and improper index usage.
+Batch Operations: Group multiple operations into a single transaction to reduce overhead, rather than performing thousands of individual commits. 
+Simple Logic
+Simple Logic
+ +4
+3. Structural & Physical Parameters (Handling Data Growth)
+Partitioning: Use horizontal partitioning (range, list, or hash) to divide large tables into smaller, manageable chunks, improving query performance.
+Data Retention Policy: Implement archiving. Move old data to a cold-storage database or a separate "archive" table to keep production tables lean.
+Proper Data Types: Use the smallest data type possible (e.g., INT instead of BIGINT if numbers remain small) to save space and I/O. 
+Stack Overflow
+Stack Overflow
+ +4
+4. Maintenance & Operational Best Practices
+A database needs routine care to run without issues over time. 
+Update Statistics: Regularly update table statistics so the database engine can build efficient query plans.
+Index Rebuilding/Defragmentation: Rebuild indexes periodically to remove fragmentation caused by frequent updates, insertions, and deletions.
+Monitor Resources: Track CPU, memory, and disk I/O usage to identify bottlenecks early.
+Connection Pooling: Use connection pools (e.g., HikariCP) to reuse database connections rather than creating new ones, which is expensive.
+Database Versioning: Keep your DBMS up to date to benefit from performance improvements and security patches. 
+Summary Checklist for Long-Term Operation
+Area 	Pointer
+Design	Normalize to 3NF, use Surrogate Keys, enforce FK constraints.
+Query	Use EXPLAIN, avoid SELECT *, index WHERE clauses.
+Growth	Partition large tables, archive old data.
+Upkeep	Rebuild indexes weekly, update statistics, monitor slow queries.
+
+Area 	Pointer
+Design	Normalize to 3NF, use Surrogate Keys, enforce FK constraints.
+Query	Use EXPLAIN, avoid SELECT *, index WHERE clauses.
+Growth	Partition large tables, archive old data.
+Upkeep	Rebuild indexes weekly, update statistics, monitor slow queries.

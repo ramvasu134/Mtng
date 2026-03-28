@@ -40,6 +40,12 @@ public class StudentApiController {
         return java.util.Map.of("online", online, "total", total);
     }
 
+    /** GET /api/students/online-list – list of online students (for room creation) */
+    @GetMapping("/online-list")
+    public List<Student> onlineList() {
+        return studentService.getOnlineStudents();
+    }
+
     /** GET /api/students/{id} (all authenticated users) */
     @GetMapping("/{id}")
     public ResponseEntity<Student> get(@PathVariable Long id) {

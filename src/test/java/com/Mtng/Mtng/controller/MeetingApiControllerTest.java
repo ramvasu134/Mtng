@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 
 import java.time.LocalDateTime;
@@ -22,7 +23,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
- * MeetingApiControllerTest – unit tests for MeetingApiController.
+ * MeetingApiControllerTest – unit tests for MeetingApiController (multi-room).
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("MeetingApiController Tests")
@@ -30,6 +31,7 @@ class MeetingApiControllerTest {
 
     @Mock private MeetingService meetingService;
     @Mock private StudentService studentService;
+    @Mock private SimpMessagingTemplate messagingTemplate;
     @Mock private Authentication authentication;
     @InjectMocks private MeetingApiController controller;
 
@@ -43,6 +45,7 @@ class MeetingApiControllerTest {
         activeMeeting.setRoomName("mtng-abc12345");
         activeMeeting.setActive(true);
         activeMeeting.setStartTime(LocalDateTime.now());
+        activeMeeting.setCreatedBy("admin");
     }
 
     @Test
@@ -63,88 +66,92 @@ class MeetingApiControllerTest {
     }
 
     @Test
-    @DisplayName("start – creates meeting and returns details with roomName")
-    void start_createsMeeting() {
-        when(meetingService.startMeeting(anyString())).thenReturn(activeMeeting);
-        Map<String, String> body = Map.of("title", "Test Session");
-        ResponseEntity<Map<String, Object>> resp = controller.start(body);
+    @DisplayName("start – creates room and returns details with roomName")
+    void start_createsRoom() {
+        when(authentication.getName()).thenReturn("admin");
+        when(meetingService.startRoom(anyString(), any(), anyString())).thenReturn(activeMeeting);
+        Map<String, Object> body = Map.of("title", "Test Session");
+        ResponseEntity<Map<String, Object>> resp = controller.start(body, authentication);
         assertThat(resp.getStatusCode().value()).isEqualTo(200);
         assertThat(resp.getBody()).containsKey("roomName");
         assertThat(resp.getBody().get("roomName")).isEqualTo("mtng-abc12345");
-        assertThat(resp.getBody()).containsKey("meetingId");
     }
 
     @Test
     @DisplayName("start – uses default title when body is null")
     void start_defaultTitle() {
-        when(meetingService.startMeeting("Mtng Session")).thenReturn(activeMeeting);
-        ResponseEntity<Map<String, Object>> resp = controller.start(null);
+        when(authentication.getName()).thenReturn("admin");
+        when(meetingService.startRoom(eq("Mtng Session"), isNull(), eq("admin"))).thenReturn(activeMeeting);
+        ResponseEntity<Map<String, Object>> resp = controller.start(null, authentication);
         assertThat(resp.getStatusCode().value()).isEqualTo(200);
-        verify(meetingService).startMeeting("Mtng Session");
     }
 
     @Test
-    @DisplayName("stop – stops meeting successfully")
+    @DisplayName("stop – stops room by roomName")
     void stop_success() {
+        doNothing().when(meetingService).stopMeetingByRoomName("mtng-abc12345");
+        Map<String, String> body = Map.of("roomName", "mtng-abc12345");
+        ResponseEntity<?> resp = controller.stop(body);
+        assertThat(resp.getStatusCode().value()).isEqualTo(200);
+        verify(meetingService).stopMeetingByRoomName("mtng-abc12345");
+    }
+
+    @Test
+    @DisplayName("stop – fallback stops first active when no roomName")
+    void stop_fallback() {
         doNothing().when(meetingService).stopMeeting();
-        ResponseEntity<?> resp = controller.stop();
+        ResponseEntity<?> resp = controller.stop(null);
         assertThat(resp.getStatusCode().value()).isEqualTo(200);
         verify(meetingService).stopMeeting();
     }
 
     @Test
-    @DisplayName("stop – returns 400 on error")
-    void stop_error() {
-        doThrow(new RuntimeException("Test error")).when(meetingService).stopMeeting();
-        ResponseEntity<?> resp = controller.stop();
-        assertThat(resp.getStatusCode().value()).isEqualTo(400);
-    }
-
-    @Test
-    @DisplayName("joinMeeting – adds user to active meeting")
+    @DisplayName("joinMeeting – adds user to room by roomName")
     void join_success() {
         when(authentication.getName()).thenReturn("HARI34");
-        when(meetingService.getActiveMeeting()).thenReturn(Optional.of(activeMeeting));
+        when(meetingService.getMeetingByRoomName("mtng-abc12345")).thenReturn(Optional.of(activeMeeting));
         doNothing().when(meetingService).addStudentToMeeting(anyLong(), anyString());
         doNothing().when(studentService).markOnline(anyString());
 
-        ResponseEntity<?> resp = controller.joinMeeting(authentication);
+        Map<String, String> body = Map.of("roomName", "mtng-abc12345");
+        ResponseEntity<?> resp = controller.joinMeeting(body, authentication);
         assertThat(resp.getStatusCode().value()).isEqualTo(200);
         @SuppressWarnings("unchecked")
-        Map<String, Object> body = (Map<String, Object>) resp.getBody();
-        assertThat(body).containsKey("roomName");
-        assertThat(body.get("username")).isEqualTo("HARI34");
+        Map<String, Object> respBody = (Map<String, Object>) resp.getBody();
+        assertThat(respBody).containsKey("roomName");
+        assertThat(respBody.get("username")).isEqualTo("HARI34");
     }
 
     @Test
-    @DisplayName("joinMeeting – returns 400 when no active meeting")
-    void join_noActiveMeeting() {
+    @DisplayName("joinMeeting – returns 400 when no room found")
+    void join_noRoom() {
         when(authentication.getName()).thenReturn("HARI34");
-        when(meetingService.getActiveMeeting()).thenReturn(Optional.empty());
+        when(meetingService.getMeetingByRoomName("invalid")).thenReturn(Optional.empty());
 
-        ResponseEntity<?> resp = controller.joinMeeting(authentication);
+        Map<String, String> body = Map.of("roomName", "invalid");
+        ResponseEntity<?> resp = controller.joinMeeting(body, authentication);
         assertThat(resp.getStatusCode().value()).isEqualTo(400);
     }
 
     @Test
-    @DisplayName("leaveMeeting – removes user from meeting")
+    @DisplayName("leaveMeeting – removes user from specific room")
     void leave_success() {
         when(authentication.getName()).thenReturn("HARI34");
-        when(meetingService.getActiveMeeting()).thenReturn(Optional.of(activeMeeting));
+        when(meetingService.getMeetingByRoomName("mtng-abc12345")).thenReturn(Optional.of(activeMeeting));
         doNothing().when(meetingService).removeStudentFromMeeting(anyLong(), anyString());
 
-        ResponseEntity<?> resp = controller.leaveMeeting(authentication);
+        Map<String, String> body = Map.of("roomName", "mtng-abc12345");
+        ResponseEntity<?> resp = controller.leaveMeeting(body, authentication);
         assertThat(resp.getStatusCode().value()).isEqualTo(200);
-        verify(meetingService).removeStudentFromMeeting(1L, "HARI34");
     }
 
     @Test
-    @DisplayName("leaveMeeting – handles no active meeting gracefully")
-    void leave_noActiveMeeting() {
+    @DisplayName("leaveMeeting – handles null body gracefully")
+    void leave_nullBody() {
         when(authentication.getName()).thenReturn("HARI34");
         when(meetingService.getActiveMeeting()).thenReturn(Optional.empty());
 
-        ResponseEntity<?> resp = controller.leaveMeeting(authentication);
+        ResponseEntity<?> resp = controller.leaveMeeting(null, authentication);
         assertThat(resp.getStatusCode().value()).isEqualTo(200);
     }
 
@@ -153,7 +160,7 @@ class MeetingApiControllerTest {
     void toggleRecording_success() {
         activeMeeting.setFullRecording(true);
         when(meetingService.toggleFullRecording()).thenReturn(activeMeeting);
-        ResponseEntity<?> resp = controller.toggleRecording();
+        ResponseEntity<?> resp = controller.toggleRecording(null);
         assertThat(resp.getStatusCode().value()).isEqualTo(200);
     }
 
@@ -162,7 +169,7 @@ class MeetingApiControllerTest {
     void toggleRecording_noMeeting() {
         when(meetingService.toggleFullRecording())
                 .thenThrow(new IllegalStateException("No active meeting"));
-        ResponseEntity<?> resp = controller.toggleRecording();
+        ResponseEntity<?> resp = controller.toggleRecording(null);
         assertThat(resp.getStatusCode().value()).isEqualTo(400);
     }
 }

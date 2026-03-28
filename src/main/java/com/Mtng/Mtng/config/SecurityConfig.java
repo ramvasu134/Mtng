@@ -8,7 +8,9 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -47,6 +49,13 @@ public class SecurityConfig {
         prov.setUserDetailsService(userDetailsService);
         prov.setPasswordEncoder(passwordEncoder());
         return prov;
+    }
+
+    /** Expose AuthenticationManager for REST auth endpoint */
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
     @Bean
@@ -88,8 +97,10 @@ public class SecurityConfig {
         http
             .authenticationProvider(authProvider())
             .authorizeHttpRequests(auth -> auth
-                // Public resources
+                // Public resources (including React SPA assets)
                 .requestMatchers("/login", "/css/**", "/js/**", "/favicon.ico", "/favicon.svg").permitAll()
+                .requestMatchers("/index.html", "/assets/**", "/react-app.html").permitAll()
+                .requestMatchers("/api/auth/login").permitAll()
                 // WebSocket signaling endpoint (SockJS + STOMP)
                 .requestMatchers("/ws/**", "/ws").permitAll()
 
@@ -104,6 +115,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/students/*/mute").hasRole("ADMIN")
                 .requestMatchers("/api/meeting/start").hasRole("ADMIN")
                 .requestMatchers("/api/meeting/stop").hasRole("ADMIN")
+                .requestMatchers("/api/meeting/stop-all").hasRole("ADMIN")
                 .requestMatchers("/api/meeting/toggle-recording").hasRole("ADMIN")
                 .requestMatchers("/api/recordings/clear").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/recordings/*").hasRole("ADMIN")

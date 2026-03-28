@@ -79,6 +79,8 @@ public class StudentService {
         existing.setName(updated.getName());
         existing.setDeviceLock(updated.isDeviceLock());
         existing.setShowRecordings(updated.isShowRecordings());
+        if (updated.getEmail() != null) existing.setEmail(updated.getEmail());
+        if (updated.getPhone() != null) existing.setPhone(updated.getPhone());
         if (updated.getPassword() != null && !updated.getPassword().isBlank()) {
             String raw = updated.getPassword();
             existing.setRawPassword(raw);
@@ -114,10 +116,16 @@ public class StudentService {
         return studentRepository.count();
     }
 
-    /** Get count of online students */
+    /** Get count of online students – uses COUNT query, not a full-table load. */
     @Transactional(readOnly = true)
     public long getOnlineCount() {
-        return studentRepository.findByStatus("ONLINE").size();
+        return studentRepository.countByStatus("ONLINE");
+    }
+
+    /** Get list of online students */
+    @Transactional(readOnly = true)
+    public List<Student> getOnlineStudents() {
+        return studentRepository.findByStatus("ONLINE");
     }
 
     /** Mark student as seen (last seen update) */

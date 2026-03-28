@@ -12,10 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
- * MeetingService – business logic for meeting lifecycle management.
- * Start/stop meeting, track participants, save recordings.
+ * MeetingService – business logic for multi-room meeting lifecycle.
+ * Supports multiple concurrent rooms, each with their own participants.
  */
 @Service
 @Transactional
@@ -33,46 +34,107 @@ public class MeetingService {
         this.recordingRepository = recordingRepository;
     }
 
-    /** Get current active meeting or empty */
+    /** Get current active meeting or empty (backward compat – returns first active) */
     @Transactional(readOnly = true)
     public Optional<Meeting> getActiveMeeting() {
-        List<Meeting> active = meetingRepository.findByActive(true);
+        List<Meeting> active = meetingRepository.findByActiveTrue();
         return active.isEmpty() ? Optional.empty() : Optional.of(active.get(0));
     }
 
-    /** Start a new meeting with a stable Jitsi room name */
+    /** Get ALL active meetings/rooms */
+    @Transactional(readOnly = true)
+    public List<Meeting> getActiveMeetings() {
+        return meetingRepository.findByActiveTrue();
+    }
+
+    /** Get a specific room by roomName */
+    @Transactional(readOnly = true)
+    public Optional<Meeting> getMeetingByRoomName(String roomName) {
+        return meetingRepository.findByRoomNameAndActiveTrue(roomName);
+    }
+
+    /** Get rooms created by a specific admin */
+    @Transactional(readOnly = true)
+    public List<Meeting> getRoomsByCreator(String createdBy) {
+        return meetingRepository.findByCreatedByAndActiveTrue(createdBy);
+    }
+
+    /**
+     * Start a new meeting room (allows multiple concurrent rooms).
+     * Does NOT stop existing meetings.
+     */
     public Meeting startMeeting(String title) {
-        log.info("Starting new meeting: title={}", title);
-        // stop any running meeting first
-        meetingRepository.findByActive(true).forEach(m -> {
-            log.info("Stopping existing active meeting: id={}, title={}", m.getId(), m.getTitle());
-            m.setActive(false);
-            m.setEndTime(java.time.LocalDateTime.now());
-            meetingRepository.save(m);
-        });
+        return startRoom(title, null, null);
+    }
+
+    /**
+     * Start a new room with optional invited participants and creator.
+     */
+    public Meeting startRoom(String title, List<String> participants, String createdBy) {
+        log.info("Starting new room: title={}, createdBy={}, participants={}", title, createdBy, participants);
+
         Meeting m = new Meeting();
         m.setTitle(title);
         m.setActive(true);
         m.setStartTime(java.time.LocalDateTime.now());
-        // Generate a STABLE room name that all participants will share
+        m.setCreatedBy(createdBy);
+
+        // Generate a stable room name
         String roomName = "mtng-" + UUID.randomUUID().toString().substring(0, 8);
         m.setRoomName(roomName);
+
+        // Store invited participants as a normalised Set (1NF – no comma lists)
+        if (participants != null && !participants.isEmpty()) {
+            m.setInvitedParticipants(new HashSet<>(participants));
+        }
+
         m = meetingRepository.save(m);
         meetingParticipants.put(m.getId(), new HashSet<>());
-        log.info("Meeting started: id={}, roomName={}", m.getId(), roomName);
+        log.info("Room started: id={}, roomName={}, participants={}", m.getId(), roomName, participants);
         return m;
     }
 
-    /** Stop the currently active meeting and save recordings */
+    /** Stop a specific meeting by ID */
+    public void stopMeetingById(Long meetingId) {
+        Optional<Meeting> opt = meetingRepository.findById(meetingId);
+        if (opt.isEmpty()) {
+            log.warn("stopMeetingById called but meeting not found: {}", meetingId);
+            return;
+        }
+        Meeting m = opt.get();
+        stopSingleMeeting(m);
+    }
+
+    /** Stop a specific meeting by room name */
+    public void stopMeetingByRoomName(String roomName) {
+        Optional<Meeting> opt = meetingRepository.findByRoomNameAndActiveTrue(roomName);
+        if (opt.isEmpty()) {
+            log.warn("stopMeetingByRoomName called but no active room found: {}", roomName);
+            return;
+        }
+        stopSingleMeeting(opt.get());
+    }
+
+    /** Stop the first active meeting (backward compat) */
     public void stopMeeting() {
-        List<Meeting> active = meetingRepository.findByActive(true);
+        List<Meeting> active = meetingRepository.findByActiveTrue();
         if (active.isEmpty()) {
             log.warn("stopMeeting called but no active meeting found");
             return;
         }
+        stopSingleMeeting(active.get(0));
+    }
 
-        Meeting m = active.get(0);
-        log.info("Stopping meeting: id={}, title={}", m.getId(), m.getTitle());
+    /** Stop all active meetings */
+    public void stopAllMeetings() {
+        List<Meeting> active = meetingRepository.findByActiveTrue();
+        for (Meeting m : active) {
+            stopSingleMeeting(m);
+        }
+    }
+
+    private void stopSingleMeeting(Meeting m) {
+        log.info("Stopping room: id={}, title={}", m.getId(), m.getTitle());
         m.setActive(false);
         m.setEndTime(java.time.LocalDateTime.now());
 
@@ -88,13 +150,12 @@ public class MeetingService {
                 rec.setRecordingTime(LocalTime.now());
                 rec.setDurationSeconds(calculateDuration(m.getStartTime(), m.getEndTime()));
                 recordingRepository.save(rec);
-                log.debug("Recording saved for user: {}", username);
             });
         }
 
         meetingParticipants.remove(m.getId());
         meetingRepository.save(m);
-        log.info("Meeting stopped: id={}", m.getId());
+        log.info("Room stopped: id={}", m.getId());
     }
 
     /** Add student to meeting */
@@ -104,7 +165,7 @@ public class MeetingService {
         }
         meetingParticipants.get(meetingId).add(username);
         updateInMeetingCount(meetingId);
-        log.info("User '{}' joined meeting {}", username, meetingId);
+        log.info("User '{}' joined room {}", username, meetingId);
     }
 
     /** Remove student from meeting */
@@ -112,18 +173,17 @@ public class MeetingService {
         if (meetingParticipants.containsKey(meetingId)) {
             meetingParticipants.get(meetingId).remove(username);
             updateInMeetingCount(meetingId);
-            log.info("User '{}' left meeting {}", username, meetingId);
+            log.info("User '{}' left room {}", username, meetingId);
         }
     }
 
     /** Update in-meeting count */
     private void updateInMeetingCount(Long meetingId) {
-        Optional<Meeting> m = meetingRepository.findById(meetingId);
-        if (m.isPresent()) {
+        meetingRepository.findById(meetingId).ifPresent(m -> {
             int count = meetingParticipants.getOrDefault(meetingId, new HashSet<>()).size();
-            m.get().setInMeetingCount(count);
-            meetingRepository.save(m.get());
-        }
+            m.setInMeetingCount(count);
+            meetingRepository.save(m);
+        });
     }
 
     /** Get participants in meeting */
@@ -131,12 +191,20 @@ public class MeetingService {
         return meetingParticipants.getOrDefault(meetingId, new HashSet<>());
     }
 
-    /** Toggle full recording on active meeting */
+    /** Toggle full recording on a specific meeting */
+    public Meeting toggleFullRecording(Long meetingId) {
+        Meeting m = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new IllegalStateException("Meeting not found: " + meetingId));
+        m.setFullRecording(!m.isFullRecording());
+        log.info("Recording toggled to {} for room {}", m.isFullRecording(), m.getId());
+        return meetingRepository.save(m);
+    }
+
+    /** Toggle full recording on first active meeting (backward compat) */
     public Meeting toggleFullRecording() {
         Meeting m = getActiveMeeting()
                 .orElseThrow(() -> new IllegalStateException("No active meeting"));
         m.setFullRecording(!m.isFullRecording());
-        log.info("Recording toggled to {} for meeting {}", m.isFullRecording(), m.getId());
         return meetingRepository.save(m);
     }
 

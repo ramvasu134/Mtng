@@ -18,6 +18,8 @@ public class SignalMessage {
     private String from;   // sender's username
     private String to;     // target username (null = broadcast to all)
     private String data;   // SDP JSON or ICE candidate JSON
+    private String displayName;  // NEW: sender's display name
+    private String target;  // NEW: alias for 'to' for frontend compatibility
 
     public SignalMessage() {}
 
@@ -39,5 +41,11 @@ public class SignalMessage {
 
     public String getData()              { return data; }
     public void   setData(String data)   { this.data = data; }
+
+    public String getDisplayName()       { return displayName; }
+    public void   setDisplayName(String displayName) { this.displayName = displayName; }
+
+    public String getTarget()            { return target; }
+    public void   setTarget(String target) { this.target = target; }
 }
 

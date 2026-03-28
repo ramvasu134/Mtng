@@ -1,0 +1,1102 @@
+Copilot said: Perfect! Now I'll create a comprehensive, actionable
+Perfect! Now I'll create a comprehensive, actionable instruction document for your development team/agent to implement the enterprise-grade database system.
+
+MTNG DATABASE MIGRATION & DEPLOYMENT INSTRUCTIONS
+For Development Team/Agent Implementation
+PHASE 1: DEPENDENCY UPDATES
+Task 1.1: Update pom.xml
+File: pom.xml
+Action: Replace the entire <dependencies> section with the following:
+
+XML
+<dependencies>
+    <!-- Spring Boot Web Starter -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <!-- PostgreSQL JDBC Driver (Replace H2) -->
+    <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>42.7.1</version>
+    </dependency>
+
+    <!-- Spring Boot JPA/Hibernate for database -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+
+    <!-- Liquibase for Database Version Control & Migration -->
+    <dependency>
+        <groupId>org.liquibase</groupId>
+        <artifactId>liquibase-core</artifactId>
+    </dependency>
+
+    <!-- Hibernate Envers for Audit & Change Tracking -->
+    <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-envers</artifactId>
+    </dependency>
+
+    <!-- HikariCP Connection Pool (High Performance) -->
+    <dependency>
+        <groupId>com.zaxxer</groupId>
+        <artifactId>HikariCP</artifactId>
+    </dependency>
+
+    <!-- Thymeleaf for HTML templates -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-thymeleaf</artifactId>
+    </dependency>
+
+    <!-- Lombok for reducing boilerplate -->
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <optional>true</optional>
+    </dependency>
+
+    <!-- Spring Boot Test -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- Spring Security -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+
+    <!-- Thymeleaf Security Extras -->
+    <dependency>
+        <groupId>org.thymeleaf.extras</groupId>
+        <artifactId>thymeleaf-extras-springsecurity6</artifactId>
+    </dependency>
+
+    <!-- JUnit 5 -->
+    <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- Spring Security Test -->
+    <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- Spring WebSocket -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-websocket</artifactId>
+    </dependency>
+
+    <!-- Actuator for Metrics & Monitoring -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+
+    <!-- Micrometer Prometheus for Metrics -->
+    <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-registry-prometheus</artifactId>
+    </dependency>
+</dependencies>
+Expected Outcome: Maven will download PostgreSQL driver, Liquibase, Hibernate Envers, HikariCP, and monitoring tools.
+
+PHASE 2: APPLICATION CONFIGURATION
+Task 2.1: Update application.properties → application.yml
+File: src/main/resources/application.yml (create new file, can delete application.properties)
+Action: Create with the following content:
+
+YAML
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: Mtng
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mtng_db
+    username: ${DB_USER:mtng_admin}
+    password: ${DB_PASSWORD:SecurePassword123}
+    driver-class-name: org.postgresql.Driver
+    
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 20000
+      idle-timeout: 300000
+      max-lifetime: 1200000
+      auto-commit: true
+      connection-test-query: "SELECT 1"
+  
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          batch_size: 20
+          fetch_size: 50
+          use_get_generated_keys: true
+        order_inserts: true
+        order_updates: true
+        # Audit Configuration with Envers
+        envers:
+          audit_table_prefix: audit_
+          audit_table_suffix: _log
+          store_data_at_delete: true
+          revision_type_field_name: revision_type
+          revision_field_name: revision_id
+  
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yml
+    enabled: true
+    drop-first: false
+  
+  h2:
+    console:
+      enabled: false  # Disable H2 console (using PostgreSQL)
+
+logging:
+  level:
+    root: WARN
+    com.Mtng.Mtng: INFO
+    org.springframework.web: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.liquibase: INFO
+  file:
+    name: logs/mtng-app.log
+    max-size: 100MB
+    max-history: 30
+    total-size-cap: 1GB
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg%n"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  endpoint:
+    health:
+      show-details: when-authorized
+Expected Outcome: Application now configured for PostgreSQL with Liquibase migrations, Hibernate Envers auditing, and connection pooling.
+
+PHASE 3: DATABASE MIGRATION SCRIPTS
+Task 3.1: Create Liquibase Changelog Directory
+Directory: src/main/resources/db/changelog/
+Action: Create if not exists.
+
+Task 3.2: Create Master Changelog File
+File: src/main/resources/db/changelog/db.changelog-master.yml
+Action: Create with the following content:
+
+YAML
+databaseChangeLog:
+  - include:
+      file: db/changelog/v1.0/01-create-users-table.yml
+  - include:
+      file: db/changelog/v1.0/02-create-meetings-table.yml
+  - include:
+      file: db/changelog/v1.0/03-create-meeting-participants-table.yml
+  - include:
+      file: db/changelog/v1.0/04-create-audit-log-table.yml
+  - include:
+      file: db/changelog/v1.0/05-create-indexes.yml
+  - include:
+      file: db/changelog/v1.0/06-migrate-existing-data.yml
+Task 3.3: Create Individual Migration Files
+File 1: src/main/resources/db/changelog/v1.0/01-create-users-table.yml
+YAML
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-users-table
+      author: ramvasu134
+      description: Create normalized users table
+      changes:
+        - createTable:
+            tableName: users
+            remarks: Core user accounts (replaces teachers and students)
+            columns:
+              - column:
+                  name: user_id
+                  type: UUID
+                  remarks: Primary key - unique user identifier
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  remarks: Unique email address
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: username
+                  type: VARCHAR(100)
+                  remarks: Login username
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: full_name
+                  type: VARCHAR(255)
+                  remarks: User full name
+              - column:
+                  name: password_hash
+                  type: VARCHAR(255)
+                  remarks: BCrypt hashed password
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_type
+                  type: VARCHAR(50)
+                  remarks: ADMIN, USER, STUDENT
+                  defaultValue: STUDENT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  remarks: Account active status
+                  defaultValue: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_login_at
+                  type: TIMESTAMP
+                  remarks: Last login timestamp
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  remarks: Account creation timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  remarks: Last update timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: VARCHAR(100)
+                  remarks: User who created this record
+              - column:
+                  name: updated_by
+                  type: VARCHAR(100)
+                  remarks: User who last updated this record
+
+  - changeSet:
+      id: 002-create-users-indexes
+      author: ramvasu134
+      changes:
+        - createIndex:
+            tableName: users
+            indexName: idx_users_email
+            columns:
+              - column:
+                  name: email
+        - createIndex:
+            tableName: users
+            indexName: idx_users_username
+            columns:
+              - column:
+                  name: username
+        - createIndex:
+            tableName: users
+            indexName: idx_users_active
+            columns:
+              - column:
+                  name: is_active
+File 2: src/main/resources/db/changelog/v1.0/02-create-meetings-table.yml
+YAML
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-meetings-table
+      author: ramvasu134
+      description: Create normalized meetings table
+      changes:
+        - createTable:
+            tableName: meetings
+            remarks: Meeting records
+            columns:
+              - column:
+                  name: meeting_id
+                  type: UUID
+                  remarks: Primary key
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: organizer_id
+                  type: UUID
+                  remarks: Foreign key to users table
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_meetings_organizer
+                    references: users(user_id)
+              - column:
+                  name: meeting_title
+                  type: VARCHAR(500)
+                  remarks: Meeting title/subject
+              - column:
+                  name: description
+                  type: TEXT
+                  remarks: Detailed meeting description
+              - column:
+                  name: scheduled_start
+                  type: TIMESTAMP
+                  remarks: Scheduled meeting start time
+              - column:
+                  name: scheduled_end
+                  type: TIMESTAMP
+                  remarks: Scheduled meeting end time
+              - column:
+                  name: actual_start
+                  type: TIMESTAMP
+                  remarks: Actual meeting start time
+              - column:
+                  name: actual_end
+                  type: TIMESTAMP
+                  remarks: Actual meeting end time
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  remarks: SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED
+                  defaultValue: SCHEDULED
+              - column:
+                  name: is_recording_enabled
+                  type: BOOLEAN
+                  remarks: Is recording enabled
+                  defaultValue: false
+              - column:
+                  name: max_participants
+                  type: INTEGER
+                  remarks: Maximum participants allowed
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 004-create-meetings-indexes
+      author: ramvasu134
+      changes:
+        - createIndex:
+            tableName: meetings
+            indexName: idx_meetings_organizer
+            columns:
+              - column:
+                  name: organizer_id
+        - createIndex:
+            tableName: meetings
+            indexName: idx_meetings_status
+            columns:
+              - column:
+                  name: status
+        - createIndex:
+            tableName: meetings
+            indexName: idx_meetings_scheduled_start
+            columns:
+              - column:
+                  name: scheduled_start
+File 3: src/main/resources/db/changelog/v1.0/03-create-meeting-participants-table.yml
+YAML
+databaseChangeLog:
+  - changeSet:
+      id: 005-create-meeting-participants-table
+      author: ramvasu134
+      description: Create normalized meeting participants junction table
+      changes:
+        - createTable:
+            tableName: meeting_participants
+            remarks: Many-to-many relationship between meetings and users
+            columns:
+              - column:
+                  name: participant_id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: meeting_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_participants_meeting
+                    references: meetings(meeting_id)
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_participants_user
+                    references: users(user_id)
+              - column:
+                  name: joined_at
+                  type: TIMESTAMP
+              - column:
+                  name: left_at
+                  type: TIMESTAMP
+              - column:
+                  name: duration_seconds
+                  type: INTEGER
+              - column:
+                  name: role
+                  type: VARCHAR(50)
+                  remarks: ORGANIZER, PRESENTER, PARTICIPANT
+                  defaultValue: PARTICIPANT
+              - column:
+                  name: is_muted
+                  type: BOOLEAN
+                  defaultValue: false
+              - column:
+                  name: is_video_enabled
+                  type: BOOLEAN
+                  defaultValue: true
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 006-create-participants-indexes
+      author: ramvasu134
+      changes:
+        - createIndex:
+            tableName: meeting_participants
+            indexName: idx_participants_meeting
+            columns:
+              - column:
+                  name: meeting_id
+        - createIndex:
+            tableName: meeting_participants
+            indexName: idx_participants_user
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            tableName: meeting_participants
+            indexName: idx_participants_meeting_user
+            unique: true
+            columns:
+              - column:
+                  name: meeting_id
+              - column:
+                  name: user_id
+File 4: src/main/resources/db/changelog/v1.0/04-create-audit-log-table.yml
+YAML
+databaseChangeLog:
+  - changeSet:
+      id: 007-create-audit-log-table
+      author: ramvasu134
+      description: Create audit logging table for compliance and traceability
+      changes:
+        - createTable:
+            tableName: audit_log
+            remarks: Comprehensive audit trail for all database changes
+            columns:
+              - column:
+                  name: audit_id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: table_name
+                  type: VARCHAR(100)
+                  remarks: Name of affected table
+              - column:
+                  name: record_id
+                  type: VARCHAR(255)
+                  remarks: ID of affected record
+              - column:
+                  name: action
+                  type: VARCHAR(50)
+                  remarks: INSERT, UPDATE, DELETE
+              - column:
+                  name: old_values
+                  type: JSONB
+                  remarks: Previous values in JSON format
+              - column:
+                  name: new_values
+                  type: JSONB
+                  remarks: New values in JSON format
+              - column:
+                  name: user_id
+                  type: UUID
+              - column:
+                  name: changed_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ip_address
+                  type: VARCHAR(45)
+                  remarks: IPv4 or IPv6 address
+              - column:
+                  name: change_reason
+                  type: TEXT
+                  remarks: Optional reason for change
+              - column:
+                  name: affected_rows
+                  type: INTEGER
+
+  - changeSet:
+      id: 008-create-audit-log-indexes
+      author: ramvasu134
+      changes:
+        - createIndex:
+            tableName: audit_log
+            indexName: idx_audit_timestamp
+            columns:
+              - column:
+                  name: changed_at
+        - createIndex:
+            tableName: audit_log
+            indexName: idx_audit_table_record
+            columns:
+              - column:
+                  name: table_name
+              - column:
+                  name: record_id
+        - createIndex:
+            tableName: audit_log
+            indexName: idx_audit_user
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            tableName: audit_log
+            indexName: idx_audit_action
+            columns:
+              - column:
+                  name: action
+File 5: src/main/resources/db/changelog/v1.0/05-create-indexes.yml
+YAML
+databaseChangeLog:
+  - changeSet:
+      id: 009-create-performance-indexes
+      author: ramvasu134
+      description: Additional performance-oriented indexes
+      changes:
+        - createIndex:
+            tableName: users
+            indexName: idx_users_user_type
+            columns:
+              - column:
+                  name: user_type
+        - createIndex:
+            tableName: meetings
+            indexName: idx_meetings_created_at
+            columns:
+              - column:
+                  name: created_at
+        - createIndex:
+            tableName: meeting_participants
+            indexName: idx_participants_joined_at
+            columns:
+              - column:
+                  name: joined_at
+File 6: src/main/resources/db/changelog/v1.0/06-migrate-existing-data.yml
+YAML
+databaseChangeLog:
+  - changeSet:
+      id: 010-migrate-legacy-data
+      author: ramvasu134
+      description: Migration script for existing H2 data
+      preConditions:
+        - onFail: MARK_RAN
+          dbms:
+            type: postgresql
+      changes:
+        - sql:
+            sql: |
+              -- This migration assumes you'll manually migrate teachers/students
+              -- to the new users table structure
+              -- Placeholder for custom migration logic
+              SELECT 1;
+Expected Outcome: All migration files created. Liquibase will automatically apply migrations on application startup.
+
+PHASE 4: JPA ENTITY UPDATES
+Task 4.1: Create Base Audit Entity
+File: src/main/java/com/Mtng/Mtng/model/BaseEntity.java
+
+Java
+package com.Mtng.Mtng.model;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@MappedSuperclass
+@Getter
+@Setter
+public abstract class BaseEntity {
+    
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+    
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
+    
+    @Column(name = "created_by")
+    private String createdBy;
+    
+    @Column(name = "updated_by")
+    private String updatedBy;
+}
+Task 4.2: Create New Unified User Entity
+File: src/main/java/com/Mtng/Mtng/model/User.java
+
+Java
+package com.Mtng.Mtng.model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import org.hibernate.envers.Audited;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Entity
+@Table(
+    name = "users",
+    indexes = {
+        @Index(name = "idx_users_email", columnList = "email"),
+        @Index(name = "idx_users_username", columnList = "username"),
+        @Index(name = "idx_users_active", columnList = "is_active")
+    }
+)
+@Audited
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(exclude = {"meetingsAsOrganizer", "participatedMeetings"})
+public class User extends BaseEntity {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "user_id")
+    private UUID userId;
+    
+    @Column(name = "email", unique = true, nullable = false, length = 255)
+    private String email;
+    
+    @Column(name = "username", unique = true, nullable = false, length = 100)
+    private String username;
+    
+    @Column(name = "full_name", length = 255)
+    private String fullName;
+    
+    @Column(name = "password_hash", nullable = false, length = 255)
+    private String passwordHash;
+    
+    @Column(name = "user_type", nullable = false, length = 50)
+    @Enumerated(EnumType.STRING)
+    private UserType userType;
+    
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive = true;
+    
+    @Column(name = "last_login_at")
+    private LocalDateTime lastLoginAt;
+    
+    @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Meeting> meetingsAsOrganizer = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<MeetingParticipant> participatedMeetings = new ArrayList<>();
+    
+    public enum UserType {
+        ADMIN, USER, STUDENT
+    }
+}
+Task 4.3: Create Meeting Entity
+File: src/main/java/com/Mtng/Mtng/model/Meeting.java
+
+Java
+package com.Mtng.Mtng.model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import org.hibernate.envers.Audited;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Entity
+@Table(
+    name = "meetings",
+    indexes = {
+        @Index(name = "idx_meetings_organizer", columnList = "organizer_id"),
+        @Index(name = "idx_meetings_status", columnList = "status"),
+        @Index(name = "idx_meetings_scheduled_start", columnList = "scheduled_start"),
+        @Index(name = "idx_meetings_created_at", columnList = "created_at")
+    }
+)
+@Audited
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(exclude = "participants")
+public class Meeting extends BaseEntity {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "meeting_id")
+    private UUID meetingId;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organizer_id", nullable = false)
+    private User organizer;
+    
+    @Column(name = "meeting_title", length = 500)
+    private String title;
+    
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+    
+    @Column(name = "status", nullable = false, length = 50)
+    @Enumerated(EnumType.STRING)
+    private MeetingStatus status = MeetingStatus.SCHEDULED;
+    
+    @Column(name = "scheduled_start")
+    private LocalDateTime scheduledStart;
+    
+    @Column(name = "scheduled_end")
+    private LocalDateTime scheduledEnd;
+    
+    @Column(name = "actual_start")
+    private LocalDateTime actualStart;
+    
+    @Column(name = "actual_end")
+    private LocalDateTime actualEnd;
+    
+    @Column(name = "is_recording_enabled")
+    private Boolean isRecordingEnabled = false;
+    
+    @Column(name = "max_participants")
+    private Integer maxParticipants;
+    
+    @OneToMany(mappedBy = "meeting", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<MeetingParticipant> participants = new ArrayList<>();
+    
+    public enum MeetingStatus {
+        SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED
+    }
+}
+Task 4.4: Create MeetingParticipant Entity
+File: src/main/java/com/Mtng/Mtng/model/MeetingParticipant.java
+
+Java
+package com.Mtng.Mtng.model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import org.hibernate.envers.Audited;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Entity
+@Table(
+    name = "meeting_participants",
+    indexes = {
+        @Index(name = "idx_participants_meeting", columnList = "meeting_id"),
+        @Index(name = "idx_participants_user", columnList = "user_id"),
+        @Index(name = "idx_participants_meeting_user", columnList = "meeting_id,user_id", unique = true),
+        @Index(name = "idx_participants_joined_at", columnList = "joined_at")
+    },
+    uniqueConstraints = {
+        @UniqueConstraint(name = "uk_meeting_user", columnNames = {"meeting_id", "user_id"})
+    }
+)
+@Audited
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(exclude = {"meeting", "user"})
+public class MeetingParticipant {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "participant_id")
+    private UUID participantId;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "meeting_id", nullable = false)
+    private Meeting meeting;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+    
+    @Column(name = "joined_at")
+    private LocalDateTime joinedAt;
+    
+    @Column(name = "left_at")
+    private LocalDateTime leftAt;
+    
+    @Column(name = "duration_seconds")
+    private Integer durationSeconds;
+    
+    @Column(name = "role", length = 50)
+    @Enumerated(EnumType.STRING)
+    private ParticipantRole role = ParticipantRole.PARTICIPANT;
+    
+    @Column(name = "is_muted")
+    private Boolean isMuted = false;
+    
+    @Column(name = "is_video_enabled")
+    private Boolean isVideoEnabled = true;
+    
+    public enum ParticipantRole {
+        ORGANIZER, PRESENTER, PARTICIPANT
+    }
+}
+Task 4.5: Create AuditLog Entity
+File: src/main/java/com/Mtng/Mtng/model/AuditLog.java
+
+Java
+package com.Mtng.Mtng.model;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.type.JsonType;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Entity
+@Table(
+    name = "audit_log",
+    indexes = {
+        @Index(name = "idx_audit_timestamp", columnList = "changed_at"),
+        @Index(name = "idx_audit_table_record", columnList = "table_name,record_id"),
+        @Index(name = "idx_audit_user", columnList = "user_id"),
+        @Index(name = "idx_audit_action", columnList = "action")
+    }
+)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class AuditLog {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "audit_id")
+    private UUID auditId;
+    
+    @Column(name = "table_name", length = 100)
+    private String tableName;
+    
+    @Column(name = "record_id", length = 255)
+    private String recordId;
+    
+    @Column(name = "action", length = 50)
+    @Enumerated(EnumType.STRING)
+    private AuditAction action;
+    
+    @Column(name = "old_values", columnDefinition = "jsonb")
+    @org.hibernate.annotations.Type(JsonType.class)
+    private JsonNode oldValues;
+    
+    @Column(name = "new_values", columnDefinition = "jsonb")
+    @org.hibernate.annotations.Type(JsonType.class)
+    private JsonNode newValues;
+    
+    @Column(name = "user_id")
+    private UUID userId;
+    
+    @Column(name = "changed_at", nullable = false)
+    private LocalDateTime changedAt;
+    
+    @Column(name = "ip_address", length = 45)
+    private String ipAddress;
+    
+    @Column(name = "change_reason", columnDefinition = "TEXT")
+    private String changeReason;
+    
+    @Column(name = "affected_rows")
+    private Integer affectedRows;
+    
+    public enum AuditAction {
+        INSERT, UPDATE, DELETE
+    }
+}
+Expected Outcome: All entities created with proper relationships, indexes, and audit annotations.
+
+PHASE 5: REPOSITORY CREATION
+Task 5.1: Create Repository Interfaces
+File: src/main/java/com/Mtng/Mtng/repository/UserRepository.java
+
+Java
+package com.Mtng.Mtng.repository;
+
+import com.Mtng.Mtng.model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Repository
+public interface UserRepository extends JpaRepository<User, UUID> {
+    Optional<User> findByEmail(String email);
+    Optional<User> findByUsername(String username);
+    List<User> findByUserType(User.UserType userType);
+    List<User> findByIsActiveTrue();
+    
+    @Query("SELECT u FROM User u WHERE u.isActive = true AND u.userType = ?1")
+    List<User> findActiveUsersByType(User.UserType userType);
+}
+File: src/main/java/com/Mtng/Mtng/repository/MeetingRepository.java
+
+Java
+package com.Mtng.Mtng.repository;
+
+import com.Mtng.Mtng.model.Meeting;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+@Repository
+public interface MeetingRepository extends JpaRepository<Meeting, UUID> {
+    List<Meeting> findByOrganizerId(UUID organizerId);
+    List<Meeting> findByStatus(Meeting.MeetingStatus status);
+    
+    @Query("SELECT m FROM Meeting m WHERE m.scheduledStart BETWEEN ?1 AND ?2")
+    List<Meeting> findMeetingsBetween(LocalDateTime start, LocalDateTime end);
+}
+File: src/main/java/com/Mtng/Mtng/repository/MeetingParticipantRepository.java
+
+Java
+package com.Mtng.Mtng.repository;
+
+import com.Mtng.Mtng.model.MeetingParticipant;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.UUID;
+
+@Repository
+public interface MeetingParticipantRepository extends JpaRepository<MeetingParticipant, UUID> {
+    List<MeetingParticipant> findByMeetingId(UUID meetingId);
+    List<MeetingParticipant> findByUserId(UUID userId);
+}
+File: src/main/java/com/Mtng/Mtng/repository/AuditLogRepository.java
+
+Java
+package com.Mtng.Mtng.repository;
+
+import com.Mtng.Mtng.model.AuditLog;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+@Repository
+public interface AuditLogRepository extends JpaRepository<AuditLog, UUID> {
+    List<AuditLog> findByTableNameAndRecordId(String tableName, String recordId);
+    List<AuditLog> findByUserId(UUID userId);
+    List<AuditLog> findByChangedAtBetween(LocalDateTime start, LocalDateTime end);
+}
+PHASE 6: DATABASE SETUP INSTRUCTIONS
+Task 6.1: Install PostgreSQL
+Windows:
+
+bash
+# Download from https://www.postgresql.org/download/windows/
+# Run installer (default port: 5432, default user: postgres)
+# Remember password for postgres user
+Mac:
+
+bash
+brew install postgresql@16
+brew services start postgresql@16
+Linux (Ubuntu/Debian):
+
+bash
+sudo apt-get update
+sudo apt-get install postgresql postgresql-contrib
+sudo systemctl start postgresql
+Task 6.2: Create Database and User
+bash
+# Connect as postgres user
+psql -U postgres
+
+# In psql console:
+CREATE USER mtng_admin WITH PASSWORD 'SecurePassword123';
+CREATE DATABASE mtng_db OWNER mtng_admin;
+GRANT ALL PRIVILEGES ON DATABASE mtng_db TO mtng_admin;

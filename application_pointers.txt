@@ -1,0 +1,47 @@
+1. Secure Authentication & Authorization (User Access) 
+Multi-Factor Authentication (MFA): Require second-factor verification (SMS, OTP, or biometrics) for user logins.
+Secure Password Storage: Never store passwords in plain text. Use salted hashing algorithms like bcrypt or Argon2.
+Role-Based Access Control (RBAC): Apply the principle of least privilege—users and systems only have the minimum access necessary.
+Session Management: Create unique session IDs, store them securely, and enforce session timeouts to prevent hijacking. 
+National Portal of India
+National Portal of India
+ +3
+2. Data Protection (At Rest and In Transit)
+HTTPS/TLS Implementation: Always use TLS 1.2 or 1.3 to encrypt data in transit between the client and server. Disable weak ciphers.
+Encryption at Rest: Encrypt sensitive database information using AES-256 encryption.
+API Security: Secure backend APIs using authentication tokens (OAuth 2.0 or OpenID Connect) and implement rate limiting to prevent abuse.
+SSL Pinning (Mobile): Hardcode the certificate's public key in your app to prevent Man-in-the-Middle (MITM) attacks. 
+National Portal of India
+National Portal of India
+ +4
+3. Secure Code Practices & Vulnerability Management
+Input Validation & Sanitization: Validate all user input on both the client and server sides to prevent SQL injection and Cross-Site Scripting (XSS).
+OWASP Top 10: Adopt secure coding guidelines based on OWASP to protect against top web vulnerabilities.
+Dependency Scanning: Use Software Composition Analysis (SCA) tools to monitor third-party libraries for known vulnerabilities.
+Code Obfuscation (Mobile): Use code minification and obfuscation to make reverse engineering difficult. 
+National Portal of India
+National Portal of India
+ +3
+4. Infrastructure & Network Security
+Web Application Firewalls (WAF): Use a WAF to monitor incoming/outgoing traffic and block malicious attacks (DDoS, SQLi, XSS).
+Regular Patching: Keep all servers, operating systems, and frameworks updated to fix known security gaps.
+Hardening Systems: Disable unnecessary services, ports, and default administrator accounts.
+Container Security: If using containers, use trusted images, scan them for vulnerabilities, and use immutable deployments. 
+National Portal of India
+National Portal of India
+ +3
+5. Monitoring, Testing, and Compliance
+Logging & Monitoring: Implement comprehensive logging for user actions and system events. Use tools like SIEM to analyze logs for suspicious activity.
+Penetration Testing (VAPT): Perform regular penetration tests (simulated attacks) to identify loopholes before malicious actors do.
+Runtime Application Self-Protection (RASP): Use RASP to detect and prevent attacks in real-time by analyzing application behavior.
+Regulatory Compliance: Ensure compliance with GDPR, HIPAA, or PCI-DSS to protect user data privacy. 
+Imperva
+Imperva
+ +4
+Summary Checklist for 100% Security Attempt
+Area 	Action	Technology
+User	MFA & Strong Passwords	OAuth, Argon2, Credential Manager
+Network	Secure Data Flow	HTTPS, TLS 1.3, Certificate Pinning
+App/API	Input Sanitization & RASP	WAF, REST Frameworks, SAST/DAST
+Server	Patching & Hardening	Docker, SIEM (Splunk), Firewall
+Data	Encryption at Rest	AES-256, Database encryption

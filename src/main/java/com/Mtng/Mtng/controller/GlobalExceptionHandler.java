@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
@@ -27,6 +28,28 @@ public class GlobalExceptionHandler {
                                                  jakarta.servlet.http.HttpServletRequest request) {
         log.debug("Static resource not found: {}", request.getRequestURI());
         return ResponseEntity.notFound().build();
+    }
+
+    /**
+     * Handle Spring Security AccessDeniedException – return 403 JSON for API calls,
+     * or redirect to /access-denied for page requests.
+     * Must be declared BEFORE the catch-all to intercept it.
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public Object handleAccessDenied(AccessDeniedException ex,
+                                     jakarta.servlet.http.HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        String accept = request.getHeader("Accept");
+        if (uri.startsWith("/api/") || (accept != null && accept.contains("application/json"))) {
+            java.util.Map<String, Object> body = new java.util.LinkedHashMap<>();
+            body.put("error", "Access Denied");
+            body.put("message", "You do not have permission to perform this action.");
+            body.put("path", uri);
+            return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
+        }
+        // For page requests, let Spring Security's AccessDeniedHandler handle it
+        // by re-throwing (Spring Security's filter will catch it)
+        throw ex;
     }
 
     /** Catch-all for view-rendering errors – returns simple HTML with the message */

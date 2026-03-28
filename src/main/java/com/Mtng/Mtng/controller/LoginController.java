@@ -4,15 +4,14 @@ import com.Mtng.Mtng.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
- * LoginController – serves the login page and handles logout.
+ * LoginController – handles logout-handler POST.
  *
- * <p>Spring Security handles POST /login automatically via the filter chain.</p>
+ * <p>The React SPA handles the login page rendering.
+ * Spring Security handles POST /login automatically via the filter chain.
+ * The GET /login route is forwarded to the React SPA by DashboardController.</p>
  */
 @Controller
 public class LoginController {
@@ -22,21 +21,6 @@ public class LoginController {
     @Autowired
     public LoginController(StudentService studentService) {
         this.studentService = studentService;
-    }
-
-    /** GET /login – render login page */
-    @GetMapping("/login")
-    public String loginPage(
-            @RequestParam(value = "error",    required = false) String error,
-            @RequestParam(value = "logout",   required = false) String logout,
-            @RequestParam(value = "disabled", required = false) String disabled,
-            Model model) {
-
-        if (error    != null) model.addAttribute("errorMsg",  "Invalid username or password.");
-        if (disabled != null) model.addAttribute("errorMsg",  "⛔ Your account has been blocked. Contact admin.");
-        if (logout   != null) model.addAttribute("logoutMsg", "You have been logged out successfully.");
-
-        return "login";
     }
 
     /** POST /logout-handler – mark student as OFFLINE when logging out */
@@ -49,4 +33,3 @@ public class LoginController {
         return "redirect:/login?logout=true";
     }
 }
-

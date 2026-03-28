@@ -5,7 +5,52 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MTNG – Recordings</title>
+  <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}" />
   <link rel="stylesheet" th:href="@{/css/mtng.css}" />
+  <style>
+    .rec-group-card { background: #1e1e2e; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; margin-bottom: 14px; overflow: hidden; }
+    .rec-group-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; cursor: pointer; user-select: none; background: linear-gradient(135deg,rgba(102,126,234,0.18),rgba(118,75,162,0.12)); border-bottom: 1px solid rgba(255,255,255,0.06); transition: background 0.2s; }
+    .rec-group-header:hover { background: linear-gradient(135deg,rgba(102,126,234,0.28),rgba(118,75,162,0.2)); }
+    .rec-group-name { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .rec-group-count { background: rgba(102,126,234,0.3); padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; color: #a5b4fc; }
+    .rec-group-chevron { font-size: 14px; transition: transform 0.25s; color: #667eea; display: inline-block; }
+    .rec-group-chevron.open { transform: rotate(180deg); }
+    .rec-group-body.hidden { display: none; }
+    .rec-group-body { padding: 6px 12px 12px; }
+
+    .rec-item { background: #12121e; border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; margin-top: 8px; overflow: hidden; transition: border-color 0.2s; }
+    .rec-item:hover { border-color: rgba(102,126,234,0.35); }
+    .rec-item-header { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 10px 14px; }
+    .rec-number { background: rgba(102,126,234,0.25); color: #a5b4fc; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; flex-shrink: 0; }
+    .rec-type-badge { font-size: 12px; font-weight: 600; color: #ddd; }
+    .rec-meta-chips { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; }
+    .rec-chip { font-size: 11px; background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
+    .rec-chip.dur  { color: #A5F3FC; }
+    .rec-chip.date { color: #D8B4FE; }
+    .rec-chip.size { color: #86EFAC; }
+    .rec-chip.host { color: #FED7AA; background: rgba(255,107,0,0.12); }
+    .rec-chip.saved { color: #4ADE80; }
+
+    /* ── Audio Player ─────────────────────────────────────────── */
+    .rec-player-section { padding: 10px 14px 12px; background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.05); }
+    .rec-player-label { font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 6px; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase; }
+    audio.rec-audio-el { width: 100%; height: 38px; accent-color: #667eea; outline: none; }
+    .rec-player-btns { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; align-items: center; }
+    .btn-play-stop { background: linear-gradient(135deg,#667eea,#764ba2); color:#fff; border:none; padding:7px 16px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all 0.2s; }
+    .btn-play-stop:hover { transform:scale(1.04); box-shadow:0 4px 16px rgba(102,126,234,0.4); }
+    .btn-dl-audio { background:rgba(34,197,94,0.12); color:#22C55E; border:1px solid rgba(34,197,94,0.4); padding:7px 16px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:5px; transition:all 0.2s; }
+    .btn-dl-audio:hover { background:rgba(34,197,94,0.22); color:#22C55E; }
+    .audio-format-tag { font-size:10px; color:rgba(255,255,255,0.3); margin-left:4px; }
+    .no-audio-msg { font-size:11px; color:rgba(255,255,255,0.35); display:inline-flex; align-items:center; gap:5px; }
+    .no-audio-msg code { background:rgba(255,255,255,0.07); padding:1px 6px; border-radius:3px; font-size:10px; color:rgba(255,255,255,0.5); }
+
+    .empty-state { padding: 48px; text-align: center; color: #555; }
+    .empty-state .icon { font-size: 60px; opacity: 0.25; display: block; margin-bottom: 14px; }
+
+    /* ── Currently Playing Highlight ───────────────────────── */
+    .rec-item.now-playing { border-color: rgba(102,126,234,0.6) !important; background: rgba(102,126,234,0.06); box-shadow: 0 0 16px rgba(102,126,234,0.15); }
+    .rec-item.now-playing .rec-player-label::after { content: '  🔊 Now Playing'; color: #22C55E; font-weight: 600; }
+  </style>
 </head>
 <body>
 
@@ -16,67 +61,346 @@
 
   <!-- Info banner -->
   <div class="alert alert-info mb-2" style="font-size:12px">
-    ℹ️ All students with recordings are listed below. Click a name to expand and see that student's clips.
-    Recordings are removed after 5 days; delete any you do not need to save space.
+    <span sec:authorize="hasRole('ADMIN')">
+      🛡️ <strong>Admin View</strong> – You can see <strong>all</strong> recordings from every participant.
+    </span>
+    <span sec:authorize="hasRole('USER')">
+      🎧 <strong>My Recordings</strong> – Showing only your own recordings.
+    </span>
+    &nbsp;ℹ️ Recordings are saved automatically when meetings end.
+    Audio recorded at <strong>128 kbps Opus</strong> — crystal-clear quality.
+    Use ▶ <strong>Play</strong> to listen or <strong>⬇ Download</strong> to save a copy to your device.
+    <span th:if="${allRecordings != null and !allRecordings.isEmpty()}"
+          style="margin-left:8px;background:rgba(102,126,234,0.3);padding:3px 10px;border-radius:12px;font-weight:700;color:#a5b4fc">
+      🎙 <span th:text="${#lists.size(allRecordings)}">0</span> recording(s)
+    </span>
   </div>
 
   <!-- Toolbar -->
   <div class="search-bar">
-    <input class="search-input" type="text" placeholder="🔍 Search recordings..."
-           oninput="searchRecordings(this.value)" />
+    <input class="search-input" type="text" id="recSearch"
+           placeholder="🔍 Search by name, date or file…"
+           oninput="filterRecordings(this.value)" />
     <button class="btn btn-secondary btn-sm" onclick="location.reload()">🔄 Refresh</button>
-    <button sec:authorize="hasRole('ADMIN')" class="btn btn-success btn-sm" onclick="promptSaveRecordings()">💾 Save All</button>
+    <button class="btn btn-secondary btn-sm" onclick="playAllSequential()" title="Play all recordings one after another">▶ Play All</button>
     <button sec:authorize="hasRole('ADMIN')" class="btn btn-danger btn-sm" onclick="clearAllRecordings()">🗑 Clear All</button>
   </div>
 
   <!-- Empty state -->
-  <div th:if="${#lists.isEmpty(allRecordings)}" class="alert alert-info">
-    No recordings yet. Start a meeting and students will be recorded automatically when Full Meeting Recording is ON.
+  <div th:if="${#lists.isEmpty(allRecordings)}" class="empty-state">
+    <span class="icon">🎙</span>
+    <p style="font-size:15px;font-weight:600;color:#888;margin-bottom:6px">No recordings yet</p>
+    <p style="font-size:13px">Start a meeting → sessions are <strong>auto-recorded</strong> and saved here automatically.</p>
+    <p style="font-size:12px;color:#555;margin-top:6px">Recordings appear here after the meeting ends.</p>
   </div>
 
-  <!-- Group recordings by student -->
-  <div th:each="student : ${students}">
-    <!-- Only show if student has recordings -->
-    <div th:with="recs=${recsByStudent[student.id]}"
-         th:if="${recs != null and not #lists.isEmpty(recs)}"
-         class="card student-recording-group"
-         th:attr="data-name=${student.name}">
+  <!-- ── Grouped by participant name ─────────────────────────── -->
+  <div id="recGroupsContainer">
+    <div th:each="entry : ${recsByParticipant}"
+         class="rec-group-card"
+         th:attr="data-participant=${entry.key}">
 
-      <div class="card-header" style="cursor:pointer"
-           th:data-target="|recs-${student.id}|"
-           onclick="document.getElementById(this.dataset.target).classList.toggle('hidden')">
-        <span class="card-title" th:text="${student.name}">Student</span>
-        <span class="text-muted text-sm" th:text="${#lists.size(recs)} + ' recordings'">0 recordings</span>
-        <span style="color:var(--orange-primary)">▾</span>
-      </div>
-
-      <div th:id="'recs-' + ${student.id}">
-        <div th:each="r,i : ${recs}" th:id="'rec-' + ${r.id}" class="recording-item">
-          <div class="recording-header">
-            <span class="rec-number" th:text="'#' + ${i.count}">#1</span>
-            <span class="rec-type">🎙 Recording</span>
-            <div class="rec-meta">
-              <span th:text="${r.durationSeconds} + 's'">6s</span>
-              <span th:text="${r.recordingDate != null ? #temporals.format(r.recordingDate,'dd/MM/yyyy') : '–'}">–</span>
-              <span th:text="${r.recordingTime != null ? r.recordingTime.toString().substring(0,5) : '–'}">–</span>
-            </div>
-            <div sec:authorize="hasRole('ADMIN')" style="margin-left:auto">
-              <button class="btn btn-danger btn-sm"
-                      th:onclick="|deleteRecording(${r.id})|">🗑</button>
-            </div>
-          </div>
-          <div>
-            <button class="rec-play-btn" th:onclick="|loadAudio(${r.id})|">▶ Load Audio</button>
-          </div>
+      <!-- Group header -->
+      <div class="rec-group-header"
+           th:attr="data-body-id='grp-' + ${entry.key}"
+           onclick="toggleGroup(this)">
+        <div class="rec-group-name">
+          <span>👤</span>
+          <span th:text="${entry.key}">Participant</span>
+          <span class="rec-group-count"
+                th:text="${#lists.size(entry.value)} + ' clip' + (${#lists.size(entry.value) != 1} ? 's' : '')">N clips</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <button class="btn-play-stop" style="font-size:11px;padding:4px 12px"
+                  th:attr="onclick='event.stopPropagation();playGroup(\'grp-' + ${entry.key} + '\')'"
+                  title="Play all recordings in this group">▶ Play All</button>
+          <span class="rec-group-chevron open">▾</span>
         </div>
       </div>
-    </div>
-  </div>
+
+      <!-- Group body -->
+      <div th:id="'grp-' + ${entry.key}" class="rec-group-body">
+
+        <div th:each="r,i : ${entry.value}"
+             th:id="'rec-' + ${r.id}"
+             class="rec-item">
+
+          <!-- Header row -->
+          <div class="rec-item-header">
+            <span class="rec-number" th:text="'#' + ${i.count}">#1</span>
+            <span class="rec-type-badge"
+                  th:text="${r.participantType != null and r.participantType == 'HOST'} ? '🎙 Host Recording' : '🎙 Participant Recording'">🎙 Recording</span>
+            <div class="rec-meta-chips">
+              <span class="rec-chip dur"
+                    th:text="'⏱ ' + (${r.durationSeconds >= 3600}
+                      ? (${r.durationSeconds / 3600} + 'h ' + (${r.durationSeconds % 3600 / 60}) + 'm')
+                      : (${r.durationSeconds >= 60}
+                        ? (${r.durationSeconds / 60} + 'm ' + (${r.durationSeconds % 60}) + 's')
+                        : (${r.durationSeconds} + 's')))">0s</span>
+              <span class="rec-chip date"
+                    th:text="${r.recordingDate != null ? #temporals.format(r.recordingDate,'dd MMM yyyy') : '–'}">–</span>
+              <span class="rec-chip date"
+                    th:if="${r.recordingTime != null}"
+                    th:text="${r.recordingTime.toString().substring(0,5)}">–</span>
+              <span class="rec-chip size"
+                    th:if="${r.fileSizeBytes != null and r.fileSizeBytes > 0}"
+                    th:text="${r.fileSizeBytes > 1048576
+                      ? #numbers.formatDecimal(r.fileSizeBytes / 1048576.0, 1, 2) + ' MB'
+                      : #numbers.formatDecimal(r.fileSizeBytes / 1024.0, 1, 0) + ' KB'}">—</span>
+              <span class="rec-chip host" th:if="${r.participantType == 'HOST'}">🎙 Host</span>
+              <span class="rec-chip saved" th:if="${r.savedToDatabase}">💾 Saved</span>
+            </div>
+            <!-- Admin delete -->
+            <div sec:authorize="hasRole('ADMIN')" style="margin-left:auto;flex-shrink:0">
+              <button class="btn btn-danger btn-sm" th:onclick="|deleteRecording(${r.id})|">🗑</button>
+            </div>
+          </div>
+
+          <!-- ── Audio Player ── -->
+          <div class="rec-player-section">
+
+            <!-- Case A: Audio BLOB stored in DB → native player + buttons -->
+            <div th:if="${r.hasAudio()}">
+              <div class="rec-player-label">🎵 Playback</div>
+              <audio class="rec-audio-el"
+                     th:id="'aud-' + ${r.id}"
+                     controls
+                     preload="metadata"
+                     th:src="@{'/api/recordings/' + ${r.id} + '/audio'}">
+                Your browser does not support the HTML5 audio element.
+              </audio>
+              <div class="rec-player-btns">
+                <button class="btn-play-stop"
+                        th:id="'playbtn-' + ${r.id}"
+                        th:onclick="|togglePlay('aud-' + ${r.id}, 'playbtn-' + ${r.id})|">
+                  ▶ Play
+                </button>
+                <a class="btn-dl-audio"
+                   th:href="@{'/api/recordings/' + ${r.id} + '/audio'}"
+                   th:attr="download=${r.fileName != null ? r.fileName : 'recording.webm'}"
+                   title="Download audio to device">
+                  ⬇ Download
+                </a>
+                <select style="background:#1e1e2e;color:#a5b4fc;border:1px solid rgba(102,126,234,0.3);border-radius:5px;padding:4px 8px;font-size:11px;cursor:pointer"
+                        th:attr="onchange='changeSpeed(\'aud-' + ${r.id} + '\', this.value)'"
+                        title="Playback speed">
+                  <option value="0.5">0.5×</option>
+                  <option value="0.75">0.75×</option>
+                  <option value="1" selected>1×</option>
+                  <option value="1.25">1.25×</option>
+                  <option value="1.5">1.5×</option>
+                  <option value="2">2×</option>
+                </select>
+                <span class="audio-format-tag"
+                      th:if="${r.audioMimeType != null}"
+                      th:text="${r.audioMimeType}">—</span>
+              </div>
+            </div>
+
+            <!-- Case B: No audio in DB → show guidance -->
+            <div th:unless="${r.hasAudio()}">
+              <div class="no-audio-msg">
+                <span>📂 Audio not stored in database.</span>
+                <span th:if="${r.fileName != null}">
+                  File <code th:text="${r.fileName}">—</code> was saved to your local disk.
+                </span>
+                <span th:unless="${r.fileName != null}">
+                  Recordings are now auto-saved. New sessions will appear here with playback.
+                </span>
+              </div>
+            </div>
+
+          </div><!-- /rec-player-section -->
+        </div><!-- /rec-item -->
+      </div><!-- /rec-group-body -->
+    </div><!-- /rec-group-card -->
+  </div><!-- /recGroupsContainer -->
 
 </main>
 
 <div th:replace="~{layout :: modals}"></div>
 <div th:replace="~{layout :: footer}"></div>
+
+<script>
+  /* ── Toggle group expand/collapse ── */
+  function toggleGroup(headerEl) {
+    const bodyId  = headerEl.dataset.bodyId;
+    const body    = document.getElementById(bodyId);
+    const chevron = headerEl.querySelector('.rec-group-chevron');
+    if (!body) return;
+    const hidden = body.classList.toggle('hidden');
+    if (chevron) chevron.classList.toggle('open', !hidden);
+  }
+
+  /* ── Play / Pause toggle ── */
+  function togglePlay(audioId, btnId) {
+    const el  = document.getElementById(audioId);
+    const btn = document.getElementById(btnId);
+    if (!el) return;
+    if (el.paused) {
+      // Pause any other playing element first
+      document.querySelectorAll('audio.rec-audio-el').forEach(a => {
+        if (a !== el && !a.paused) {
+          a.pause();
+          const bid = a.id.replace('aud-', 'playbtn-');
+          const b   = document.getElementById(bid);
+          if (b) { b.textContent = '▶ Play'; b.style.background = ''; }
+        }
+      });
+      el.play().then(() => {
+        if (btn) { btn.textContent = '⏸ Pause'; btn.style.background = 'linear-gradient(135deg,#EF4444,#DC2626)'; }
+        // Highlight the currently playing item
+        el.closest('.rec-item')?.classList.add('now-playing');
+      }).catch(e => {
+        showAlert('Playback error: ' + e.message, 'error');
+        // Try to reload the audio source and retry
+        el.load();
+      });
+    } else {
+      el.pause();
+      if (btn) { btn.textContent = '▶ Play'; btn.style.background = ''; }
+      el.closest('.rec-item')?.classList.remove('now-playing');
+    }
+    // When audio ends, reset button
+    el.onended = () => {
+      if (btn) { btn.textContent = '▶ Play'; btn.style.background = ''; }
+      el.closest('.rec-item')?.classList.remove('now-playing');
+    };
+    // On error, show user-friendly message
+    el.onerror = () => {
+      if (btn) { btn.textContent = '▶ Play'; btn.style.background = ''; }
+      showAlert('⚠️ Audio could not be loaded. Try downloading instead.', 'error');
+    };
+  }
+
+  /* ── Change playback speed ── */
+  function changeSpeed(audioId, speed) {
+    const el = document.getElementById(audioId);
+    if (el) el.playbackRate = parseFloat(speed) || 1;
+  }
+
+  /* ── Play all recordings in a group sequentially ── */
+  function playGroup(groupBodyId) {
+    const body = document.getElementById(groupBodyId);
+    if (!body) return;
+    // Make sure the group is expanded
+    if (body.classList.contains('hidden')) body.classList.remove('hidden');
+    const audios = body.querySelectorAll('audio.rec-audio-el');
+    if (audios.length === 0) { showAlert('No playable recordings in this group', 'info'); return; }
+    _playSequence(Array.from(audios), 0);
+  }
+
+  /* ── Play ALL recordings on the page sequentially ── */
+  function playAllSequential() {
+    const audios = document.querySelectorAll('audio.rec-audio-el');
+    if (audios.length === 0) { showAlert('No playable recordings available', 'info'); return; }
+    showAlert('▶ Playing all ' + audios.length + ' recording(s)…', 'info');
+    _playSequence(Array.from(audios), 0);
+  }
+
+  /* ── Helper: play audio elements one after another ── */
+  function _playSequence(audioEls, idx) {
+    if (idx >= audioEls.length) {
+      showAlert('✅ Finished playing all recordings', 'success');
+      return;
+    }
+    const el = audioEls[idx];
+    // Pause any currently playing
+    document.querySelectorAll('audio.rec-audio-el').forEach(a => {
+      if (!a.paused) a.pause();
+    });
+    // Scroll into view
+    el.closest('.rec-item')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Update button state
+    const btnId = el.id.replace('aud-', 'playbtn-');
+    const btn   = document.getElementById(btnId);
+    el.play().then(() => {
+      if (btn) { btn.textContent = '⏸ Pause'; btn.style.background = 'linear-gradient(135deg,#EF4444,#DC2626)'; }
+      el.closest('.rec-item')?.classList.add('now-playing');
+    }).catch(e => {
+      // Skip this one and play next
+      _playSequence(audioEls, idx + 1);
+    });
+    el.onended = () => {
+      if (btn) { btn.textContent = '▶ Play'; btn.style.background = ''; }
+      el.closest('.rec-item')?.classList.remove('now-playing');
+      _playSequence(audioEls, idx + 1);
+    };
+    el.onerror = () => {
+      if (btn) { btn.textContent = '▶ Play'; btn.style.background = ''; }
+      _playSequence(audioEls, idx + 1);
+    };
+  }
+
+  /* ── Filter recordings ── */
+  function filterRecordings(query) {
+    const q = (query || '').toLowerCase().trim();
+    document.querySelectorAll('.rec-group-card').forEach(card => {
+      const name = (card.dataset.participant || '').toLowerCase();
+      let anyMatch = !q || name.includes(q);
+      card.querySelectorAll('.rec-item').forEach(item => {
+        const txt   = item.textContent.toLowerCase();
+        const match = !q || txt.includes(q) || name.includes(q);
+        item.style.display = match ? '' : 'none';
+        if (match) anyMatch = true;
+      });
+      card.style.display = !q || anyMatch ? '' : 'none';
+    });
+  }
+
+  /* ── Delete one recording ── */
+  async function deleteRecording(id) {
+    if (!confirm('Delete this recording permanently? This cannot be undone.')) return;
+    try {
+      const r = await fetch('/api/recordings/' + id, { method: 'DELETE' });
+      if (r.ok || r.status === 204) {
+        const el = document.getElementById('rec-' + id);
+        if (el) el.remove();
+        showAlert('🗑 Recording deleted', 'success');
+      } else {
+        showAlert('Delete failed (HTTP ' + r.status + ')', 'error');
+      }
+    } catch (e) { showAlert('Delete error: ' + e.message, 'error'); }
+  }
+
+  /* ── Clear ALL recordings (admin) ── */
+  async function clearAllRecordings() {
+    if (!confirm('⚠️ Delete ALL recordings from the database? This cannot be undone.')) return;
+    try {
+      const r = await fetch('/api/recordings/clear', { method: 'DELETE' });
+      if (r.ok) { location.reload(); }
+      else showAlert('Clear failed (HTTP ' + r.status + ')', 'error');
+    } catch (e) { showAlert('Error: ' + e.message, 'error'); }
+  }
+
+  /* ── Lightweight showAlert fallback (mtng.js may override it) ── */
+  function showAlert(msg, type) {
+    if (typeof window._mtngAlert === 'function') { window._mtngAlert(msg, type); return; }
+    const d = document.createElement('div');
+    d.style.cssText = 'position:fixed;top:20px;right:20px;z-index:9999;padding:12px 20px;border-radius:8px;'
+        + 'font-size:13px;font-weight:600;color:#fff;box-shadow:0 4px 16px rgba(0,0,0,0.4);transition:opacity 0.4s;background:'
+        + (type==='success'?'#22C55E':type==='error'?'#EF4444':'#3B82F6');
+    d.textContent = msg;
+    document.body.appendChild(d);
+    setTimeout(() => { d.style.opacity='0'; setTimeout(()=>d.remove(),400); }, 3200);
+  }
+
+  /* ── Auto-refresh: poll for new recordings every 10s ────────────── */
+  let _lastRecCount = document.querySelectorAll('.rec-item').length;
+  setInterval(async () => {
+    try {
+      const r = await fetch('/api/recordings');
+      if (!r.ok) return;
+      const recs = await r.json();
+      if (recs.length !== _lastRecCount) {
+        // New recordings appeared — reload the page to show them
+        _lastRecCount = recs.length;
+        location.reload();
+      }
+    } catch(e) {}
+  }, 10000);
+</script>
+
 <script th:src="@{/js/mtng.js}"></script>
 </body>
 </html>

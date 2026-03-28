@@ -1,263 +1,1177 @@
-2026-03-22T09:48:09.802+05:30  INFO 5692 --- [Mtng] [main] com.Mtng.Mtng.MtngApplicationTests       : Starting MtngApplicationTests using Java 21.0.10 with PID 5692 (started by user in D:\IntelliJ Projects Trainings\Mtng)
-2026-03-22T09:48:09.812+05:30 DEBUG 5692 --- [Mtng] [main] com.Mtng.Mtng.MtngApplicationTests       : Running with Spring Boot v3.4.3, Spring v6.2.3
-2026-03-22T09:48:09.818+05:30  INFO 5692 --- [Mtng] [main] com.Mtng.Mtng.MtngApplicationTests       : The following 1 profile is active: "test"
-2026-03-22T09:48:09.914+05:30 DEBUG 5692 --- [Mtng] [main] o.s.w.c.s.GenericWebApplicationContext   : Refreshing org.springframework.web.context.support.GenericWebApplicationContext@45658133
-2026-03-22T09:48:11.695+05:30  INFO 5692 --- [Mtng] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-03-22T09:48:11.854+05:30  INFO 5692 --- [Mtng] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 134 ms. Found 5 JPA repository interfaces.
-2026-03-22T09:48:13.255+05:30  INFO 5692 --- [Mtng] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2026-03-22T09:48:13.404+05:30  INFO 5692 --- [Mtng] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.8.Final
-2026-03-22T09:48:13.499+05:30  INFO 5692 --- [Mtng] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
-2026-03-22T09:48:13.889+05:30  INFO 5692 --- [Mtng] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-03-22T09:48:14.020+05:30  INFO 5692 --- [Mtng] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-03-22T09:48:14.543+05:30  INFO 5692 --- [Mtng] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
-2026-03-22T09:48:14.552+05:30  INFO 5692 --- [Mtng] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-03-22T09:48:14.703+05:30  INFO 5692 --- [Mtng] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
-	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
-	Database driver: undefined/unknown
-	Database version: 2.3.232
-	Autocommit mode: undefined/unknown
-	Isolation level: undefined/unknown
-	Minimum pool size: undefined/unknown
-	Maximum pool size: undefined/unknown
-2026-03-22T09:48:16.474+05:30  INFO 5692 --- [Mtng] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-03-22T09:48:16.560+05:30  INFO 5692 --- [Mtng] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-03-22T09:48:17.901+05:30  WARN 5692 --- [Mtng] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2026-03-22T09:48:18.026+05:30  INFO 5692 --- [Mtng] [main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authProvider
-2026-03-22T09:48:18.027+05:30  WARN 5692 --- [Mtng] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
-2026-03-22T09:48:18.368+05:30 DEBUG 5692 --- [Mtng] [main] s.w.s.m.m.a.RequestMappingHandlerMapping : 32 mappings in 'requestMappingHandlerMapping'
-2026-03-22T09:48:18.754+05:30 DEBUG 5692 --- [Mtng] [main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
-2026-03-22T09:48:20.165+05:30 DEBUG 5692 --- [Mtng] [main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
-2026-03-22T09:48:20.493+05:30 DEBUG 5692 --- [Mtng] [main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
-2026-03-22T09:48:20.578+05:30  INFO 5692 --- [Mtng] [main] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:testdb'
-2026-03-22T09:48:21.118+05:30  INFO 5692 --- [Mtng] [main] com.Mtng.Mtng.MtngApplicationTests       : Started MtngApplicationTests in 12.153 seconds (process running for 17.312)
-2026-03-22T09:48:22.524+05:30  INFO 5692 --- [Mtng] [main] com.Mtng.Mtng.config.DataInitializer     : Teachers seeded:
-2026-03-22T09:48:22.525+05:30  INFO 5692 --- [Mtng] [main] com.Mtng.Mtng.config.DataInitializer     :   ADMIN  →  username: admin  /  password: admin123
-2026-03-22T09:48:22.525+05:30  INFO 5692 --- [Mtng] [main] com.Mtng.Mtng.config.DataInitializer     :   USER   →  username: user   /  password: user123
-2026-03-22T09:48:22.532+05:30  INFO 5692 --- [Mtng] [main] com.Mtng.Mtng.config.DataInitializer     : Seeding sample students ...
-2026-03-22T09:48:22.579+05:30  INFO 5692 --- [Mtng] [main] com.Mtng.Mtng.config.DataInitializer     : Sample data seeded: 3 students
-2026-03-22T09:48:23.745+05:30 DEBUG 5692 --- [Mtng] [SpringApplicationShutdownHook] o.s.w.c.s.GenericWebApplicationContext   : Closing org.springframework.web.context.support.GenericWebApplicationContext@45658133, started on Sun Mar 22 09:48:09 IST 2026
-2026-03-22T09:48:23.755+05:30  INFO 5692 --- [Mtng] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
-2026-03-22T09:48:23.768+05:30  INFO 5692 --- [Mtng] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
-2026-03-22T09:48:23.774+05:30  INFO 5692 --- [Mtng] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
-2026-03-22 12:19:31.551 [main] INFO  com.Mtng.Mtng.ChatIntegrationTest - Starting ChatIntegrationTest using Java 21.0.10 with PID 3232 (started by user in D:\IntelliJ Projects Trainings\Mtng)
-2026-03-22 12:19:31.554 [main] INFO  com.Mtng.Mtng.ChatIntegrationTest - The following 1 profile is active: "test"
-2026-03-22 12:19:42.733 [main] INFO  com.Mtng.Mtng.ChatIntegrationTest - Started ChatIntegrationTest in 11.888 seconds (process running for 14.461)
-2026-03-22 12:19:44.062 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Teachers seeded:
-2026-03-22 12:19:44.063 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   ADMIN  →  username: admin  /  password: admin123
-2026-03-22 12:19:44.064 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   USER   →  username: user   /  password: user123
-2026-03-22 12:19:44.068 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Seeding sample students ...
-2026-03-22 12:19:44.357 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Sample data seeded: 3 students
-2026-03-22 12:19:45.283 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Clear Chat Test
-2026-03-22 12:19:45.381 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=1, roomName=mtng-fc35b108
-2026-03-22 12:19:45.546 [main] INFO  c.M.M.controller.ChatApiController - [AUDIT] Chat message from 'admin' in meeting 1
-2026-03-22 12:19:45.550 [main] INFO  com.Mtng.Mtng.service.ChatService - [AUDIT] Chat: sender=admin, meetingId=1, contentLength=13
-2026-03-22 12:19:45.645 [main] INFO  c.M.M.controller.ChatApiController - [AUDIT] Chat cleared
-2026-03-22 12:19:45.714 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Chat Test
-2026-03-22 12:19:45.720 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping existing active meeting: id=1, title=Clear Chat Test
-2026-03-22 12:19:45.729 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=2, roomName=mtng-2b41306f
-2026-03-22 12:19:45.753 [main] INFO  c.M.M.controller.ChatApiController - [AUDIT] Chat message from 'admin' in meeting 2
-2026-03-22 12:19:45.756 [main] INFO  com.Mtng.Mtng.service.ChatService - [AUDIT] Chat: sender=admin, meetingId=2, contentLength=15
-2026-03-22 12:19:45.897 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Student Chat Test
-2026-03-22 12:19:45.907 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping existing active meeting: id=2, title=Chat Test
-2026-03-22 12:19:45.911 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=3, roomName=mtng-d2e9a8d5
-2026-03-22 12:19:45.926 [main] INFO  c.M.M.controller.ChatApiController - [AUDIT] Chat message from 'HARI34' in meeting 3
-2026-03-22 12:19:45.928 [main] INFO  com.Mtng.Mtng.service.ChatService - [AUDIT] Chat: sender=HARI34, meetingId=3, contentLength=11
-2026-03-22 12:19:45.952 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Compat Chat Test
-2026-03-22 12:19:45.959 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping existing active meeting: id=3, title=Student Chat Test
-2026-03-22 12:19:45.965 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=4, roomName=mtng-306db6da
-2026-03-22 12:19:46.016 [main] INFO  c.M.M.controller.ChatApiController - [AUDIT] Chat message from 'admin' in meeting 4
-2026-03-22 12:19:46.019 [main] INFO  com.Mtng.Mtng.service.ChatService - [AUDIT] Chat: sender=admin, meetingId=4, contentLength=20
-2026-03-22 12:19:47.219 [main] INFO  c.M.M.controller.ChatApiController - [AUDIT] Chat cleared
-2026-03-22 12:19:47.265 [main] INFO  c.M.M.controller.ChatApiController - [AUDIT] Chat message from 'admin' in meeting 1
-2026-03-22 12:19:47.284 [main] INFO  c.M.M.controller.ChatApiController - [AUDIT] Chat message from 'HARI34' in meeting 1
-2026-03-22 12:19:47.510 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] Recording toggle requested
-2026-03-22 12:19:47.533 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting start requested: title=Test Session
-2026-03-22 12:19:47.593 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'HARI34' attempting to join meeting
-2026-03-22 12:19:47.606 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting stop requested
-2026-03-22 12:19:47.611 [main] ERROR c.M.M.c.MeetingApiController - Error stopping meeting: Test error
-2026-03-22 12:19:47.623 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'HARI34' attempting to join meeting
-2026-03-22 12:19:47.630 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting stop requested
-2026-03-22 12:19:47.637 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting start requested: title=Mtng Session
-2026-03-22 12:19:47.649 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] Recording toggle requested
-2026-03-22 12:19:47.671 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'HARI34' leaving meeting
-2026-03-22 12:19:47.683 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'HARI34' leaving meeting
-2026-03-22 12:19:47.923 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Record Test
-2026-03-22 12:19:47.928 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping existing active meeting: id=4, title=Compat Chat Test
-2026-03-22 12:19:47.932 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=5, roomName=mtng-708544ef
-2026-03-22 12:19:48.054 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] Recording toggle requested
-2026-03-22 12:19:48.068 [main] INFO  c.Mtng.Mtng.service.MeetingService - Recording toggled to true for meeting 5
-2026-03-22 12:19:48.152 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting start requested: title=Integration Test Meeting
-2026-03-22 12:19:48.154 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Integration Test Meeting
-2026-03-22 12:19:48.178 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping existing active meeting: id=5, title=Record Test
-2026-03-22 12:19:48.194 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=6, roomName=mtng-1cd698ec
-2026-03-22 12:19:48.449 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'HARI34' attempting to join meeting
-2026-03-22 12:19:48.480 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Join Test
-2026-03-22 12:19:48.487 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=7, roomName=mtng-426f11b6
-2026-03-22 12:19:48.491 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'HARI34' attempting to join meeting
-2026-03-22 12:19:48.505 [main] INFO  c.Mtng.Mtng.service.MeetingService - User 'HARI34' joined meeting 7
-2026-03-22 12:19:48.518 [main] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'HARI34' marked ONLINE
-2026-03-22 12:19:48.586 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Active Test
-2026-03-22 12:19:48.602 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping existing active meeting: id=7, title=Join Test
-2026-03-22 12:19:48.617 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=8, roomName=mtng-413d5a6b
-2026-03-22 12:19:48.733 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Leave Test
-2026-03-22 12:19:48.738 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping existing active meeting: id=8, title=Active Test
-2026-03-22 12:19:48.741 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=9, roomName=mtng-4ae8bce3
-2026-03-22 12:19:48.746 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'HARI34' leaving meeting
-2026-03-22 12:19:48.756 [main] INFO  c.Mtng.Mtng.service.MeetingService - User 'HARI34' left meeting 9
-2026-03-22 12:19:48.778 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Stop Test
-2026-03-22 12:19:48.783 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping existing active meeting: id=9, title=Leave Test
-2026-03-22 12:19:48.787 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=10, roomName=mtng-071af7fb
-2026-03-22 12:19:48.803 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting stop requested
-2026-03-22 12:19:48.809 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping meeting: id=10, title=Stop Test
-2026-03-22 12:19:48.810 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting stopped: id=10
-2026-03-22 12:19:48.991 [main] INFO  com.Mtng.Mtng.MtngApplicationTests - Starting MtngApplicationTests using Java 21.0.10 with PID 3232 (started by user in D:\IntelliJ Projects Trainings\Mtng)
-2026-03-22 12:19:48.991 [main] INFO  com.Mtng.Mtng.MtngApplicationTests - The following 1 profile is active: "test"
-2026-03-22 12:19:52.103 [main] INFO  com.Mtng.Mtng.MtngApplicationTests - Started MtngApplicationTests in 3.264 seconds (process running for 23.831)
-2026-03-22 12:19:52.478 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Teachers seeded:
-2026-03-22 12:19:52.478 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   ADMIN  →  username: admin  /  password: admin123
-2026-03-22 12:19:52.479 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   USER   →  username: user   /  password: user123
-2026-03-22 12:19:52.483 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Seeding sample students ...
-2026-03-22 12:19:52.885 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Sample data seeded: 3 students
-2026-03-22 12:19:55.174 [main] INFO  com.Mtng.Mtng.service.AuditService - [AUDIT] actor=HARI34, action=JOIN, details=Joined meeting, ip=null
-2026-03-22 12:19:55.201 [main] INFO  com.Mtng.Mtng.service.AuditService - [AUDIT] actor=admin, action=MEETING_START, details=Started meeting 'Test', ip=127.0.0.1
-2026-03-22 12:19:55.365 [main] INFO  com.Mtng.Mtng.service.ChatService - [AUDIT] Chat: sender=Teacher, meetingId=1, contentLength=12
-2026-03-22 12:19:55.620 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Clear Test
-2026-03-22 12:19:55.621 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=1, roomName=mtng-6c5531a2
-2026-03-22 12:19:55.621 [main] INFO  c.Mtng.Mtng.service.MeetingService - User 'HARI34' joined meeting 1
-2026-03-22 12:19:55.621 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping meeting: id=1, title=null
-2026-03-22 12:19:55.622 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting stopped: id=1
-2026-03-22 12:19:55.650 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Room Test
-2026-03-22 12:19:55.652 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=1, roomName=mtng-798ca87d
-2026-03-22 12:19:55.660 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Remove Test
-2026-03-22 12:19:55.661 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=1, roomName=mtng-0701201c
-2026-03-22 12:19:55.662 [main] INFO  c.Mtng.Mtng.service.MeetingService - User 'HARI34' joined meeting 1
-2026-03-22 12:19:55.663 [main] INFO  c.Mtng.Mtng.service.MeetingService - User 'PRIYA01' joined meeting 1
-2026-03-22 12:19:55.663 [main] INFO  c.Mtng.Mtng.service.MeetingService - User 'HARI34' left meeting 1
-2026-03-22 12:19:55.669 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Meeting 1
-2026-03-22 12:19:55.670 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=1, roomName=mtng-fc492529
-2026-03-22 12:19:55.670 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Meeting 2
-2026-03-22 12:19:55.670 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=1, roomName=mtng-f8b84dc6
-2026-03-22 12:19:55.687 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Participant Test
-2026-03-22 12:19:55.688 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=1, roomName=mtng-9a7fc8fb
-2026-03-22 12:19:55.688 [main] INFO  c.Mtng.Mtng.service.MeetingService - User 'HARI34' joined meeting 1
-2026-03-22 12:19:55.714 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=New Session
-2026-03-22 12:19:55.714 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping existing active meeting: id=1, title=Test Session
-2026-03-22 12:19:55.715 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=null, roomName=mtng-e7ace798
-2026-03-22 12:19:55.720 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping meeting: id=1, title=Test Session
-2026-03-22 12:19:55.721 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting stopped: id=1
-2026-03-22 12:19:55.726 [main] INFO  c.Mtng.Mtng.service.MeetingService - Recording toggled to true for meeting 1
-2026-03-22 12:19:55.744 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Mtng Session
-2026-03-22 12:19:55.745 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=2, roomName=mtng-7762c936
-2026-03-22 12:19:56.277 [main] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student created: id=1, username=HARI34
-2026-03-22 12:19:56.313 [main] WARN  c.Mtng.Mtng.service.StudentService - Attempt to create student with duplicate username: HARI34
-2026-03-22 12:20:38.792 [main] INFO  com.Mtng.Mtng.ChatIntegrationTest - Starting ChatIntegrationTest using Java 21.0.10 with PID 16376 (started by user in D:\IntelliJ Projects Trainings\Mtng)
-2026-03-22 12:20:38.795 [main] INFO  com.Mtng.Mtng.ChatIntegrationTest - The following 1 profile is active: "test"
-2026-03-22 12:20:49.051 [main] INFO  com.Mtng.Mtng.ChatIntegrationTest - Started ChatIntegrationTest in 10.947 seconds (process running for 13.294)
-2026-03-22 12:20:50.282 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Teachers seeded:
-2026-03-22 12:20:50.282 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   ADMIN  →  username: admin  /  password: admin123
-2026-03-22 12:20:50.283 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   USER   →  username: user   /  password: user123
-2026-03-22 12:20:50.287 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Seeding sample students ...
-2026-03-22 12:20:50.572 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Sample data seeded: 3 students
-2026-03-22 12:20:51.435 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Clear Chat Test
-2026-03-22 12:20:51.526 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=1, roomName=mtng-58ad8faf
-2026-03-22 12:20:51.637 [main] INFO  c.M.M.controller.ChatApiController - [AUDIT] Chat message from 'admin' in meeting 1
-2026-03-22 12:20:51.642 [main] INFO  com.Mtng.Mtng.service.ChatService - [AUDIT] Chat: sender=admin, meetingId=1, contentLength=13
-2026-03-22 12:20:51.715 [main] INFO  c.M.M.controller.ChatApiController - [AUDIT] Chat cleared
-2026-03-22 12:20:51.789 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Chat Test
-2026-03-22 12:20:51.793 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping existing active meeting: id=1, title=Clear Chat Test
-2026-03-22 12:20:51.800 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=2, roomName=mtng-3730b50d
-2026-03-22 12:20:51.833 [main] INFO  c.M.M.controller.ChatApiController - [AUDIT] Chat message from 'admin' in meeting 2
-2026-03-22 12:20:51.835 [main] INFO  com.Mtng.Mtng.service.ChatService - [AUDIT] Chat: sender=admin, meetingId=2, contentLength=15
-2026-03-22 12:20:51.987 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Student Chat Test
-2026-03-22 12:20:51.992 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping existing active meeting: id=2, title=Chat Test
-2026-03-22 12:20:51.995 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=3, roomName=mtng-27dc16f6
-2026-03-22 12:20:52.007 [main] INFO  c.M.M.controller.ChatApiController - [AUDIT] Chat message from 'HARI34' in meeting 3
-2026-03-22 12:20:52.010 [main] INFO  com.Mtng.Mtng.service.ChatService - [AUDIT] Chat: sender=HARI34, meetingId=3, contentLength=11
-2026-03-22 12:20:52.042 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Compat Chat Test
-2026-03-22 12:20:52.049 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping existing active meeting: id=3, title=Student Chat Test
-2026-03-22 12:20:52.052 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=4, roomName=mtng-1fea9117
-2026-03-22 12:20:52.062 [main] INFO  c.M.M.controller.ChatApiController - [AUDIT] Chat message from 'admin' in meeting 4
-2026-03-22 12:20:52.064 [main] INFO  com.Mtng.Mtng.service.ChatService - [AUDIT] Chat: sender=admin, meetingId=4, contentLength=20
-2026-03-22 12:20:53.266 [main] INFO  c.M.M.controller.ChatApiController - [AUDIT] Chat cleared
-2026-03-22 12:20:53.305 [main] INFO  c.M.M.controller.ChatApiController - [AUDIT] Chat message from 'admin' in meeting 1
-2026-03-22 12:20:53.321 [main] INFO  c.M.M.controller.ChatApiController - [AUDIT] Chat message from 'HARI34' in meeting 1
-2026-03-22 12:20:53.544 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] Recording toggle requested
-2026-03-22 12:20:53.565 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting start requested: title=Test Session
-2026-03-22 12:20:53.598 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'HARI34' attempting to join meeting
-2026-03-22 12:20:53.606 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting stop requested
-2026-03-22 12:20:53.607 [main] ERROR c.M.M.c.MeetingApiController - Error stopping meeting: Test error
-2026-03-22 12:20:53.626 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'HARI34' attempting to join meeting
-2026-03-22 12:20:53.637 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting stop requested
-2026-03-22 12:20:53.645 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting start requested: title=Mtng Session
-2026-03-22 12:20:53.653 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] Recording toggle requested
-2026-03-22 12:20:53.666 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'HARI34' leaving meeting
-2026-03-22 12:20:53.675 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'HARI34' leaving meeting
-2026-03-22 12:20:53.911 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Record Test
-2026-03-22 12:20:53.918 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping existing active meeting: id=4, title=Compat Chat Test
-2026-03-22 12:20:53.922 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=5, roomName=mtng-d3bb0a4f
-2026-03-22 12:20:54.067 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] Recording toggle requested
-2026-03-22 12:20:54.072 [main] INFO  c.Mtng.Mtng.service.MeetingService - Recording toggled to true for meeting 5
-2026-03-22 12:20:54.129 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting start requested: title=Integration Test Meeting
-2026-03-22 12:20:54.130 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Integration Test Meeting
-2026-03-22 12:20:54.137 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping existing active meeting: id=5, title=Record Test
-2026-03-22 12:20:54.144 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=6, roomName=mtng-b2d533f6
-2026-03-22 12:20:54.433 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'HARI34' attempting to join meeting
-2026-03-22 12:20:54.468 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Join Test
-2026-03-22 12:20:54.474 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=7, roomName=mtng-ac8745d7
-2026-03-22 12:20:54.480 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'HARI34' attempting to join meeting
-2026-03-22 12:20:54.524 [main] INFO  c.Mtng.Mtng.service.MeetingService - User 'HARI34' joined meeting 7
-2026-03-22 12:20:54.538 [main] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'HARI34' marked ONLINE
-2026-03-22 12:20:54.567 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Active Test
-2026-03-22 12:20:54.570 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping existing active meeting: id=7, title=Join Test
-2026-03-22 12:20:54.581 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=8, roomName=mtng-70a255d8
-2026-03-22 12:20:54.640 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Leave Test
-2026-03-22 12:20:54.644 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping existing active meeting: id=8, title=Active Test
-2026-03-22 12:20:54.649 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=9, roomName=mtng-3f540b69
-2026-03-22 12:20:54.655 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'HARI34' leaving meeting
-2026-03-22 12:20:54.662 [main] INFO  c.Mtng.Mtng.service.MeetingService - User 'HARI34' left meeting 9
-2026-03-22 12:20:54.686 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Stop Test
-2026-03-22 12:20:54.689 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping existing active meeting: id=9, title=Leave Test
-2026-03-22 12:20:54.693 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=10, roomName=mtng-9c24e4c3
-2026-03-22 12:20:54.699 [main] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting stop requested
-2026-03-22 12:20:54.703 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping meeting: id=10, title=Stop Test
-2026-03-22 12:20:54.705 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting stopped: id=10
-2026-03-22 12:20:54.855 [main] INFO  com.Mtng.Mtng.MtngApplicationTests - Starting MtngApplicationTests using Java 21.0.10 with PID 16376 (started by user in D:\IntelliJ Projects Trainings\Mtng)
-2026-03-22 12:20:54.856 [main] INFO  com.Mtng.Mtng.MtngApplicationTests - The following 1 profile is active: "test"
-2026-03-22 12:20:58.036 [main] INFO  com.Mtng.Mtng.MtngApplicationTests - Started MtngApplicationTests in 3.293 seconds (process running for 22.28)
-2026-03-22 12:20:58.389 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Teachers seeded:
-2026-03-22 12:20:58.389 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   ADMIN  →  username: admin  /  password: admin123
-2026-03-22 12:20:58.390 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   USER   →  username: user   /  password: user123
-2026-03-22 12:20:58.394 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Seeding sample students ...
-2026-03-22 12:20:58.777 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Sample data seeded: 3 students
-2026-03-22 12:21:00.846 [main] INFO  com.Mtng.Mtng.service.AuditService - [AUDIT] actor=HARI34, action=JOIN, details=Joined meeting, ip=null
-2026-03-22 12:21:00.863 [main] INFO  com.Mtng.Mtng.service.AuditService - [AUDIT] actor=admin, action=MEETING_START, details=Started meeting 'Test', ip=127.0.0.1
-2026-03-22 12:21:01.006 [main] INFO  com.Mtng.Mtng.service.ChatService - [AUDIT] Chat: sender=Teacher, meetingId=1, contentLength=12
-2026-03-22 12:21:01.287 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Clear Test
-2026-03-22 12:21:01.288 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=1, roomName=mtng-5b738147
-2026-03-22 12:21:01.288 [main] INFO  c.Mtng.Mtng.service.MeetingService - User 'HARI34' joined meeting 1
-2026-03-22 12:21:01.289 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping meeting: id=1, title=null
-2026-03-22 12:21:01.289 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting stopped: id=1
-2026-03-22 12:21:01.317 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Room Test
-2026-03-22 12:21:01.317 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=1, roomName=mtng-1ce9cb05
-2026-03-22 12:21:01.337 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Remove Test
-2026-03-22 12:21:01.340 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=1, roomName=mtng-15388803
-2026-03-22 12:21:01.341 [main] INFO  c.Mtng.Mtng.service.MeetingService - User 'HARI34' joined meeting 1
-2026-03-22 12:21:01.341 [main] INFO  c.Mtng.Mtng.service.MeetingService - User 'PRIYA01' joined meeting 1
-2026-03-22 12:21:01.342 [main] INFO  c.Mtng.Mtng.service.MeetingService - User 'HARI34' left meeting 1
-2026-03-22 12:21:01.349 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Meeting 1
-2026-03-22 12:21:01.351 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=1, roomName=mtng-a4928887
-2026-03-22 12:21:01.351 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Meeting 2
-2026-03-22 12:21:01.351 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=1, roomName=mtng-476e38f5
-2026-03-22 12:21:01.358 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Participant Test
-2026-03-22 12:21:01.359 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=1, roomName=mtng-20e1bdbe
-2026-03-22 12:21:01.360 [main] INFO  c.Mtng.Mtng.service.MeetingService - User 'HARI34' joined meeting 1
-2026-03-22 12:21:01.399 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=New Session
-2026-03-22 12:21:01.399 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping existing active meeting: id=1, title=Test Session
-2026-03-22 12:21:01.400 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=null, roomName=mtng-6f36cc73
-2026-03-22 12:21:01.405 [main] INFO  c.Mtng.Mtng.service.MeetingService - Stopping meeting: id=1, title=Test Session
-2026-03-22 12:21:01.406 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting stopped: id=1
-2026-03-22 12:21:01.411 [main] INFO  c.Mtng.Mtng.service.MeetingService - Recording toggled to true for meeting 1
-2026-03-22 12:21:01.429 [main] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Mtng Session
-2026-03-22 12:21:01.430 [main] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=2, roomName=mtng-7d31e46a
-2026-03-22 12:21:01.754 [main] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student created: id=1, username=HARI34
-2026-03-22 12:21:01.790 [main] WARN  c.Mtng.Mtng.service.StudentService - Attempt to create student with duplicate username: HARI34
+2026-03-28 10:41:44.471 [main] INFO  com.Mtng.Mtng.MtngApplication - Starting MtngApplication v0.0.1-SNAPSHOT using Java 21.0.10 with PID 7104 (D:\IntelliJ Projects Trainings\Mtng\target\Mtng-0.0.1-SNAPSHOT.jar started by user in D:\IntelliJ Projects Trainings\Mtng)
+2026-03-28 10:41:44.500 [main] INFO  com.Mtng.Mtng.MtngApplication - No active profile set, falling back to 1 default profile: "default"
+2026-03-28 10:42:13.559 [main] INFO  com.Mtng.Mtng.MtngApplication - Started MtngApplication in 31.028 seconds (process running for 32.297)
+2026-03-28 10:42:14.292 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Teachers seeded:
+2026-03-28 10:42:14.292 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   ADMIN  →  username: admin  /  password: admin123
+2026-03-28 10:42:14.300 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   USER   →  username: user   /  password: user123
+2026-03-28 10:42:14.309 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Seeding sample students ...
+2026-03-28 10:42:14.656 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Sample data seeded: 3 students
+2026-03-28 10:50:19.160 [https-jsse-nio-8443-exec-10] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 10:50:35.510 [https-jsse-nio-8443-exec-5] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting start requested: title=Mtng Session
+2026-03-28 10:50:35.512 [https-jsse-nio-8443-exec-5] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Mtng Session
+2026-03-28 10:50:35.523 [https-jsse-nio-8443-exec-5] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=1, roomName=mtng-140e0ffa
+2026-03-28 10:50:35.586 [https-jsse-nio-8443-exec-2] INFO  c.M.M.c.MeetingApiController - [AUDIT] Students notified for meeting: id=1, title=Mtng Session
+2026-03-28 10:52:02.882 [https-jsse-nio-8443-exec-8] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting stop requested
+2026-03-28 10:52:02.888 [https-jsse-nio-8443-exec-8] INFO  c.Mtng.Mtng.service.MeetingService - Stopping meeting: id=1, title=Mtng Session
+2026-03-28 10:52:02.889 [https-jsse-nio-8443-exec-8] INFO  c.Mtng.Mtng.service.MeetingService - Meeting stopped: id=1
+2026-03-28 10:53:00.940 [https-jsse-nio-8443-exec-6] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'RAM22' leaving meeting
+2026-03-28 10:53:08.960 [https-jsse-nio-8443-exec-4] ERROR c.M.M.c.GlobalExceptionHandler - Exception on [/api/recordings/5/audio]: ServletOutputStream failed to write: java.io.IOException: An established connection was aborted by the software in your host machine → root: An established connection was aborted by the software in your host machine
+java.io.IOException: An established connection was aborted by the software in your host machine
+	at java.base/sun.nio.ch.SocketDispatcher.write0(Native Method)
+	at java.base/sun.nio.ch.SocketDispatcher.write(SocketDispatcher.java:54)
+	at java.base/sun.nio.ch.IOUtil.writeFromNativeBuffer(IOUtil.java:137)
+	at java.base/sun.nio.ch.IOUtil.write(IOUtil.java:102)
+	at java.base/sun.nio.ch.IOUtil.write(IOUtil.java:58)
+	at java.base/sun.nio.ch.SocketChannelImpl.write(SocketChannelImpl.java:542)
+	at org.apache.tomcat.util.net.SecureNioChannel.flush(SecureNioChannel.java:124)
+	at org.apache.tomcat.util.net.SecureNioChannel.write(SecureNioChannel.java:815)
+	at org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper.doWrite(NioEndpoint.java:1380)
+	at org.apache.tomcat.util.net.SocketWrapperBase.doWrite(SocketWrapperBase.java:764)
+	at org.apache.tomcat.util.net.SocketWrapperBase.writeBlocking(SocketWrapperBase.java:589)
+	at org.apache.tomcat.util.net.SocketWrapperBase.write(SocketWrapperBase.java:533)
+	at org.apache.coyote.http11.Http11OutputBuffer$SocketOutputBuffer.doWrite(Http11OutputBuffer.java:548)
+	at org.apache.coyote.http11.filters.IdentityOutputFilter.doWrite(IdentityOutputFilter.java:73)
+	at org.apache.coyote.http11.Http11OutputBuffer.doWrite(Http11OutputBuffer.java:193)
+	at org.apache.coyote.Response.doWrite(Response.java:631)
+	at org.apache.catalina.connector.OutputBuffer.realWriteBytes(OutputBuffer.java:334)
+	at org.apache.catalina.connector.OutputBuffer.appendByteArray(OutputBuffer.java:751)
+	at org.apache.catalina.connector.OutputBuffer.append(OutputBuffer.java:672)
+	at org.apache.catalina.connector.OutputBuffer.writeBytes(OutputBuffer.java:381)
+	at org.apache.catalina.connector.OutputBuffer.write(OutputBuffer.java:359)
+	at org.apache.catalina.connector.CoyoteOutputStream.write(CoyoteOutputStream.java:102)
+	at org.springframework.security.web.util.OnCommittedResponseWrapper$SaveContextServletOutputStream.write(OnCommittedResponseWrapper.java:639)
+	at org.springframework.web.context.request.async.StandardServletAsyncWebRequest$LifecycleServletOutputStream.write(StandardServletAsyncWebRequest.java:401)
+	at java.base/java.io.OutputStream.write(OutputStream.java:124)
+	at org.springframework.util.StreamUtils.copy(StreamUtils.java:118)
+	at org.springframework.http.converter.ByteArrayHttpMessageConverter.writeInternal(ByteArrayHttpMessageConverter.java:67)
+	at org.springframework.http.converter.ByteArrayHttpMessageConverter.writeInternal(ByteArrayHttpMessageConverter.java:38)
+	at org.springframework.http.converter.AbstractHttpMessageConverter.write(AbstractHttpMessageConverter.java:235)
+	at org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor.writeWithMessageConverters(AbstractMessageConverterMethodProcessor.java:344)
+	at org.springframework.web.servlet.mvc.method.annotation.HttpEntityMethodProcessor.handleReturnValue(HttpEntityMethodProcessor.java:263)
+	at org.springframework.web.method.support.HandlerMethodReturnValueHandlerComposite.handleReturnValue(HandlerMethodReturnValueHandlerComposite.java:78)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:136)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:986)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:891)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1088)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:978)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.csrf.CsrfFilter.doFilterInternal(CsrfFilter.java:117)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.channel.ChannelProcessingFilter.doFilter(ChannelProcessingFilter.java:133)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:243)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:238)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:362)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:278)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1743)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2026-03-28 10:53:09.045 [https-jsse-nio-8443-exec-4] WARN  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Failure in @ExceptionHandler com.Mtng.Mtng.controller.GlobalExceptionHandler#handleAllExceptions(Exception, HttpServletRequest)
+org.springframework.http.converter.HttpMessageNotWritableException: No converter for [class java.util.LinkedHashMap] with preset Content-Type 'audio/webm;codecs=opus'
+	at org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor.writeWithMessageConverters(AbstractMessageConverterMethodProcessor.java:365)
+	at org.springframework.web.servlet.mvc.method.annotation.HttpEntityMethodProcessor.handleReturnValue(HttpEntityMethodProcessor.java:263)
+	at org.springframework.web.method.support.HandlerMethodReturnValueHandlerComposite.handleReturnValue(HandlerMethodReturnValueHandlerComposite.java:78)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:136)
+	at org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver.doResolveHandlerMethodException(ExceptionHandlerExceptionResolver.java:471)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodExceptionResolver.doResolveException(AbstractHandlerMethodExceptionResolver.java:73)
+	at org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver.resolveException(AbstractHandlerExceptionResolver.java:182)
+	at org.springframework.web.servlet.handler.HandlerExceptionResolverComposite.resolveException(HandlerExceptionResolverComposite.java:80)
+	at org.springframework.web.servlet.DispatcherServlet.processHandlerException(DispatcherServlet.java:1357)
+	at org.springframework.web.servlet.DispatcherServlet.processDispatchResult(DispatcherServlet.java:1160)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1105)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:978)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.csrf.CsrfFilter.doFilterInternal(CsrfFilter.java:117)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.channel.ChannelProcessingFilter.doFilter(ChannelProcessingFilter.java:133)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:243)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:238)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:362)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:278)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1743)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2026-03-28 11:24:12.437 [main] INFO  com.Mtng.Mtng.MtngApplication - Starting MtngApplication v0.0.1-SNAPSHOT using Java 21.0.10 with PID 15084 (D:\IntelliJ Projects Trainings\Mtng\target\Mtng-0.0.1-SNAPSHOT.jar started by user in D:\IntelliJ Projects Trainings\Mtng)
+2026-03-28 11:24:12.452 [main] INFO  com.Mtng.Mtng.MtngApplication - No active profile set, falling back to 1 default profile: "default"
+2026-03-28 11:24:33.273 [main] INFO  com.Mtng.Mtng.MtngApplication - Started MtngApplication in 22.792 seconds (process running for 25.089)
+2026-03-28 11:24:33.933 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Teachers seeded:
+2026-03-28 11:24:33.934 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   ADMIN  →  username: admin  /  password: admin123
+2026-03-28 11:24:33.935 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   USER   →  username: user   /  password: user123
+2026-03-28 11:24:33.941 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Seeding sample students ...
+2026-03-28 11:24:34.260 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Sample data seeded: 3 students
+2026-03-28 11:30:05.812 [https-jsse-nio-8443-exec-10] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting start requested: title=Mtng Session
+2026-03-28 11:30:05.812 [https-jsse-nio-8443-exec-10] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Mtng Session
+2026-03-28 11:30:05.812 [https-jsse-nio-8443-exec-10] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=1, roomName=mtng-0d10a81b
+2026-03-28 11:30:05.853 [https-jsse-nio-8443-exec-7] INFO  c.M.M.c.MeetingApiController - [AUDIT] Students notified for meeting: id=1, title=Mtng Session
+2026-03-28 11:31:41.136 [https-jsse-nio-8443-exec-1] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 11:33:23.970 [https-jsse-nio-8443-exec-2] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'RAM22' leaving meeting
+2026-03-28 11:33:24.018 [https-jsse-nio-8443-exec-2] INFO  c.Mtng.Mtng.service.MeetingService - User 'RAM22' left meeting 1
+2026-03-28 11:33:24.615 [https-jsse-nio-8443-exec-5] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'RAM22' leaving meeting
+2026-03-28 11:33:24.621 [https-jsse-nio-8443-exec-5] INFO  c.Mtng.Mtng.service.MeetingService - User 'RAM22' left meeting 1
+2026-03-28 11:33:29.383 [https-jsse-nio-8443-exec-2] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting stop requested
+2026-03-28 11:33:29.388 [https-jsse-nio-8443-exec-2] INFO  c.Mtng.Mtng.service.MeetingService - Stopping meeting: id=1, title=Mtng Session
+2026-03-28 11:33:29.390 [https-jsse-nio-8443-exec-2] INFO  c.Mtng.Mtng.service.MeetingService - Meeting stopped: id=1
+2026-03-28 11:33:45.482 [https-jsse-nio-8443-exec-6] ERROR c.M.M.c.GlobalExceptionHandler - Exception on [/api/recordings/6/audio]: ServletOutputStream failed to write: java.io.IOException: An established connection was aborted by the software in your host machine → root: An established connection was aborted by the software in your host machine
+java.io.IOException: An established connection was aborted by the software in your host machine
+	at java.base/sun.nio.ch.SocketDispatcher.write0(Native Method)
+	at java.base/sun.nio.ch.SocketDispatcher.write(SocketDispatcher.java:54)
+	at java.base/sun.nio.ch.IOUtil.writeFromNativeBuffer(IOUtil.java:137)
+	at java.base/sun.nio.ch.IOUtil.write(IOUtil.java:102)
+	at java.base/sun.nio.ch.IOUtil.write(IOUtil.java:58)
+	at java.base/sun.nio.ch.SocketChannelImpl.write(SocketChannelImpl.java:542)
+	at org.apache.tomcat.util.net.SecureNioChannel.flush(SecureNioChannel.java:124)
+	at org.apache.tomcat.util.net.SecureNioChannel.write(SecureNioChannel.java:844)
+	at org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper.doWrite(NioEndpoint.java:1380)
+	at org.apache.tomcat.util.net.SocketWrapperBase.doWrite(SocketWrapperBase.java:764)
+	at org.apache.tomcat.util.net.SocketWrapperBase.writeBlocking(SocketWrapperBase.java:589)
+	at org.apache.tomcat.util.net.SocketWrapperBase.write(SocketWrapperBase.java:533)
+	at org.apache.coyote.http11.Http11OutputBuffer$SocketOutputBuffer.doWrite(Http11OutputBuffer.java:548)
+	at org.apache.coyote.http11.filters.IdentityOutputFilter.doWrite(IdentityOutputFilter.java:73)
+	at org.apache.coyote.http11.Http11OutputBuffer.doWrite(Http11OutputBuffer.java:193)
+	at org.apache.coyote.Response.doWrite(Response.java:631)
+	at org.apache.catalina.connector.OutputBuffer.realWriteBytes(OutputBuffer.java:334)
+	at org.apache.catalina.connector.OutputBuffer.appendByteArray(OutputBuffer.java:751)
+	at org.apache.catalina.connector.OutputBuffer.append(OutputBuffer.java:672)
+	at org.apache.catalina.connector.OutputBuffer.writeBytes(OutputBuffer.java:381)
+	at org.apache.catalina.connector.OutputBuffer.write(OutputBuffer.java:359)
+	at org.apache.catalina.connector.CoyoteOutputStream.write(CoyoteOutputStream.java:102)
+	at org.springframework.security.web.util.OnCommittedResponseWrapper$SaveContextServletOutputStream.write(OnCommittedResponseWrapper.java:639)
+	at org.springframework.web.context.request.async.StandardServletAsyncWebRequest$LifecycleServletOutputStream.write(StandardServletAsyncWebRequest.java:401)
+	at java.base/java.io.OutputStream.write(OutputStream.java:124)
+	at org.springframework.util.StreamUtils.copy(StreamUtils.java:118)
+	at org.springframework.http.converter.ByteArrayHttpMessageConverter.writeInternal(ByteArrayHttpMessageConverter.java:67)
+	at org.springframework.http.converter.ByteArrayHttpMessageConverter.writeInternal(ByteArrayHttpMessageConverter.java:38)
+	at org.springframework.http.converter.AbstractHttpMessageConverter.write(AbstractHttpMessageConverter.java:235)
+	at org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor.writeWithMessageConverters(AbstractMessageConverterMethodProcessor.java:344)
+	at org.springframework.web.servlet.mvc.method.annotation.HttpEntityMethodProcessor.handleReturnValue(HttpEntityMethodProcessor.java:263)
+	at org.springframework.web.method.support.HandlerMethodReturnValueHandlerComposite.handleReturnValue(HandlerMethodReturnValueHandlerComposite.java:78)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:136)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:986)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:891)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1088)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:978)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.csrf.CsrfFilter.doFilterInternal(CsrfFilter.java:117)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.channel.ChannelProcessingFilter.doFilter(ChannelProcessingFilter.java:133)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:243)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:238)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:362)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:278)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1743)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2026-03-28 11:33:45.446 [https-jsse-nio-8443-exec-10] ERROR c.M.M.c.GlobalExceptionHandler - Exception on [/api/recordings/5/audio]: ServletOutputStream failed to write: java.io.IOException: An established connection was aborted by the software in your host machine → root: An established connection was aborted by the software in your host machine
+java.io.IOException: An established connection was aborted by the software in your host machine
+	at java.base/sun.nio.ch.SocketDispatcher.write0(Native Method)
+	at java.base/sun.nio.ch.SocketDispatcher.write(SocketDispatcher.java:54)
+	at java.base/sun.nio.ch.IOUtil.writeFromNativeBuffer(IOUtil.java:137)
+	at java.base/sun.nio.ch.IOUtil.write(IOUtil.java:102)
+	at java.base/sun.nio.ch.IOUtil.write(IOUtil.java:58)
+	at java.base/sun.nio.ch.SocketChannelImpl.write(SocketChannelImpl.java:542)
+	at org.apache.tomcat.util.net.SecureNioChannel.flush(SecureNioChannel.java:124)
+	at org.apache.tomcat.util.net.SecureNioChannel.write(SecureNioChannel.java:844)
+	at org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper.doWrite(NioEndpoint.java:1380)
+	at org.apache.tomcat.util.net.SocketWrapperBase.doWrite(SocketWrapperBase.java:764)
+	at org.apache.tomcat.util.net.SocketWrapperBase.writeBlocking(SocketWrapperBase.java:589)
+	at org.apache.tomcat.util.net.SocketWrapperBase.write(SocketWrapperBase.java:533)
+	at org.apache.coyote.http11.Http11OutputBuffer$SocketOutputBuffer.doWrite(Http11OutputBuffer.java:548)
+	at org.apache.coyote.http11.filters.IdentityOutputFilter.doWrite(IdentityOutputFilter.java:73)
+	at org.apache.coyote.http11.Http11OutputBuffer.doWrite(Http11OutputBuffer.java:193)
+	at org.apache.coyote.Response.doWrite(Response.java:631)
+	at org.apache.catalina.connector.OutputBuffer.realWriteBytes(OutputBuffer.java:334)
+	at org.apache.catalina.connector.OutputBuffer.appendByteArray(OutputBuffer.java:751)
+	at org.apache.catalina.connector.OutputBuffer.append(OutputBuffer.java:672)
+	at org.apache.catalina.connector.OutputBuffer.writeBytes(OutputBuffer.java:381)
+	at org.apache.catalina.connector.OutputBuffer.write(OutputBuffer.java:359)
+	at org.apache.catalina.connector.CoyoteOutputStream.write(CoyoteOutputStream.java:102)
+	at org.springframework.security.web.util.OnCommittedResponseWrapper$SaveContextServletOutputStream.write(OnCommittedResponseWrapper.java:639)
+	at org.springframework.web.context.request.async.StandardServletAsyncWebRequest$LifecycleServletOutputStream.write(StandardServletAsyncWebRequest.java:401)
+	at java.base/java.io.OutputStream.write(OutputStream.java:124)
+	at org.springframework.util.StreamUtils.copy(StreamUtils.java:118)
+	at org.springframework.http.converter.ByteArrayHttpMessageConverter.writeInternal(ByteArrayHttpMessageConverter.java:67)
+	at org.springframework.http.converter.ByteArrayHttpMessageConverter.writeInternal(ByteArrayHttpMessageConverter.java:38)
+	at org.springframework.http.converter.AbstractHttpMessageConverter.write(AbstractHttpMessageConverter.java:235)
+	at org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor.writeWithMessageConverters(AbstractMessageConverterMethodProcessor.java:344)
+	at org.springframework.web.servlet.mvc.method.annotation.HttpEntityMethodProcessor.handleReturnValue(HttpEntityMethodProcessor.java:263)
+	at org.springframework.web.method.support.HandlerMethodReturnValueHandlerComposite.handleReturnValue(HandlerMethodReturnValueHandlerComposite.java:78)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:136)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:986)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:891)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1088)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:978)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.csrf.CsrfFilter.doFilterInternal(CsrfFilter.java:117)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.channel.ChannelProcessingFilter.doFilter(ChannelProcessingFilter.java:133)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:243)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:238)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:362)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:278)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1743)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2026-03-28 11:33:45.514 [https-jsse-nio-8443-exec-6] WARN  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Failure in @ExceptionHandler com.Mtng.Mtng.controller.GlobalExceptionHandler#handleAllExceptions(Exception, HttpServletRequest)
+org.springframework.http.converter.HttpMessageNotWritableException: No converter for [class java.util.LinkedHashMap] with preset Content-Type 'audio/webm;codecs=opus'
+	at org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor.writeWithMessageConverters(AbstractMessageConverterMethodProcessor.java:365)
+	at org.springframework.web.servlet.mvc.method.annotation.HttpEntityMethodProcessor.handleReturnValue(HttpEntityMethodProcessor.java:263)
+	at org.springframework.web.method.support.HandlerMethodReturnValueHandlerComposite.handleReturnValue(HandlerMethodReturnValueHandlerComposite.java:78)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:136)
+	at org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver.doResolveHandlerMethodException(ExceptionHandlerExceptionResolver.java:471)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodExceptionResolver.doResolveException(AbstractHandlerMethodExceptionResolver.java:73)
+	at org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver.resolveException(AbstractHandlerExceptionResolver.java:182)
+	at org.springframework.web.servlet.handler.HandlerExceptionResolverComposite.resolveException(HandlerExceptionResolverComposite.java:80)
+	at org.springframework.web.servlet.DispatcherServlet.processHandlerException(DispatcherServlet.java:1357)
+	at org.springframework.web.servlet.DispatcherServlet.processDispatchResult(DispatcherServlet.java:1160)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1105)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:978)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.csrf.CsrfFilter.doFilterInternal(CsrfFilter.java:117)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.channel.ChannelProcessingFilter.doFilter(ChannelProcessingFilter.java:133)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:243)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:238)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:362)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:278)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1743)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2026-03-28 11:33:45.526 [https-jsse-nio-8443-exec-10] WARN  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Failure in @ExceptionHandler com.Mtng.Mtng.controller.GlobalExceptionHandler#handleAllExceptions(Exception, HttpServletRequest)
+org.springframework.http.converter.HttpMessageNotWritableException: No converter for [class java.util.LinkedHashMap] with preset Content-Type 'audio/webm;codecs=opus'
+	at org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor.writeWithMessageConverters(AbstractMessageConverterMethodProcessor.java:365)
+	at org.springframework.web.servlet.mvc.method.annotation.HttpEntityMethodProcessor.handleReturnValue(HttpEntityMethodProcessor.java:263)
+	at org.springframework.web.method.support.HandlerMethodReturnValueHandlerComposite.handleReturnValue(HandlerMethodReturnValueHandlerComposite.java:78)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:136)
+	at org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver.doResolveHandlerMethodException(ExceptionHandlerExceptionResolver.java:471)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodExceptionResolver.doResolveException(AbstractHandlerMethodExceptionResolver.java:73)
+	at org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver.resolveException(AbstractHandlerExceptionResolver.java:182)
+	at org.springframework.web.servlet.handler.HandlerExceptionResolverComposite.resolveException(HandlerExceptionResolverComposite.java:80)
+	at org.springframework.web.servlet.DispatcherServlet.processHandlerException(DispatcherServlet.java:1357)
+	at org.springframework.web.servlet.DispatcherServlet.processDispatchResult(DispatcherServlet.java:1160)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1105)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:978)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.csrf.CsrfFilter.doFilterInternal(CsrfFilter.java:117)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.channel.ChannelProcessingFilter.doFilter(ChannelProcessingFilter.java:133)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:243)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:238)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:362)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:278)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1743)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2026-03-28 11:34:12.853 [https-jsse-nio-8443-exec-4] ERROR c.M.M.c.GlobalExceptionHandler - Exception on [/api/recordings/5/audio]: ServletOutputStream failed to write: java.io.IOException: Connection reset by peer → root: Connection reset by peer
+java.io.IOException: Connection reset by peer
+	at java.base/sun.nio.ch.SocketDispatcher.write0(Native Method)
+	at java.base/sun.nio.ch.SocketDispatcher.write(SocketDispatcher.java:54)
+	at java.base/sun.nio.ch.IOUtil.writeFromNativeBuffer(IOUtil.java:137)
+	at java.base/sun.nio.ch.IOUtil.write(IOUtil.java:102)
+	at java.base/sun.nio.ch.IOUtil.write(IOUtil.java:58)
+	at java.base/sun.nio.ch.SocketChannelImpl.write(SocketChannelImpl.java:542)
+	at org.apache.tomcat.util.net.SecureNioChannel.flush(SecureNioChannel.java:124)
+	at org.apache.tomcat.util.net.SecureNioChannel.write(SecureNioChannel.java:815)
+	at org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper.doWrite(NioEndpoint.java:1380)
+	at org.apache.tomcat.util.net.SocketWrapperBase.doWrite(SocketWrapperBase.java:764)
+	at org.apache.tomcat.util.net.SocketWrapperBase.writeBlocking(SocketWrapperBase.java:589)
+	at org.apache.tomcat.util.net.SocketWrapperBase.write(SocketWrapperBase.java:533)
+	at org.apache.coyote.http11.Http11OutputBuffer$SocketOutputBuffer.doWrite(Http11OutputBuffer.java:548)
+	at org.apache.coyote.http11.filters.IdentityOutputFilter.doWrite(IdentityOutputFilter.java:73)
+	at org.apache.coyote.http11.Http11OutputBuffer.doWrite(Http11OutputBuffer.java:193)
+	at org.apache.coyote.Response.doWrite(Response.java:631)
+	at org.apache.catalina.connector.OutputBuffer.realWriteBytes(OutputBuffer.java:334)
+	at org.apache.catalina.connector.OutputBuffer.appendByteArray(OutputBuffer.java:751)
+	at org.apache.catalina.connector.OutputBuffer.append(OutputBuffer.java:672)
+	at org.apache.catalina.connector.OutputBuffer.writeBytes(OutputBuffer.java:381)
+	at org.apache.catalina.connector.OutputBuffer.write(OutputBuffer.java:359)
+	at org.apache.catalina.connector.CoyoteOutputStream.write(CoyoteOutputStream.java:102)
+	at org.springframework.security.web.util.OnCommittedResponseWrapper$SaveContextServletOutputStream.write(OnCommittedResponseWrapper.java:639)
+	at org.springframework.web.context.request.async.StandardServletAsyncWebRequest$LifecycleServletOutputStream.write(StandardServletAsyncWebRequest.java:401)
+	at java.base/java.io.OutputStream.write(OutputStream.java:124)
+	at org.springframework.util.StreamUtils.copy(StreamUtils.java:118)
+	at org.springframework.http.converter.ByteArrayHttpMessageConverter.writeInternal(ByteArrayHttpMessageConverter.java:67)
+	at org.springframework.http.converter.ByteArrayHttpMessageConverter.writeInternal(ByteArrayHttpMessageConverter.java:38)
+	at org.springframework.http.converter.AbstractHttpMessageConverter.write(AbstractHttpMessageConverter.java:235)
+	at org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor.writeWithMessageConverters(AbstractMessageConverterMethodProcessor.java:344)
+	at org.springframework.web.servlet.mvc.method.annotation.HttpEntityMethodProcessor.handleReturnValue(HttpEntityMethodProcessor.java:263)
+	at org.springframework.web.method.support.HandlerMethodReturnValueHandlerComposite.handleReturnValue(HandlerMethodReturnValueHandlerComposite.java:78)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:136)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:986)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:891)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1088)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:978)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.csrf.CsrfFilter.doFilterInternal(CsrfFilter.java:117)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.channel.ChannelProcessingFilter.doFilter(ChannelProcessingFilter.java:133)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:243)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:238)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:362)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:278)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1743)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2026-03-28 11:34:12.872 [https-jsse-nio-8443-exec-4] WARN  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Failure in @ExceptionHandler com.Mtng.Mtng.controller.GlobalExceptionHandler#handleAllExceptions(Exception, HttpServletRequest)
+org.springframework.http.converter.HttpMessageNotWritableException: No converter for [class java.util.LinkedHashMap] with preset Content-Type 'audio/webm;codecs=opus'
+	at org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor.writeWithMessageConverters(AbstractMessageConverterMethodProcessor.java:365)
+	at org.springframework.web.servlet.mvc.method.annotation.HttpEntityMethodProcessor.handleReturnValue(HttpEntityMethodProcessor.java:263)
+	at org.springframework.web.method.support.HandlerMethodReturnValueHandlerComposite.handleReturnValue(HandlerMethodReturnValueHandlerComposite.java:78)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:136)
+	at org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver.doResolveHandlerMethodException(ExceptionHandlerExceptionResolver.java:471)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodExceptionResolver.doResolveException(AbstractHandlerMethodExceptionResolver.java:73)
+	at org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver.resolveException(AbstractHandlerExceptionResolver.java:182)
+	at org.springframework.web.servlet.handler.HandlerExceptionResolverComposite.resolveException(HandlerExceptionResolverComposite.java:80)
+	at org.springframework.web.servlet.DispatcherServlet.processHandlerException(DispatcherServlet.java:1357)
+	at org.springframework.web.servlet.DispatcherServlet.processDispatchResult(DispatcherServlet.java:1160)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1105)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:978)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.csrf.CsrfFilter.doFilterInternal(CsrfFilter.java:117)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.channel.ChannelProcessingFilter.doFilter(ChannelProcessingFilter.java:133)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:243)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:238)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:362)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:278)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1743)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2026-03-28 11:34:33.634 [https-jsse-nio-8443-exec-1] ERROR c.M.M.c.GlobalExceptionHandler - Exception on [/api/recordings/5/audio]: ServletOutputStream failed to write: java.io.IOException: An established connection was aborted by the software in your host machine → root: An established connection was aborted by the software in your host machine
+java.io.IOException: An established connection was aborted by the software in your host machine
+	at java.base/sun.nio.ch.SocketDispatcher.write0(Native Method)
+	at java.base/sun.nio.ch.SocketDispatcher.write(SocketDispatcher.java:54)
+	at java.base/sun.nio.ch.IOUtil.writeFromNativeBuffer(IOUtil.java:137)
+	at java.base/sun.nio.ch.IOUtil.write(IOUtil.java:102)
+	at java.base/sun.nio.ch.IOUtil.write(IOUtil.java:58)
+	at java.base/sun.nio.ch.SocketChannelImpl.write(SocketChannelImpl.java:542)
+	at org.apache.tomcat.util.net.SecureNioChannel.flush(SecureNioChannel.java:124)
+	at org.apache.tomcat.util.net.SecureNioChannel.write(SecureNioChannel.java:815)
+	at org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper.doWrite(NioEndpoint.java:1380)
+	at org.apache.tomcat.util.net.SocketWrapperBase.doWrite(SocketWrapperBase.java:764)
+	at org.apache.tomcat.util.net.SocketWrapperBase.writeBlocking(SocketWrapperBase.java:589)
+	at org.apache.tomcat.util.net.SocketWrapperBase.write(SocketWrapperBase.java:533)
+	at org.apache.coyote.http11.Http11OutputBuffer$SocketOutputBuffer.doWrite(Http11OutputBuffer.java:548)
+	at org.apache.coyote.http11.filters.IdentityOutputFilter.doWrite(IdentityOutputFilter.java:73)
+	at org.apache.coyote.http11.Http11OutputBuffer.doWrite(Http11OutputBuffer.java:193)
+	at org.apache.coyote.Response.doWrite(Response.java:631)
+	at org.apache.catalina.connector.OutputBuffer.realWriteBytes(OutputBuffer.java:334)
+	at org.apache.catalina.connector.OutputBuffer.appendByteArray(OutputBuffer.java:751)
+	at org.apache.catalina.connector.OutputBuffer.append(OutputBuffer.java:672)
+	at org.apache.catalina.connector.OutputBuffer.writeBytes(OutputBuffer.java:381)
+	at org.apache.catalina.connector.OutputBuffer.write(OutputBuffer.java:359)
+	at org.apache.catalina.connector.CoyoteOutputStream.write(CoyoteOutputStream.java:102)
+	at org.springframework.security.web.util.OnCommittedResponseWrapper$SaveContextServletOutputStream.write(OnCommittedResponseWrapper.java:639)
+	at org.springframework.web.context.request.async.StandardServletAsyncWebRequest$LifecycleServletOutputStream.write(StandardServletAsyncWebRequest.java:401)
+	at java.base/java.io.OutputStream.write(OutputStream.java:124)
+	at org.springframework.util.StreamUtils.copy(StreamUtils.java:118)
+	at org.springframework.http.converter.ByteArrayHttpMessageConverter.writeInternal(ByteArrayHttpMessageConverter.java:67)
+	at org.springframework.http.converter.ByteArrayHttpMessageConverter.writeInternal(ByteArrayHttpMessageConverter.java:38)
+	at org.springframework.http.converter.AbstractHttpMessageConverter.write(AbstractHttpMessageConverter.java:235)
+	at org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor.writeWithMessageConverters(AbstractMessageConverterMethodProcessor.java:344)
+	at org.springframework.web.servlet.mvc.method.annotation.HttpEntityMethodProcessor.handleReturnValue(HttpEntityMethodProcessor.java:263)
+	at org.springframework.web.method.support.HandlerMethodReturnValueHandlerComposite.handleReturnValue(HandlerMethodReturnValueHandlerComposite.java:78)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:136)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:986)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:891)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1088)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:978)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.csrf.CsrfFilter.doFilterInternal(CsrfFilter.java:117)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.channel.ChannelProcessingFilter.doFilter(ChannelProcessingFilter.java:133)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:243)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:238)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:362)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:278)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1743)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2026-03-28 11:34:33.649 [https-jsse-nio-8443-exec-1] WARN  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Failure in @ExceptionHandler com.Mtng.Mtng.controller.GlobalExceptionHandler#handleAllExceptions(Exception, HttpServletRequest)
+org.springframework.http.converter.HttpMessageNotWritableException: No converter for [class java.util.LinkedHashMap] with preset Content-Type 'audio/webm;codecs=opus'
+	at org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor.writeWithMessageConverters(AbstractMessageConverterMethodProcessor.java:365)
+	at org.springframework.web.servlet.mvc.method.annotation.HttpEntityMethodProcessor.handleReturnValue(HttpEntityMethodProcessor.java:263)
+	at org.springframework.web.method.support.HandlerMethodReturnValueHandlerComposite.handleReturnValue(HandlerMethodReturnValueHandlerComposite.java:78)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:136)
+	at org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver.doResolveHandlerMethodException(ExceptionHandlerExceptionResolver.java:471)
+	at org.springframework.web.servlet.handler.AbstractHandlerMethodExceptionResolver.doResolveException(AbstractHandlerMethodExceptionResolver.java:73)
+	at org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver.resolveException(AbstractHandlerExceptionResolver.java:182)
+	at org.springframework.web.servlet.handler.HandlerExceptionResolverComposite.resolveException(HandlerExceptionResolverComposite.java:80)
+	at org.springframework.web.servlet.DispatcherServlet.processHandlerException(DispatcherServlet.java:1357)
+	at org.springframework.web.servlet.DispatcherServlet.processDispatchResult(DispatcherServlet.java:1160)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1105)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:978)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.csrf.CsrfFilter.doFilterInternal(CsrfFilter.java:117)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.channel.ChannelProcessingFilter.doFilter(ChannelProcessingFilter.java:133)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:243)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:238)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:362)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:278)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:905)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1743)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:1583)

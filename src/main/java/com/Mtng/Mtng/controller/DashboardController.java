@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -112,13 +113,44 @@ public class DashboardController {
     public String recordings(@RequestParam(required = false) String search, Model model) {
         addCommonAttributes(model);
         model.addAttribute("activeTab", "recordings");
-        List<Recording> allRecs = recordingService.getAllRecordings();
-        // Group recordings by studentId for reliable template access (avoids SpEL type issues)
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        model.addAttribute("isAdmin", isAdmin);
+
+        List<Recording> allRecs;
+        if (isAdmin) {
+            allRecs = recordingService.getAllRecordings();
+        } else {
+            // Normal user: show only their own recordings
+            String username = auth != null ? auth.getName() : "";
+            allRecs = recordingService.getRecordingsByParticipantName(username);
+            if (allRecs.isEmpty()) {
+                // Try matching by display name via student lookup
+                allRecs = studentService.findByUsername(username)
+                        .map(s -> recordingService.getRecordingsByParticipantName(s.getName()))
+                        .orElse(Collections.emptyList());
+            }
+        }
+
+        // Legacy grouping by studentId
         Map<Long, List<Recording>> recsByStudent = allRecs.stream()
                 .collect(Collectors.groupingBy(Recording::getStudentId));
-        model.addAttribute("students", studentService.getAllStudents());
-        model.addAttribute("recsByStudent", recsByStudent);
-        model.addAttribute("allRecordings", allRecs);
+
+        // Primary grouping by participant name – works for host + participant recordings
+        Map<String, List<Recording>> recsByParticipant = allRecs.stream()
+                .collect(Collectors.groupingBy(
+                        r -> r.getStudentName() != null && !r.getStudentName().isBlank()
+                                ? r.getStudentName() : "Unknown",
+                        java.util.LinkedHashMap::new,
+                        Collectors.toList()
+                ));
+
+        model.addAttribute("students",          studentService.getAllStudents());
+        model.addAttribute("recsByStudent",     recsByStudent);
+        model.addAttribute("recsByParticipant", recsByParticipant);
+        model.addAttribute("allRecordings",     allRecs);
         return "recordings";
     }
 

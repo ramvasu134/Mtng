@@ -40,6 +40,7 @@ public class MtngUserDetailsService implements UserDetailsService {
                 .map(s -> User.builder()
                         .username(s.getUsername())
                         .password(s.getPassword())   // BCrypt-encoded (set on create)
+                        .disabled(s.isBlocked())     // blocked students cannot log in
                         .roles("USER")
                         .build())
                 .orElseThrow(() -> new UsernameNotFoundException(

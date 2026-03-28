@@ -501,12 +501,114 @@ function openSchedule() {
    ═══════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', function() {
   // Auto-start chat polling on chat page
-  if (document.getElementById('chatMessages')) {
+  // NOTE: skip on meeting-room page — it has its own MtngJitsiWrapper._startChatPolling()
+  if (document.getElementById('chatMessages') && !window.location.pathname.includes('/meeting-room')) {
     startChatPolling();
     window.addEventListener('beforeunload', stopChatPolling);
   }
   // Attach create student form
   const form = document.getElementById('createStudentForm');
   if (form) form.addEventListener('submit', createStudent);
+
+  // Global meeting start notification (all pages except meeting-room)
+  if (!window.location.pathname.includes('/meeting-room')) {
+    initMeetingNotifications();
+  }
 });
+
+/* ═══════════════════════════════════════════
+   GLOBAL MEETING NOTIFICATION SYSTEM
+   Polls /api/meeting/active every 5s.
+   Shows animated banner + auto-redirects when meeting starts.
+   ═══════════════════════════════════════════ */
+let _meetingPollInterval = null;
+let _lastMeetingActiveState = null;
+let _meetingNotifBanner = null;
+
+function initMeetingNotifications() {
+  checkMeetingStatus();
+  _meetingPollInterval = setInterval(checkMeetingStatus, 5000);
+}
+
+async function checkMeetingStatus() {
+  try {
+    const res = await fetch('/api/meeting/active');
+    const isActive = res.status === 200;
+
+    if (isActive === _lastMeetingActiveState) return; // no change
+    _lastMeetingActiveState = isActive;
+
+    if (isActive) {
+      const data = await res.json();
+      showMeetingStartBanner(data);
+    } else {
+      hideMeetingBanner();
+    }
+  } catch(e) { /* ignore network errors */ }
+}
+
+function showMeetingStartBanner(meeting) {
+  if (_meetingNotifBanner) return;
+
+  // Inject CSS animation once
+  if (!document.getElementById('_bannerCss')) {
+    const s = document.createElement('style');
+    s.id = '_bannerCss';
+    s.textContent =
+      '@keyframes slideDownBanner{from{transform:translateY(-100%)}to{transform:translateY(0)}}' +
+      '@keyframes livePulse{0%,100%{opacity:1}50%{opacity:0.5}}';
+    document.head.appendChild(s);
+  }
+
+  _meetingNotifBanner = document.createElement('div');
+  _meetingNotifBanner.id = '_meetingBanner';
+  _meetingNotifBanner.style.cssText =
+    'position:fixed;top:0;left:0;right:0;z-index:9990;' +
+    'background:linear-gradient(135deg,#15803D,#16A34A);' +
+    'color:#fff;padding:10px 20px;' +
+    'display:flex;align-items:center;justify-content:space-between;' +
+    'box-shadow:0 4px 24px rgba(22,163,74,0.7);' +
+    'animation:slideDownBanner 0.4s ease-out;';
+
+  const title = meeting && meeting.title ? escHtml(meeting.title) : 'Meeting';
+  _meetingNotifBanner.innerHTML =
+    '<div style="display:flex;align-items:center;gap:14px">' +
+      '<span style="font-size:24px;animation:livePulse 1s infinite">📢</span>' +
+      '<div>' +
+        '<div style="font-weight:700;font-size:15px">🟢 LIVE: ' + title + '</div>' +
+        '<div style="font-size:12px;opacity:0.85">Meeting has started – join now!</div>' +
+      '</div>' +
+    '</div>' +
+    '<div style="display:flex;gap:10px">' +
+      '<button onclick="window.location.href=\'/meeting-room\'" ' +
+        'style="background:#fff;color:#15803D;border:none;padding:9px 20px;' +
+        'border-radius:8px;font-weight:700;cursor:pointer;font-size:14px">🎤 Join Now</button>' +
+      '<button onclick="this.closest(\'#_meetingBanner\').remove();window._meetingNotifBanner=null;" ' +
+        'style="background:rgba(0,0,0,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);' +
+        'padding:7px 14px;border-radius:6px;cursor:pointer;font-size:12px">✕</button>' +
+    '</div>';
+
+  document.body.insertBefore(_meetingNotifBanner, document.body.firstChild);
+  _playMeetingChime();
+}
+
+function hideMeetingBanner() {
+  if (_meetingNotifBanner) { _meetingNotifBanner.remove(); _meetingNotifBanner = null; }
+}
+
+function _playMeetingChime() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [523, 659, 784, 1047].forEach((f, i) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value = f; o.type = 'sine';
+      const t = ctx.currentTime + i * 0.13;
+      g.gain.setValueAtTime(0.28, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+      o.start(t); o.stop(t + 0.35);
+    });
+  } catch(e) { /* ignore */ }
+}
+
 

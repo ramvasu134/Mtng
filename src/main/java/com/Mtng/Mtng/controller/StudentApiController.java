@@ -32,6 +32,14 @@ public class StudentApiController {
         return studentService.getAllStudents();
     }
 
+    /** GET /api/students/online – count of online students */
+    @GetMapping("/online")
+    public java.util.Map<String, Object> onlineCount() {
+        long online = studentService.getOnlineCount();
+        long total  = studentService.getTotalCount();
+        return java.util.Map.of("online", online, "total", total);
+    }
+
     /** GET /api/students/{id} (all authenticated users) */
     @GetMapping("/{id}")
     public ResponseEntity<Student> get(@PathVariable Long id) {

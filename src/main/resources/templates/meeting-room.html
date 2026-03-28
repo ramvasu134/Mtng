@@ -3,569 +3,529 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MTNG – Video Meeting Room</title>
-  <script src='https://meet.jit.si/external_api.js'></script>
+  <title>MTNG – Meeting Room</title>
+  <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}" />
+  <link rel="stylesheet" th:href="@{/css/mtng.css}" />
+  <!-- SockJS + Stomp for WebRTC signaling (replaces Jitsi – no external auth) -->
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #1a1a1a; color: #fff; overflow: hidden; }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-      background: #1a1a1a;
-      color: #fff;
-      overflow: hidden;
-    }
+    .meeting-wrapper { display: flex; height: calc(100vh - 104px); flex-direction: column; overflow: hidden; }
+    .meeting-content { display: flex; flex: 1; overflow: hidden; min-height: 0; }
 
-    .meeting-wrapper {
-      display: flex;
-      height: 100vh;
-      flex-direction: column;
-    }
-
-    /* Header */
-    .meeting-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 12px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      z-index: 100;
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .meeting-title {
-      font-size: 18px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .timer {
-      font-size: 16px;
-      font-weight: 600;
-      background: rgba(0, 0, 0, 0.2);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-family: 'Courier New', monospace;
-      letter-spacing: 1px;
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .header-stat {
-      background: rgba(0, 0, 0, 0.2);
-      padding: 8px 14px;
-      border-radius: 6px;
-      font-size: 13px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .end-meeting-btn {
-      background: #f44336;
-      color: white;
-      border: none;
-      padding: 10px 24px;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 14px;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .end-meeting-btn:hover {
-      background: #da190b;
-      transform: scale(1.05);
-    }
-
-    /* Main Content */
-    .meeting-content {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-      gap: 0;
-    }
-
-    /* Video Container */
-    .video-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      background: #000;
-      position: relative;
-    }
-
-    #jitsi-container {
-      width: 100%;
-      height: 100%;
-      background: #000;
-    }
+    /* Video Grid – repurposed as Audio Participant Grid */
+    .video-container { flex: 1; display: flex; flex-direction: column; background: #0d0d1a; min-height: 0; overflow: hidden; }
+    #videoGrid { flex: 1; display: grid; grid-template-columns: 1fr; gap: 8px; background: #0a0a14; overflow: auto; min-height: 0; padding: 12px; align-content: start; }
+    .video-tile { position: relative; background: #1e1e2e; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.07); min-height: 80px; }
 
     /* Controls Bar */
-    .controls-bar {
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 15px;
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 200;
-    }
+    .controls-bar { background: linear-gradient(to bottom, rgba(10,10,10,0.85), rgba(0,0,0,1)); padding: 10px 20px; display: flex; justify-content: center; align-items: center; gap: 12px; flex-shrink: 0; border-top: 1px solid rgba(255,255,255,0.1); }
+    .control-group { display: flex; flex-direction: column; align-items: center; }
+    .control-button { width: 50px; height: 50px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.15); color: #fff; cursor: pointer; font-size: 20px; transition: all 0.25s; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(6px); }
+    .control-button:hover { background: rgba(255,255,255,0.28); transform: scale(1.1); }
+    .control-button.active { background: #22C55E; border-color: #22C55E; }
+    .control-button.muted { background: #EF4444; border-color: #EF4444; }
+    .control-button.end { width: 58px; height: 58px; font-size: 22px; background: #EF4444; border-color: #EF4444; }
+    .control-button.end:hover { background: #DC2626; transform: scale(1.08); }
+    .control-label { font-size: 10px; text-align: center; margin-top: 4px; color: rgba(255,255,255,0.6); }
 
-    .control-button {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      border: none;
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      cursor: pointer;
-      font-size: 20px;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-    }
+    /* Meeting Header Bar */
+    .meeting-header { background: linear-gradient(135deg, #1e1e2e 0%, #2d1b69 100%); padding: 10px 18px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-bottom: 1px solid rgba(102,126,234,0.3); }
+    .meeting-title-bar { display: flex; align-items: center; gap: 14px; }
+    .meeting-title-text { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .meeting-timer { font-size: 14px; font-weight: 600; font-family: 'Courier New', monospace; background: rgba(0,0,0,0.3); padding: 5px 12px; border-radius: 16px; letter-spacing: 1px; color: #A5F3FC; }
+    .meeting-header-stats { display: flex; align-items: center; gap: 10px; }
+    .header-stat { background: rgba(0,0,0,0.25); padding: 6px 12px; border-radius: 6px; font-size: 12px; display: flex; align-items: center; gap: 5px; color: #ddd; }
+    .end-meeting-btn { background: #EF4444; color: #fff; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 13px; transition: all 0.25s; display: flex; align-items: center; gap: 6px; }
+    .end-meeting-btn:hover { background: #DC2626; transform: scale(1.04); }
 
-    .control-button:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: scale(1.1);
-    }
-
-    .control-button.active {
-      background: #4CAF50;
-      border-color: #4CAF50;
-    }
-
-    .control-button.muted {
-      background: #f44336;
-      border-color: #f44336;
-    }
-
-    .control-button.end {
-      background: #f44336;
-      width: 60px;
-      height: 60px;
-      font-size: 24px;
-    }
-
-    .control-button.end:hover {
-      background: #da190b;
-    }
-
-    .control-label {
-      font-size: 11px;
-      text-align: center;
-      margin-top: 4px;
-      color: rgba(255,255,255,0.7);
-    }
-
-    .control-group {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    /* Right Sidebar - Chat & Participants */
-    .sidebar {
-      width: 340px;
-      background: #242424;
-      display: flex;
-      flex-direction: column;
-      border-left: 1px solid #3a3a3a;
-      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
-    }
-
-    .sidebar-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 16px;
-      font-weight: 600;
-      font-size: 14px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      border-bottom: 1px solid #3a3a3a;
-    }
-
-    .sidebar-tab {
-      padding: 8px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      background: rgba(0, 0, 0, 0.2);
-      transition: all 0.3s;
-      border: 1px solid transparent;
-      color: white;
-      font-weight: 600;
-      font-size: 13px;
-    }
-
-    .sidebar-tab.active {
-      background: rgba(255, 255, 255, 0.2);
-      border-color: #00d4ff;
-    }
-
-    .sidebar-content {
-      flex: 1;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-    }
+    /* Sidebar */
+    .sidebar { width: 320px; background: #1e1e1e; display: flex; flex-direction: column; border-left: 1px solid #333; flex-shrink: 0; }
+    .sidebar-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 14px 16px; display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+    .sidebar-tab { padding: 7px 12px; border-radius: 5px; cursor: pointer; background: rgba(0,0,0,0.2); transition: all 0.2s; border: 1px solid transparent; color: #fff; font-weight: 600; font-size: 12px; }
+    .sidebar-tab.active { background: rgba(255,255,255,0.25); border-color: #00d4ff; }
+    .sidebar-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-height: 0; }
 
     /* Chat */
-    .chat-area {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-
-    .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .chat-message {
-      background: rgba(102, 126, 234, 0.1);
-      border-left: 3px solid #667eea;
-      padding: 10px 12px;
-      border-radius: 4px;
-      font-size: 13px;
-      line-height: 1.4;
-    }
-
-    .chat-message.own {
-      background: rgba(0, 212, 255, 0.1);
-      border-left-color: #00d4ff;
-      margin-left: 10px;
-    }
-
-    .chat-message-sender {
-      font-weight: 600;
-      font-size: 12px;
-      color: #00d4ff;
-      margin-bottom: 4px;
-    }
-
-    .chat-message.own .chat-message-sender {
-      color: #00ff00;
-    }
-
-    .chat-message-time {
-      font-size: 10px;
-      color: rgba(255,255,255,0.4);
-      margin-top: 4px;
-    }
-
-    .chat-input-area {
-      padding: 12px;
-      border-top: 1px solid #3a3a3a;
-      display: flex;
-      gap: 8px;
-    }
-
-    .chat-input {
-      flex: 1;
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid #3a3a3a;
-      border-radius: 6px;
-      padding: 10px 12px;
-      color: white;
-      font-size: 13px;
-      font-family: inherit;
-    }
-
-    .chat-input:focus {
-      outline: none;
-      border-color: #667eea;
-      background: rgba(0, 0, 0, 0.5);
-    }
-
-    .chat-send-btn {
-      background: #667eea;
-      border: none;
-      color: white;
-      width: 38px;
-      height: 38px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: all 0.3s;
-    }
-
-    .chat-send-btn:hover {
-      background: #764ba2;
-      transform: scale(1.05);
-    }
+    .chat-area { display: flex; flex-direction: column; height: 100%; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 10px; }
+    .chat-message { margin-bottom: 10px; }
+    .chat-message.own { text-align: right; }
+    .chat-bubble { display: inline-block; padding: 8px 12px; border-radius: 10px; max-width: 88%; font-size: 13px; word-wrap: break-word; }
+    .chat-bubble.mine { background: linear-gradient(135deg,#FF6B00,#FF8C00); color:#fff; border-bottom-right-radius:2px; }
+    .chat-bubble.theirs { background: #2d2d3e; color: #ddd; border-bottom-left-radius: 2px; }
+    .bubble-sender { font-size: 10px; font-weight: 700; opacity: 0.8; margin-bottom: 3px; }
+    .bubble-time { font-size: 10px; opacity: 0.6; margin-top: 3px; }
+    .chat-input-area { padding: 10px; border-top: 1px solid #333; display: flex; gap: 8px; flex-shrink: 0; }
+    .chat-input { flex: 1; background: #2d2d2d; border: 1px solid #444; color: #fff; padding: 9px 12px; border-radius: 20px; font-size: 13px; outline: none; }
+    .chat-input:focus { border-color: #FF6B00; }
+    .chat-send-btn { width: 38px; height: 38px; border-radius: 50%; background: #FF6B00; color: #fff; border: none; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .chat-send-btn:hover { background: #E55A00; }
 
     /* Participants */
-    .participants-list {
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .participant-item {
-      background: rgba(0, 0, 0, 0.2);
-      padding: 12px;
-      border-radius: 6px;
-      border-left: 3px solid #667eea;
-      font-size: 13px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .participant-name {
-      font-weight: 500;
-    }
-
-    .participant-status {
-      font-size: 11px;
-      color: #00ff00;
-      background: rgba(0, 255, 0, 0.1);
-      padding: 2px 8px;
-      border-radius: 10px;
-    }
-
-    /* Scroll bars */
-    .chat-messages::-webkit-scrollbar,
-    .participants-list::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .chat-messages::-webkit-scrollbar-track,
-    .participants-list::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.2);
-    }
-
-    .chat-messages::-webkit-scrollbar-thumb,
-    .participants-list::-webkit-scrollbar-thumb {
-      background: #667eea;
-      border-radius: 3px;
-    }
-
-    /* Incoming Call Modal */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.9);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 3000;
-      backdrop-filter: blur(5px);
-    }
-
-    .incoming-call-box {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 20px;
-      padding: 40px;
-      text-align: center;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-      animation: slideUp 0.5s ease-out;
-    }
-
-    @keyframes slideUp {
-      from { transform: translateY(100px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    .incoming-icon {
-      font-size: 80px;
-      margin-bottom: 20px;
-      animation: pulse 1s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-    }
-
-    .incoming-title { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
-    .incoming-subtitle { font-size: 16px; margin-bottom: 40px; opacity: 0.9; }
-
-    .incoming-buttons { display: flex; gap: 20px; justify-content: center; }
-
-    .btn-accept {
-      background: #4CAF50; color: white; border: none;
-      padding: 14px 40px; border-radius: 10px;
-      font-size: 16px; font-weight: 600; cursor: pointer;
-      transition: all 0.3s; display: flex; align-items: center; gap: 10px;
-    }
-    .btn-accept:hover { background: #45a049; transform: scale(1.05); }
-
-    .btn-reject {
-      background: #f44336; color: white; border: none;
-      padding: 14px 40px; border-radius: 10px;
-      font-size: 16px; font-weight: 600; cursor: pointer;
-      transition: all 0.3s; display: flex; align-items: center; gap: 10px;
-    }
-    .btn-reject:hover { background: #da190b; transform: scale(1.05); }
+    .participants-list { padding: 10px; }
+    .participant-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #2a2a2a; border-radius: 8px; margin-bottom: 8px; border: 1px solid #333; }
+    .p-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg,#667eea,#764ba2); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .p-name { font-size: 13px; font-weight: 600; }
+    .p-status { font-size: 11px; color: #22C55E; }
 
     /* No Meeting Screen */
-    .no-meeting-screen {
-      height: 100vh; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-      color: white; gap: 30px;
-    }
-    .no-meeting-icon { font-size: 100px; opacity: 0.5; }
-    .no-meeting-text { font-size: 24px; font-weight: 600; }
-    .no-meeting-subtext { font-size: 16px; color: #888; }
+    .no-meeting-screen { height: calc(100vh - 104px); display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%); color: #fff; gap: 20px; }
+    .no-meeting-icon { font-size: 90px; opacity: 0.4; animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+    .no-meeting-text { font-size: 26px; font-weight: 700; }
+    .no-meeting-subtext { font-size: 15px; color: #666; }
+    .refresh-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border: none; padding: 12px 30px; border-radius: 8px; font-size: 15px; cursor: pointer; transition: all 0.25s; }
+    .refresh-btn:hover { transform: scale(1.05); }
 
-    .refresh-btn {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white; border: none; padding: 12px 32px;
-      border-radius: 8px; font-size: 16px; cursor: pointer;
-      transition: all 0.3s;
-    }
-    .refresh-btn:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4); }
+    /* Pre-join Test Modal */
+    .prejoin-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.96); display: flex; align-items: center; justify-content: center; z-index: 5000; backdrop-filter: blur(8px); }
+    .prejoin-box { background: linear-gradient(135deg, #1a1a2e, #2a2a3e); border: 1px solid rgba(102,126,234,0.5); border-radius: 18px; padding: 32px; width: 500px; max-width: 95vw; box-shadow: 0 20px 60px rgba(0,0,0,0.8); animation: slideUp 0.35s ease-out; }
+    @keyframes slideUp { from{transform:translateY(40px);opacity:0} to{transform:translateY(0);opacity:1} }
+    .prejoin-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .prejoin-subtitle { font-size: 12px; color: rgba(255,255,255,0.55); margin-bottom: 20px; }
+    .device-row { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.35); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.07); }
+    .device-icon { font-size: 24px; width: 36px; text-align: center; }
+    .device-info { flex: 1; }
+    .device-name { font-size: 12px; font-weight: 600; }
+    .device-status { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+    .device-indicator { width: 12px; height: 12px; border-radius: 50%; background: #555; flex-shrink: 0; transition: background 0.3s; }
+    .device-indicator.ok    { background: #22C55E; box-shadow: 0 0 8px rgba(34,197,94,0.8); }
+    .device-indicator.error { background: #EF4444; box-shadow: 0 0 8px rgba(239,68,68,0.8); }
+    .device-indicator.checking { background: #F59E0B; animation: blink 1s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .audio-level-bar { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 5px; overflow: hidden; }
+    .audio-level-fill { height: 100%; background: #22C55E; border-radius: 2px; width: 0%; transition: width 0.1s; }
+    .preview-video { width: 100%; height: 120px; background: #000; border-radius: 8px; margin-bottom: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    .preview-video video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+    .prejoin-buttons { display: flex; gap: 10px; margin-top: 18px; }
+    .btn-prejoin-join { flex: 1; background: linear-gradient(135deg, #22C55E, #16A34A); color: #fff; border: none; padding: 13px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.25s; }
+    .btn-prejoin-join:hover { transform: scale(1.02); box-shadow: 0 6px 20px rgba(34,197,94,0.4); }
+    .btn-prejoin-skip { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 13px 18px; border-radius: 10px; font-size: 13px; cursor: pointer; transition: all 0.25s; }
+    .btn-prejoin-skip:hover { background: rgba(255,255,255,0.18); }
 
-    @media (max-width: 1024px) {
-      .sidebar { width: 280px; }
-    }
+    /* Incoming Call */
+    .mtng-call-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.92); display: flex; align-items: center; justify-content: center; z-index: 4000; backdrop-filter: blur(6px); }
+    .incoming-call-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 40px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.6); animation: slideUp 0.4s ease-out; }
+    .incoming-icon { font-size: 80px; margin-bottom: 16px; animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+    .incoming-title { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+    .incoming-subtitle { font-size: 15px; margin-bottom: 36px; opacity: 0.9; }
+    .incoming-buttons { display: flex; gap: 16px; justify-content: center; }
+    .btn-accept { background: #22C55E; color: #fff; border: none; padding: 13px 36px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.25s; display: flex; align-items: center; gap: 8px; }
+    .btn-accept:hover { background: #16A34A; transform: scale(1.05); }
+    .btn-reject { background: #EF4444; color: #fff; border: none; padding: 13px 36px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.25s; display: flex; align-items: center; gap: 8px; }
+    .btn-reject:hover { background: #DC2626; transform: scale(1.05); }
 
+    /* Scrollbars */
+    .chat-messages::-webkit-scrollbar, .participants-list::-webkit-scrollbar { width: 4px; }
+    .chat-messages::-webkit-scrollbar-track, .participants-list::-webkit-scrollbar-track { background: transparent; }
+    .chat-messages::-webkit-scrollbar-thumb, .participants-list::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
+
+    /* Mute indicator badge on audio tiles */
+    .mic-indicator {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(239,68,68,0.9); color: #fff;
+      border-radius: 50%; width: 28px; height: 28px;
+      display: none; align-items: center; justify-content: center;
+      font-size: 14px; backdrop-filter: blur(4px);
+      box-shadow: 0 2px 8px rgba(239,68,68,0.6);
+      animation: muteIn 0.2s ease-out;
+    }
+    @keyframes muteIn { from{transform:scale(0)}to{transform:scale(1)} }
+    .mic-indicator.show { display: flex; }
+
+    /* Participant mute badge in list */
+    .p-muted { font-size: 10px; color: #EF4444; margin-left: 4px; }
+
+    /* ── Audio-Only Tile ─────────────────────────── */
+    .audio-tile { position: relative; background: linear-gradient(145deg,#1e1e2e,#252540); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.07); min-height: 120px; padding: 18px 12px 12px; transition: border-color 0.25s; }
+    .audio-tile.speaking { border-color: rgba(34,197,94,0.7); box-shadow: 0 0 16px rgba(34,197,94,0.25); }
+    .audio-tile.local-tile { border-color: rgba(102,126,234,0.5); }
+    .audio-avatar { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 32px; color: #fff; font-weight: 700; margin-bottom: 8px; position: relative; transition: box-shadow 0.2s; }
+    .audio-tile.speaking .audio-avatar { box-shadow: 0 0 0 3px rgba(34,197,94,0.7), 0 0 20px rgba(34,197,94,0.4); }
+    .audio-name { font-size: 13px; font-weight: 600; color: #fff; text-align: center; margin-bottom: 8px; }
+    .audio-status { font-size: 11px; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+
+    /* Waveform bars */
+    .waveform { display: flex; align-items: flex-end; gap: 2px; height: 28px; padding: 2px 4px; background: rgba(0,0,0,0.3); border-radius: 6px; width: 100%; justify-content: center; }
+    .waveform-bar { width: 3px; background: #22C55E; border-radius: 2px; min-height: 3px; max-height: 24px; transition: height 0.08s ease; }
+    .audio-tile.muted-tile .waveform-bar { background: #555; height: 3px !important; }
+
+    /* Noise filter badge */
+    .noise-badge { position: absolute; top: 8px; left: 8px; background: rgba(102,126,234,0.85); color: #fff; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 8px; letter-spacing: 0.3px; }
+
+    /* ── Recording Indicator ────────────────────── */
+    .rec-indicator { display: none; align-items: center; gap: 6px; background: rgba(239,68,68,0.15); border: 1px solid #EF4444; border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 600; color: #EF4444; }
+    .rec-indicator.active { display: flex; }
+    .rec-dot { width: 8px; height: 8px; border-radius: 50%; background: #EF4444; animation: recPulse 1s infinite; }
+    @keyframes recPulse { 0%,100%{opacity:1}50%{opacity:0.3} }
+    #recTimer { font-family: 'Courier New', monospace; font-size: 11px; color: #EF4444; }
+
+    /* ── Save Recording Modal ───────────────────── */
+    .save-rec-overlay { position: fixed; top:0;left:0;right:0;bottom:0; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; z-index: 6000; backdrop-filter: blur(8px); }
+    .save-rec-box { background: linear-gradient(135deg,#1a1a2e,#2a2a40); border: 1px solid rgba(34,197,94,0.4); border-radius: 18px; padding: 32px; width: 440px; max-width: 95vw; box-shadow: 0 20px 60px rgba(0,0,0,0.8); animation: slideUp 0.35s ease-out; }
+    .save-rec-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; color: #22C55E; display: flex; align-items: center; gap: 8px; }
+    .save-rec-meta { font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 20px; }
+    .save-rec-meta span { display: inline-flex; align-items: center; gap: 4px; margin-right: 14px; color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 600; }
+    .save-option-btn { width: 100%; padding: 14px 20px; border-radius: 10px; border: 1px solid; cursor: pointer; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 10px; margin-bottom: 10px; transition: all 0.25s; text-align: left; }
+    .save-option-local { background: rgba(102,126,234,0.15); border-color: #667eea; color: #fff; }
+    .save-option-local:hover { background: rgba(102,126,234,0.3); transform: scale(1.01); }
+    .save-option-db { background: rgba(34,197,94,0.12); border-color: #22C55E; color: #fff; }
+    .save-option-db:hover { background: rgba(34,197,94,0.25); transform: scale(1.01); }
+    .save-option-both { background: rgba(255,107,0,0.12); border-color: #FF6B00; color: #fff; }
+    .save-option-both:hover { background: rgba(255,107,0,0.25); transform: scale(1.01); }
+    .save-option-discard { background: rgba(100,100,100,0.1); border-color: #555; color: #aaa; }
+    .save-option-discard:hover { background: rgba(100,100,100,0.2); }
+    .save-option-icon { font-size: 22px; }
+    .save-option-text { flex: 1; }
+    .save-option-text strong { display: block; font-size: 14px; }
+    .save-option-text small { font-size: 11px; opacity: 0.7; }
+
+    /* ── Mic Blocked / Permission Denied Overlay ───────────────── */
+    .mic-blocked-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.96); display: flex; align-items: center; justify-content: center; z-index: 9000; backdrop-filter: blur(12px); }
+    .mic-blocked-box { background: linear-gradient(135deg, #1a0a0a 0%, #2d1414 100%); border: 2px solid rgba(239,68,68,0.55); border-radius: 20px; padding: 40px 36px; max-width: 500px; width: 95vw; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.85), 0 0 40px rgba(239,68,68,0.12); animation: slideUp 0.4s ease-out; }
+    .mic-blocked-icon { font-size: 76px; margin-bottom: 14px; animation: pulse 2s ease-in-out infinite; display: block; }
+    .mic-blocked-title { font-size: 22px; font-weight: 800; color: #EF4444; margin-bottom: 8px; }
+    .mic-blocked-sub { font-size: 14px; color: rgba(255,255,255,0.65); margin-bottom: 18px; line-height: 1.6; }
+    .mic-instructions-box { background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; text-align: left; font-size: 12px; color: rgba(255,255,255,0.72); line-height: 1.9; }
+    .mic-instructions-box strong { color: #fff; display: block; margin-bottom: 4px; font-size: 13px; }
+    .btn-retry-mic { width: 100%; padding: 14px; border: none; border-radius: 10px; background: linear-gradient(135deg, #22C55E, #16A34A); color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; margin-bottom: 10px; transition: all 0.25s; }
+    .btn-retry-mic:hover { transform: scale(1.02); box-shadow: 0 6px 20px rgba(34,197,94,0.4); }
+    .btn-listen-only { width: 100%; padding: 12px; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; background: rgba(255,255,255,0.08); color: #ccc; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+    .btn-listen-only:hover { background: rgba(255,255,255,0.15); }
+    .mic-retry-status { margin-top: 10px; font-size: 12px; color: rgba(255,255,255,0.5); min-height: 18px; }
+
+    /* ── Audio Player (Recordings) ─────────────────────────────── */
+    .rec-player-row { margin-top: 8px; background: rgba(0,0,0,0.35); border-radius: 8px; padding: 8px 12px; border: 1px solid rgba(255,255,255,0.07); }
+    .rec-audio-el { width: 100%; height: 36px; accent-color: #FF6B00; outline: none; }
+    .rec-player-actions { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+    .btn-play-rec { background: linear-gradient(135deg,#667eea,#764ba2); color:#fff; border:none; padding:6px 14px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:5px; }
+    .btn-play-rec:hover { transform:scale(1.04); }
+    .btn-play-rec.loading { opacity:0.6; cursor:wait; }
+    .btn-dl-rec { background:rgba(34,197,94,0.15); color:#22C55E; border:1px solid #22C55E; padding:6px 14px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:5px; }
+    .btn-dl-rec:hover { background:rgba(34,197,94,0.25); }
+    .no-audio-badge { display:inline-flex; align-items:center; gap:4px; font-size:11px; color:rgba(255,255,255,0.3); padding:4px 8px; border-radius:4px; background:rgba(255,255,255,0.05); margin-top:6px; }
+
+    /* ── Mobile / First-Visit Mic Permission Gate ───────────────── */
+    .mic-perm-overlay { position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.97);display:flex;align-items:center;justify-content:center;z-index:9600;backdrop-filter:blur(14px); }
+    .mic-perm-box { background:linear-gradient(135deg,#0d1a2e 0%,#1a2d4a 100%);border:2px solid rgba(102,126,234,0.55);border-radius:22px;padding:36px 28px;max-width:460px;width:95vw;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.9),0 0 40px rgba(102,126,234,0.15);animation:slideUp 0.4s ease-out; }
+    .mic-perm-icon { font-size:70px;display:block;margin-bottom:14px;animation:pulse 2s ease-in-out infinite; }
+    .mic-perm-title { font-size:20px;font-weight:800;color:#fff;margin-bottom:8px; }
+    .mic-perm-sub { font-size:13px;color:rgba(255,255,255,0.65);margin-bottom:16px;line-height:1.7; }
+    .mic-perm-steps { background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px;margin-bottom:18px;text-align:left;font-size:12px;color:rgba(255,255,255,0.7);line-height:2.1; }
+    .mic-perm-steps strong { color:#fff;display:block;margin-bottom:6px; }
+    .btn-grant-mic { width:100%;padding:15px;border:none;border-radius:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;transition:all 0.25s;letter-spacing:0.3px; }
+    .btn-grant-mic:hover,.btn-grant-mic:active { transform:scale(1.02);box-shadow:0 8px 24px rgba(102,126,234,0.5); }
+    .btn-skip-perm { width:100%;padding:11px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(255,255,255,0.06);color:#aaa;font-size:13px;cursor:pointer;transition:all 0.2s; }
+    .mic-perm-status { margin-top:12px;font-size:12px;color:rgba(255,255,255,0.5);min-height:18px; }
+
+    /* ── Mutual Audio Handshake Badge (on remote tiles) ─────────── */
+    .handshake-badge { position:absolute;bottom:8px;right:8px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.4);border-radius:8px;padding:3px 8px;font-size:10px;color:#22C55E;font-weight:600;display:none; }
+    .handshake-badge.active { display:block;animation:hsFadeIn 0.4s ease-out; }
+    @keyframes hsFadeIn { from{opacity:0;transform:scale(0.85)}to{opacity:1;transform:scale(1)} }
+
+    /* ── Auto-Recording Badge (in meeting header) ──────────────── */
+    .auto-rec-badge { display:none;align-items:center;gap:5px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.4);border-radius:16px;padding:4px 12px;font-size:11px;font-weight:600;color:#EF4444; }
+    .auto-rec-badge.active { display:flex; }
+    .auto-rec-dot { width:7px;height:7px;border-radius:50%;background:#EF4444;animation:recPulse 1s infinite; }
+
+    /* ═══════════════════════ MOBILE RESPONSIVE ═══════════════════════ */
+
+    /* ── Tablet (≤ 768px) ───────────────────────────────── */
     @media (max-width: 768px) {
-      .sidebar {
-        position: absolute; right: 0; width: 100%; height: 40%; bottom: 0;
-      }
-      .controls-bar { padding: 10px; }
-      .control-button { width: 44px; height: 44px; }
+      .meeting-content { flex-direction: column; }
+      .sidebar { width: 100%; max-height: 40vh; border-left: none; border-top: 1px solid #333; }
+      .video-container { min-height: 30vh; }
+      #videoGrid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; padding: 8px; }
+      .audio-tile { min-height: 90px; padding: 10px 8px; }
+      .audio-avatar { width: 50px; height: 50px; font-size: 22px; }
+      .audio-name { font-size: 12px; }
+      .controls-bar { padding: 8px 12px; gap: 8px; flex-wrap: wrap; }
+      .control-button { width: 44px; height: 44px; font-size: 17px; }
+      .control-button.end { width: 50px; height: 50px; font-size: 19px; }
+      .control-label { font-size: 9px; }
+      .meeting-header { padding: 8px 12px; flex-wrap: wrap; gap: 8px; }
+      .meeting-title-text { font-size: 14px; }
+      .meeting-timer { font-size: 12px; padding: 4px 8px; }
+      .meeting-header-stats { gap: 6px; flex-wrap: wrap; }
+      .header-stat { padding: 4px 8px; font-size: 11px; }
+      .end-meeting-btn { padding: 6px 14px; font-size: 12px; }
+      .chat-input-area { padding: 8px; }
+      .chat-input { padding: 7px 10px; font-size: 12px; }
+      .chat-send-btn { width: 34px; height: 34px; font-size: 14px; }
+      .prejoin-box { width: 420px; padding: 24px; }
+      .save-rec-box { width: 400px; padding: 24px; }
+      .incoming-call-box { padding: 30px; }
+    }
+
+    /* ── Mobile (≤ 480px) ────────────────────────────────── */
+    @media (max-width: 480px) {
+      .meeting-wrapper { height: calc(100vh - 90px); }
+      .meeting-content { flex-direction: column; }
+      .sidebar { width: 100%; max-height: 35vh; }
+      .video-container { min-height: 25vh; }
+      #videoGrid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 4px; padding: 6px; }
+      .audio-tile { min-height: 70px; padding: 8px 6px; }
+      .audio-avatar { width: 40px; height: 40px; font-size: 18px; margin-bottom: 4px; }
+      .audio-name { font-size: 11px; margin-bottom: 4px; }
+      .audio-status { font-size: 9px; margin-bottom: 4px; }
+      .waveform { height: 20px; }
+      .waveform-bar { width: 2px; }
+
+      /* ── Controls bar: scroll horizontally, all buttons visible ── */
+      .controls-bar { padding: 6px 8px; gap: 6px; overflow-x: auto; flex-wrap: nowrap; justify-content: flex-start; -webkit-overflow-scrolling: touch; }
+      .control-group { flex-shrink: 0; }
+      .control-button { width: 40px; height: 40px; font-size: 16px; }
+      .control-button.end { width: 46px; height: 46px; font-size: 18px; }
+      .control-label { font-size: 8px; }
+
+      /* ── Meeting header compact ── */
+      .meeting-header { padding: 6px 8px; gap: 6px; }
+      .meeting-title-bar { gap: 8px; }
+      .meeting-title-text { font-size: 12px; gap: 4px; }
+      .meeting-timer { font-size: 11px; padding: 3px 6px; }
+      .meeting-header-stats { gap: 4px; }
+      .header-stat { padding: 3px 6px; font-size: 10px; }
+      .end-meeting-btn { padding: 5px 10px; font-size: 11px; gap: 4px; }
+      .rec-indicator { padding: 3px 8px; font-size: 10px; }
+      .auto-rec-badge { padding: 3px 8px; font-size: 10px; }
+
+      /* ── Chat compact ── */
+      .chat-messages { padding: 6px; }
+      .chat-bubble { padding: 6px 10px; font-size: 12px; max-width: 92%; }
+      .chat-input-area { padding: 6px; gap: 6px; }
+      .chat-input { padding: 6px 8px; font-size: 11px; }
+      .chat-send-btn { width: 30px; height: 30px; font-size: 12px; }
+      .sidebar-header { padding: 10px 12px; }
+      .sidebar-tab { padding: 5px 10px; font-size: 11px; }
+
+      /* ── Participant list compact ── */
+      .participant-item { padding: 8px 10px; gap: 8px; }
+      .p-avatar { width: 30px; height: 30px; font-size: 13px; }
+      .p-name { font-size: 12px; }
+      .p-status { font-size: 10px; }
+
+      /* ── Modals: full-width on mobile ── */
+      .prejoin-box, .save-rec-box, .mic-blocked-box, .mic-perm-box, .incoming-call-box { width: 95vw; max-width: 95vw; padding: 20px 16px; }
+      .prejoin-title, .save-rec-title { font-size: 17px; }
+      .save-option-btn { padding: 10px 14px; font-size: 12px; }
+      .save-option-icon { font-size: 18px; }
+      .save-option-text strong { font-size: 12px; }
+      .save-option-text small { font-size: 10px; }
+      .incoming-icon { font-size: 50px; }
+      .incoming-title { font-size: 20px; }
+      .incoming-subtitle { font-size: 13px; margin-bottom: 24px; }
+      .incoming-buttons { flex-direction: column; gap: 10px; }
+      .btn-accept, .btn-reject { width: 100%; justify-content: center; }
+      .no-meeting-screen { padding: 20px; gap: 14px; }
+      .no-meeting-icon { font-size: 60px; }
+      .no-meeting-text { font-size: 20px; }
+      .no-meeting-subtext { font-size: 13px; }
+      .refresh-btn { padding: 10px 22px; font-size: 13px; }
+    }
+
+    /* ── Very small phones (≤ 360px) ───────────────────── */
+    @media (max-width: 360px) {
+      .controls-bar { gap: 4px; padding: 4px 6px; }
+      .control-button { width: 36px; height: 36px; font-size: 14px; }
+      .control-button.end { width: 42px; height: 42px; font-size: 16px; }
+      .control-label { display: none; }
+      .meeting-title-text span:first-child { display: none; }
+      .meeting-header-stats .header-stat { display: none; }
+      .meeting-header-stats .end-meeting-btn { display: flex; }
+      .meeting-header-stats .rec-indicator { display: flex; }
+      .meeting-header-stats .auto-rec-badge.active { display: flex; }
+      #videoGrid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
     }
   </style>
 </head>
 <body>
 
-<!-- Incoming Call Modal -->
-<div id="incomingCallModal" class="modal-overlay" style="display: none;">
+<!-- Standard header and navigation – always visible -->
+<div th:replace="~{layout :: header('meeting-room')}"></div>
+<div th:replace="~{layout :: nav('meeting-room')}"></div>
+
+<!-- ═══════════════════════ MIC BLOCKED / PERMISSION OVERLAY ════════════════════════ -->
+<div id="micBlockedOverlay" class="mic-blocked-overlay" style="display:none">
+  <div class="mic-blocked-box">
+    <span class="mic-blocked-icon">🎙</span>
+    <div class="mic-blocked-title">Microphone Access Required</div>
+    <div class="mic-blocked-sub" id="micBlockedReason">
+      Your browser needs microphone permission to join the meeting.
+    </div>
+    <div class="mic-instructions-box">
+      <strong>📋 How to enable microphone:</strong>
+      🌐 <b>Chrome / Edge</b>: Click the 🔒 lock icon in the address bar → <em>Microphone</em> → Allow → Reload<br>
+      🦊 <b>Firefox</b>: Click the shield 🛡 in address bar → Allow Microphone<br>
+      🧭 <b>Safari (Mac)</b>: Safari menu → Settings for This Website → Microphone → Allow<br>
+      📱 <b>Android Chrome</b>: Tap ⋮ → Site Settings → Microphone → Allow<br>
+      🍎 <b>iOS Safari</b>: Settings app → Safari → Microphone → Allow
+    </div>
+    <button class="btn-retry-mic" id="retryMicBtn" onclick="retryMicAccess()">🎙 Try Again – Grant Access</button>
+    <button class="btn-listen-only" onclick="continueWithoutMic()">👂 Join as Listener Only (No Mic)</button>
+    <div class="mic-retry-status" id="micRetryStatus"></div>
+  </div>
+</div>
+
+<!-- ═══════════ MOBILE / FIRST-VISIT MIC PERMISSION GATE ═══════════ -->
+<!-- Shown proactively on mobile browsers where getUserMedia MUST be triggered
+     by an explicit user gesture (iOS Safari, Android Chrome require this).
+     Also shown on desktop when permissions API signals 'prompt' state. -->
+<div id="micPermOverlay" class="mic-perm-overlay" style="display:none">
+  <div class="mic-perm-box">
+    <span class="mic-perm-icon">🎙</span>
+    <div class="mic-perm-title">Enable Your Microphone</div>
+    <div class="mic-perm-sub" id="micPermSub">
+      Tap the button below and allow microphone access so you can talk and hear everyone in the meeting.
+    </div>
+    <div class="mic-perm-steps" id="micPermSteps">
+      <!-- Filled dynamically by JS with device/browser-specific instructions -->
+    </div>
+    <button class="btn-grant-mic" id="grantMicBtn" onclick="grantMicPermission()">
+      🎙 Allow Microphone &amp; Join
+    </button>
+    <button class="btn-skip-perm" onclick="skipMicPermission()">
+      👂 Join as Listener Only (No Mic)
+    </button>
+    <div class="mic-perm-status" id="micPermStatus"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ PRE-JOIN TEST MODAL ═══════════════════════════ -->
+<div id="prejoinModal" class="prejoin-modal" style="display:none">
+  <div class="prejoin-box">
+    <div class="prejoin-title">🎙 Audio Check</div>
+    <div class="prejoin-subtitle">This is a <strong style="color:#667eea">Audio-Only</strong> meeting – no camera required</div>
+    <!-- Microphone level visualizer -->
+    <div style="background:rgba(0,0,0,0.3);border-radius:10px;padding:16px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.07)">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+        <span style="font-size:28px">🎙</span>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600;margin-bottom:2px">Microphone</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.45)" id="micStatus">Requesting access...</div>
+        </div>
+        <div class="device-indicator checking" id="micIndicator"></div>
+      </div>
+      <div class="audio-level-bar"><div class="audio-level-fill" id="audioLevel"></div></div>
+      <div style="margin-top:8px;font-size:11px;color:rgba(255,255,255,0.4)">Speak to test your microphone ↑</div>
+    </div>
+    <div class="device-row">
+      <div class="device-icon">🔊</div>
+      <div class="device-info">
+        <div class="device-name">Speaker</div>
+        <div class="device-status" id="spkStatus">Click Test to verify</div>
+      </div>
+      <button onclick="testSpeaker()" style="background:rgba(102,126,234,0.3);border:1px solid #667eea;color:#fff;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px">Test 🔊</button>
+    </div>
+    <div class="device-row" style="background:rgba(102,126,234,0.1);border-color:rgba(102,126,234,0.3)">
+      <div class="device-icon">🔇</div>
+      <div class="device-info">
+        <div class="device-name">Noise Filter</div>
+        <div class="device-status" style="color:#667eea">AI noise suppression + echo cancellation active</div>
+      </div>
+      <div class="device-indicator ok"></div>
+    </div>
+    <div class="prejoin-buttons">
+      <button class="btn-prejoin-skip" onclick="skipPrejoinTest()">Skip Test</button>
+      <button class="btn-prejoin-join" onclick="proceedToMeeting()">🎙 Join Meeting</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ INCOMING CALL MODAL ═══════════════════════════ -->
+<div id="incomingCallModal" class="mtng-call-overlay" style="display:none">
   <div class="incoming-call-box">
     <div class="incoming-icon">📞</div>
     <div class="incoming-title">INCOMING MEETING CALL!</div>
     <div class="incoming-subtitle" id="incomingMeetingTitle">Meeting Starting...</div>
     <div class="incoming-buttons">
-      <button class="btn-accept" onclick="acceptCall()">
-        <span>✓</span> ACCEPT &amp; JOIN
-      </button>
-      <button class="btn-reject" onclick="rejectCall()">
-        <span>×</span> REJECT
-      </button>
+      <button class="btn-accept" onclick="acceptCall()"><span>✓</span> ACCEPT &amp; JOIN</button>
+      <button class="btn-reject" onclick="rejectCall()"><span>✕</span> REJECT</button>
     </div>
   </div>
 </div>
 
-<!-- No Active Meeting Screen -->
-<div id="noMeetingScreen" class="no-meeting-screen">
+<!-- ═══════════════════════════ NO ACTIVE MEETING SCREEN ═══════════════════════════ -->
+<div id="noMeetingScreen" class="no-meeting-screen" style="display:none">
   <div class="no-meeting-icon">📵</div>
   <div class="no-meeting-text">No Active Meeting</div>
-  <div class="no-meeting-subtext">Waiting for the instructor to start...</div>
-  <button class="refresh-btn" onclick="location.reload()">🔄 Refresh</button>
+  <div class="no-meeting-subtext">Waiting for the instructor to start a session...</div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+    <button class="refresh-btn" onclick="location.reload()">🔄 Refresh</button>
+    <a href="/" style="background:rgba(255,107,0,0.15);border:1px solid #FF6B00;color:#FF6B00;padding:12px 26px;border-radius:8px;font-size:14px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:6px">🏠 Dashboard</a>
+  </div>
+  <div style="font-size:12px;color:#444;margin-top:8px">✨ Page auto-updates when meeting starts</div>
 </div>
 
-<!-- Meeting Room -->
-<div id="meetingRoom" class="meeting-wrapper" style="display: none;">
-  <!-- Header -->
+<!-- ═══════════════════════════ ACTIVE MEETING ROOM ═══════════════════════════ -->
+<div id="meetingRoom" class="meeting-wrapper" style="display:none">
+
+  <!-- Meeting Info Bar -->
   <div class="meeting-header">
-    <div class="header-left">
-      <div class="meeting-title">
+    <div class="meeting-title-bar">
+      <div class="meeting-title-text">
         <span>🎤</span>
-        <span id="meetingTitleText" th:text="${meeting != null ? meeting.title : 'Meeting'}">Meeting</span>
+        <span id="meetingTitleText" th:text="${meeting != null ? meeting.title : 'MTNG Meeting'}">Meeting</span>
       </div>
-      <div class="timer" id="timer">00:00:00</div>
+      <div class="meeting-timer" id="timer">00:00:00</div>
     </div>
-    <div class="header-right">
+    <div class="meeting-header-stats">
       <div class="header-stat">👥 <span id="inMeetingCount">0</span> In Meeting</div>
       <div class="header-stat">🟢 <span id="onlineCount">0</span> Online</div>
+      <div class="rec-indicator" id="recIndicator">
+        <div class="rec-dot"></div>
+        <span>REC</span>
+        <span id="recTimer">00:00</span>
+      </div>
+      <div class="auto-rec-badge" id="autoRecBadge" title="Session is being automatically recorded">
+        <div class="auto-rec-dot"></div>
+        AUTO REC
+      </div>
       <button class="end-meeting-btn" id="endMeetingBtn" sec:authorize="hasRole('ADMIN')" onclick="endMeeting()">
         ⏹ End Meeting
       </button>
     </div>
   </div>
 
-  <!-- Main Content -->
+  <!-- Main content: video + sidebar -->
   <div class="meeting-content">
-    <!-- Video Container -->
-    <div class="video-container">
-      <div id="jitsi-container"></div>
 
-      <!-- Controls Bar -->
+    <!-- Video area -->
+    <div class="video-container">
+      <div id="videoGrid"><!-- Video tiles added dynamically --></div>
+
+      <!-- Controls -->
       <div class="controls-bar">
         <div class="control-group">
-          <button class="control-button active" id="micBtn" onclick="mtngWrapper.toggleMic()" title="Toggle Microphone">
-            🎙
-          </button>
+          <button class="control-button active" id="micBtn" onclick="room && room.toggleMic()" title="Toggle Mic">🎙</button>
           <div class="control-label">Mic</div>
         </div>
-
         <div class="control-group">
-          <button class="control-button active" id="cameraBtn" onclick="mtngWrapper.toggleCamera()" title="Toggle Camera">
-            📷
-          </button>
-          <div class="control-label">Camera</div>
+          <button class="control-button active" id="noiseBtn" onclick="room && room.toggleNoiseFilter()" title="Noise Filter">🔇</button>
+          <div class="control-label">Noise Filter</div>
         </div>
-
         <div class="control-group">
-          <button class="control-button" id="screenBtn" onclick="mtngWrapper.toggleScreenShare()" title="Share Screen">
-            🖥
-          </button>
+          <button class="control-button" id="recordBtn" onclick="room && room.toggleRecording()" title="Toggle Recording (currently auto-recording)" style="font-size:18px">⏺</button>
+          <div class="control-label" id="recordBtnLabel">Auto Rec</div>
+        </div>
+        <div class="control-group">
+          <button class="control-button" id="screenBtn" onclick="room && room.toggleScreenShare()" title="Share Screen">🖥</button>
           <div class="control-label">Share</div>
         </div>
-
         <div class="control-group">
-          <button class="control-button" id="chatToggleBtn" onclick="showTab('chat')" title="Chat">
-            💬
-          </button>
+          <button class="control-button" onclick="showSidebarTab('chat')" title="Chat">💬</button>
           <div class="control-label">Chat</div>
         </div>
-
         <div class="control-group">
-          <button class="control-button" id="participantsBtn" onclick="showTab('participants')" title="Participants">
-            👥
-          </button>
+          <button class="control-button" onclick="showSidebarTab('participants')" title="Participants">👥</button>
           <div class="control-label">People</div>
         </div>
-
         <div class="control-group">
-          <button class="control-button" id="settingsBtn2" onclick="mtngWrapper.openSettings()" title="Settings">
-            ⚙
-          </button>
-          <div class="control-label">Settings</div>
-        </div>
-
-        <div class="control-group">
-          <button class="control-button end" onclick="leaveMeeting()" title="Leave Meeting">
-            📞
-          </button>
+          <button class="control-button end" onclick="leaveMeeting()" title="Leave">📞</button>
           <div class="control-label">Leave</div>
         </div>
       </div>
@@ -574,422 +534,1245 @@
     <!-- Sidebar -->
     <div class="sidebar">
       <div class="sidebar-header">
-        <button class="sidebar-tab active" id="chatTabBtn" onclick="showTab('chat')">💬 Chat</button>
-        <button class="sidebar-tab" id="participantsTabBtn" onclick="showTab('participants')">👥 People</button>
+        <button class="sidebar-tab active" id="chatTabBtn" onclick="showSidebarTab('chat')">💬 Chat</button>
+        <button class="sidebar-tab" id="participantsTabBtn" onclick="showSidebarTab('participants')">👥 People</button>
       </div>
-
-      <div id="chatTab" class="sidebar-content">
+      <!-- Chat Panel -->
+      <div id="chatPanel" class="sidebar-content">
         <div class="chat-area">
           <div class="chat-messages" id="chatMessages">
-            <div style="padding: 20px; text-align: center; color: #888;">💬 No messages yet. Start a conversation!</div>
+            <div style="padding:20px;text-align:center;color:#555">💬 No messages yet.</div>
           </div>
           <div class="chat-input-area">
-            <input type="text" class="chat-input" id="chatInput" placeholder="Send a message..." onkeypress="handleChatKeyPress(event)">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Send a message..." onkeypress="handleChatKeyPress(event)" />
             <button class="chat-send-btn" onclick="sendChatMessage()">➤</button>
           </div>
         </div>
       </div>
-
-      <div id="participantsTab" class="sidebar-content" style="display: none;">
+      <!-- Participants Panel -->
+      <div id="participantsPanel" class="sidebar-content" style="display:none">
         <div class="participants-list" id="participantsList">
-          <div style="padding: 20px; text-align: center; color: #888;">Loading participants...</div>
+          <div style="padding:20px;text-align:center;color:#555">No participants yet.</div>
         </div>
       </div>
+    </div>
+
+  </div>
+</div><!-- /meetingRoom -->
+
+<!-- ═══════════════════════════ SAVE RECORDING MODAL ═══════════════════════════ -->
+<div id="saveRecordingModal" class="save-rec-overlay" style="display:none">
+  <div class="save-rec-box">
+    <div class="save-rec-title">💾 Recording Ready</div>
+    <div class="save-rec-meta">
+      <span>⏱ <span id="savedRecDuration">—</span></span>
+      <span>📦 <span id="savedRecSize">—</span></span>
+      <span>🎙 <span id="savedRecName">—</span></span>
+    </div>
+    <div style="font-size:11px;color:#667eea;background:rgba(102,126,234,0.08);border:1px solid rgba(102,126,234,0.3);border-radius:6px;padding:8px 12px;margin-bottom:12px">
+      💡 <strong>Tip:</strong> Choose "Download + Save" to keep a copy on your device AND in the app database for later playback.
+    </div>
+    <div id="saveRecNote" style="font-size:12px;color:#F59E0B;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:6px;padding:8px 12px;margin-bottom:12px;display:none">
+      ⚠️ Meeting is ending — after you choose an option, you will be returned to the dashboard.
+    </div>
+    <button class="save-option-btn save-option-both" onclick="saveRecordingBoth()">
+      <div class="save-option-icon">💾</div>
+      <div class="save-option-text">
+        <strong>Download + Save to Database (Recommended)</strong>
+        <small>Download .webm file to your disk AND store audio in database for online playback</small>
+      </div>
+    </button>
+    <button class="save-option-btn save-option-local" onclick="downloadRecordingOnly()">
+      <div class="save-option-icon">⬇️</div>
+      <div class="save-option-text">
+        <strong>Download to Local Disk Only</strong>
+        <small>Save crystal-clear .webm audio file to your computer (128 kbps Opus)</small>
+      </div>
+    </button>
+    <button class="save-option-btn save-option-db" onclick="saveRecordingDbOnly()">
+      <div class="save-option-icon">🗄️</div>
+      <div class="save-option-text">
+        <strong>Save to Database (Audio + Metadata)</strong>
+        <small>Store audio in app database – listen back anytime from Recordings tab</small>
+      </div>
+    </button>
+    <button class="save-option-btn save-option-discard" onclick="discardRecording()">
+      <div class="save-option-icon">🗑️</div>
+      <div class="save-option-text">
+        <strong>Discard Recording</strong>
+        <small>Remove this recording without saving anything</small>
+      </div>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SHARED MODALS ═══════════════════════════ -->
+<div id="changePasswordModal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title">🔑 Change Password</div>
+    <div class="form-group">
+      <label class="form-label">New Password</label>
+      <input id="newPassword" type="password" class="form-control" placeholder="Min 4 characters" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Confirm Password</label>
+      <input id="confirmPassword" type="password" class="form-control" placeholder="Repeat password" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('changePasswordModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="savePassword()">Save</button>
     </div>
   </div>
 </div>
 
+<div id="scheduleModal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title">📅 Schedule Meeting</div>
+    <div class="form-group">
+      <label class="form-label">Meeting Title</label>
+      <input id="schedTitle" type="text" class="form-control" placeholder="e.g. Mathematics Lesson" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Date &amp; Time</label>
+      <input id="schedDateTime" type="datetime-local" class="form-control" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('scheduleModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="showAlert('Scheduled!','success');closeModal('scheduleModal')">Schedule</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     NATIVE WebRTC MEETING ROOM
+     • No Jitsi  • No external auth  • No third-party server
+     • Spring WebSocket (STOMP) signaling  • Browser RTCPeerConnection
+     ═══════════════════════════════════════════════════════════════════ -->
 <script th:inline="javascript">
-/*
- * ═══════════════════════════════════════════════════════════════
- *  MtngJitsiWrapper – Our personal Jitsi wrapper for the MTNG app.
- *  Encapsulates all Jitsi External API interactions, handles
- *  audio/video/screenshare controls, events, and UI sync.
- * ═══════════════════════════════════════════════════════════════
- */
-class MtngJitsiWrapper {
 
-  constructor() {
-    this.api = null;
-    this.isMicOn = true;
-    this.isCameraOn = true;
-    this.isScreenSharing = false;
-    this.isJoined = false;
-    this.participantCount = 0;
-    this.meetingStartTime = null;
-    this.timerInterval = null;
-    this.chatPollInterval = null;
+/* ──────────────────────────────────────────────────────────────────
+   MtngMeetingRoom – self-contained WebRTC meeting class
+   Fixes applied:
+   1. Perfect negotiation (polite/impolite) – resolves glare for multi-peer
+   2. ICE candidate queuing – candidates arriving before remote-desc are buffered
+   3. mute-state signal broadcast – remote peers see 🔇 badge when you mute
+   4. Visual mic indicator on both local and remote tiles
+   5. peerMuteState map tracks mute state per participant for participant list
+────────────────────────────────────────────────────────────────── */
+class MtngMeetingRoom {
+
+  constructor(roomName, currentUser) {
+    this.roomName      = roomName;
+    this.currentUser   = currentUser;
+    this.localStream   = null;          // raw mic stream from getUserMedia
+    this.processedStream = null;        // noise-filtered stream for WebRTC
+    this.screenStream  = null;
+    this.peers         = {};   // peerId → RTCPeerConnection
+    this.pendingIce    = {};   // peerId → RTCIceCandidate[]
+    this.makingOffer   = {};   // peerId → boolean
+    this.peerMuteState = {};   // peerId → { micOn: bool }
+    this.stompClient   = null;
+    this.isMicOn       = true;
+    this.isCameraOn    = false;    // VIDEO DISABLED – audio-only meeting
+    this.isScreenSharing   = false;
+    this.timerInterval     = null;
+    this.chatPollInterval  = null;
     this.statsPollInterval = null;
-    this.currentUser = /*[[${currentUser}]]*/ 'Guest';
-    this.roomName = /*[[${roomName}]]*/ '';
-    this.meetingTitle = /*[[${meeting?.title}]]*/ 'Meeting';
-    this.hasActiveMeeting = /*[[${hasActiveMeeting}]]*/ false;
-    this.isAdmin = document.getElementById('endMeetingBtn') !== null;
+    this.meetingStartTime  = Date.now();
 
-    console.log('[MTNG] Wrapper initialized: user=' + this.currentUser +
-                ', room=' + this.roomName + ', admin=' + this.isAdmin);
+    // ── Audio processing (Web Audio API) ──────────────────────────────
+    this._audioCtx         = null;
+    this._processedDest    = null;  // MediaStreamDestination for WebRTC send
+    this._recordingMixer   = null;  // GainNode combining local + remote audio
+    this._recordingDest    = null;  // MediaStreamDestination for MediaRecorder
+    this._analyserLocal    = null;  // AnalyserNode for local waveform
+    this._analyserNodes    = {};    // peerId → AnalyserNode for remote tiles
+    this._waveAnimId       = null;  // requestAnimationFrame id
+    this._noiseFilterOn    = true;  // Noise filter toggle state
+    this._highpassNode     = null;
+    this._lowpassNode      = null;
+    this._compressorNode   = null;
+    this._gainNode         = null;
+
+    // ── Recording state ───────────────────────────────────────────────
+    this._recorder         = null;
+    this._recordingChunks  = [];
+    this._recordingBlob    = null;
+    this._isRecording      = false;
+    this._recStartTime     = null;
+    this._recEndTime       = null;      // captured when recorder stops
+    this._recDurationSecs  = 0;         // computed from start→end, stored for DB save
+    this._recTimerInterval = null;
+    this._recMeetingId     = null;      // captured at recording start so it survives meeting.stop
+
+    // ICE: Google STUN + openrelay TURN
+    this._autoRecording    = false;   // true when recording was auto-started on join
+    this._audioHandshake   = {};      // peerId → true once mutual audio confirmed
+    this._suppressOnStop   = false;   // set true by endMeeting/leaveMeeting to prevent double-save
+    this.iceConfig = {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        {
+          urls: [
+            'turn:openrelay.metered.ca:80',
+            'turn:openrelay.metered.ca:443',
+            'turn:openrelay.metered.ca:443?transport=tcp'
+          ],
+          username: 'openrelayproject',
+          credential: 'openrelayproject'
+        }
+      ]
+    };
+    console.log('[MTNG] Room: user=' + currentUser + ' room=' + roomName);
   }
 
-  /**
-   * Initialize the Jitsi meeting with proper config.
-   * Key fixes:
-   * 1) Uses STABLE roomName from server (not Date.now())
-   * 2) Proper audio config with echo cancellation
-   * 3) Hides download/app promo
-   * 4) Correct event listener names
-   */
-  init() {
-    if (!this.roomName) {
-      console.error('[MTNG] No room name provided – cannot initialize Jitsi');
-      return;
-    }
-
-    console.log('[MTNG] Initializing Jitsi: room=' + this.roomName);
-
-    const options = {
-      roomName: this.roomName,
-      width: '100%',
-      height: '100%',
-      parentNode: document.querySelector('#jitsi-container'),
-
-      configOverwrite: {
-        // ─── Audio/Video ───
-        startWithAudioMuted: false,
-        startWithVideoMuted: false,
-
-        // ─── Disable pre-join page (join instantly) ───
-        prejoinPageEnabled: false,
-        prejoinConfig: { enabled: false },
-
-        // ─── Audio quality & echo cancellation ───
-        enableNoisyMicDetection: true,
-        disableAP: false,       // keep audio processing ON
-        disableAEC: false,      // keep echo cancellation ON
-        disableNS: false,       // keep noise suppression ON
-        disableAGC: false,      // keep auto gain control ON
-        disableHPF: false,      // keep high-pass filter ON
-        stereo: false,
-
-        // ─── Audio codec ───
-        audioQuality: {
-          stereo: false,
-          opusMaxAverageBitrate: 128000
-        },
-
-        // ─── Video quality ───
-        constraints: {
-          video: {
-            height: { ideal: 720, max: 1080, min: 180 },
-            width: { ideal: 1280, max: 1920, min: 320 }
-          }
-        },
-        resolution: 720,
-
-        // ─── Disable deep linking (NO app download prompts) ───
-        disableDeepLinking: true,
-
-        // ─── Disable welcome/landing pages ───
-        enableWelcomePage: false,
-        enableClosePage: false,
-
-        // ─── P2P for better 1-on-1 audio ───
-        p2p: {
-          enabled: true,
-          stunServers: [
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:stun1.l.google.com:19302' }
-          ]
-        },
-
-        // ─── Other ───
-        disableModeratorIndicator: false,
-        disableProfile: false,
-        enableLayerSuspension: true,
-        channelLastN: 4
-      },
-
-      interfaceConfigOverwrite: {
-        // ─── Hide all download/promo UI ───
-        MOBILE_APP_PROMO: false,
-        SHOW_PROMOTIONAL_CLOSE_PAGE: false,
-        SHOW_CHROME_EXTENSION_BANNER: false,
-        HIDE_DEEP_LINKING_LOGO: true,
-        SHOW_POWERED_BY: false,
-        SHOW_BRAND_WATERMARK: false,
-        SHOW_JITSI_WATERMARK: false,
-        SHOW_WATERMARK_FOR_GUESTS: false,
-
-        // ─── Toolbar buttons ───
-        TOOLBAR_BUTTONS: [
-          'microphone', 'camera', 'desktop', 'fullscreen',
-          'fodeviceselection', 'chat', 'settings',
-          'raisehand', 'videoquality', 'filmstrip',
-          'shortcuts', 'help', 'mute-everyone',
-          'closedcaptions', 'stats', 'tileview',
-          'select-background', 'participants-pane'
-        ],
-
-        // ─── Film strip ───
-        FILM_STRIP_MAX_HEIGHT: 120,
-
-        // ─── Settings ───
-        SETTINGS_SECTIONS: ['devices', 'language', 'moderator', 'profile', 'calendar'],
-
-        // ─── Disable invite (we handle participants ourselves) ───
-        DISABLE_JOIN_LEAVE_NOTIFICATIONS: false,
-        DISABLE_RINGING: false
-      },
-
-      userInfo: {
-        displayName: this.currentUser
-      }
+  // ── 1. Init ──────────────────────────────────────────────────────
+  async init() {
+    // ── Request AUDIO only (video disabled) ──────────────────────────
+    const audioConstraints = {
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: true,
+      channelCount: 1,          // Mono voice – less bandwidth, cleaner audio
+      sampleRate: 44100
     };
 
-    this.api = new JitsiMeetExternalAPI('meet.jit.si', options);
-    this._attachEventListeners();
-    this.meetingStartTime = new Date();
+    // ★ FIX: Reuse the mic stream from the prejoin test if it's still alive.
+    //   Calling getUserMedia a second time fails on many mobile browsers
+    //   (NotAllowedError / NotReadableError) because the first stream was
+    //   just stopped and the hardware hasn't released yet, or the browser
+    //   only grants permission once per user gesture.
+    if (typeof _previewStream !== 'undefined' && _previewStream) {
+      const liveTracks = _previewStream.getAudioTracks().filter(t => t.readyState === 'live');
+      if (liveTracks.length > 0) {
+        this.localStream = _previewStream;
+        _previewStream = null; // consumed — room now owns it
+        console.log('[MTNG] ✅ Reused prejoin mic stream (no 2nd getUserMedia needed)');
+        hideMicBlockedOverlay();
+      }
+    }
+
+    // Only call getUserMedia if we don't have a stream yet
+    if (!this.localStream) {
+      try {
+        this.localStream = await navigator.mediaDevices.getUserMedia({ audio: audioConstraints, video: false });
+        console.log('[MTNG] ✅ Audio-only mic acquired');
+        hideMicBlockedOverlay();
+      } catch (err) {
+        console.error('[MTNG] Mic error:', err.name, err.message);
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+          showMicBlockedOverlay('Permission denied. Please allow microphone access in your browser settings, then click "Try Again".');
+        } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+          showMicBlockedOverlay('No microphone detected. Please connect a microphone or headset and click "Try Again".', true);
+        } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+          showMicBlockedOverlay('Microphone is already in use by another application. Close that app and click "Try Again".');
+        } else {
+          showMicBlockedOverlay('Could not access microphone: ' + err.message + '. Click "Try Again" after resolving the issue.');
+        }
+        // Continue in listener-only mode (no outgoing audio but can still receive)
+      }
+    }
+
+    // ── Setup Web Audio noise-filter chain (MUST await AudioContext resume) ──
+    await this._setupAudioProcessing();
+
+    // Use processed stream for WebRTC sending (falls back to raw if setup fails)
+    const streamForRTC = this.processedStream || this.localStream;
+
+    this._addAudioTile('local', this.currentUser, true);
     this._startTimer();
-    this._startChatPolling();
     this._startStatsPolling();
-
-    console.log('[MTNG] Jitsi API created successfully');
+    this._startChatPolling();
+    this._connectSignaling();
+    this._startWaveformAnimation();
   }
 
-  /**
-   * Attach Jitsi event listeners with CORRECT event names.
-   * The Jitsi External API uses:
-   *   - audioMuteStatusChanged  (not audioMuted/audioUnmuted)
-   *   - videoMuteStatusChanged  (not videoMuted/videoUnmuted)
-   *   - screenSharingStatusChanged
-   */
-  _attachEventListeners() {
-    const self = this;
-
-    // ─── Conference joined ───
-    this.api.addEventListener('videoConferenceJoined', (data) => {
-      console.log('[MTNG] Joined conference:', data);
-      self.isJoined = true;
-      self._joinMeetingAPI();
-      self._updateUI();
-    });
-
-    // ─── Audio mute status ───
-    this.api.addEventListener('audioMuteStatusChanged', (data) => {
-      console.log('[MTNG] Audio mute changed:', data.muted);
-      self.isMicOn = !data.muted;
-      self._updateMicButton();
-    });
-
-    // ─── Video mute status ───
-    this.api.addEventListener('videoMuteStatusChanged', (data) => {
-      console.log('[MTNG] Video mute changed:', data.muted);
-      self.isCameraOn = !data.muted;
-      self._updateCameraButton();
-    });
-
-    // ─── Screen sharing status ───
-    this.api.addEventListener('screenSharingStatusChanged', (data) => {
-      console.log('[MTNG] Screen sharing changed:', data.on);
-      self.isScreenSharing = data.on;
-      self._updateScreenButton();
-    });
-
-    // ─── Participant joined ───
-    this.api.addEventListener('participantJoined', (data) => {
-      console.log('[MTNG] Participant joined:', data.displayName);
-      self._updateParticipantCount();
-    });
-
-    // ─── Participant left ───
-    this.api.addEventListener('participantLeft', (data) => {
-      console.log('[MTNG] Participant left:', data);
-      self._updateParticipantCount();
-    });
-
-    // ─── Incoming message ───
-    this.api.addEventListener('incomingMessage', (data) => {
-      console.log('[MTNG] Jitsi chat message from:', data.from);
-    });
-
-    // ─── Conference ended / hung up ───
-    this.api.addEventListener('readyToClose', () => {
-      console.log('[MTNG] Jitsi readyToClose');
-      self._leaveMeetingAPI();
-      window.location.href = '/';
-    });
-
-    // ─── Participant role changed (detect moderator) ───
-    this.api.addEventListener('participantRoleChanged', (data) => {
-      console.log('[MTNG] Role changed:', data);
-    });
-  }
-
-  // ═══════════════════════════════════════════════
-  // CONTROL METHODS – called by our custom buttons
-  // ═══════════════════════════════════════════════
-
-  toggleMic() {
-    if (!this.api) return;
-    console.log('[MTNG] Toggling mic, currently:', this.isMicOn ? 'ON' : 'OFF');
-    this.api.executeCommand('toggleAudio');
-    // The audioMuteStatusChanged event will update the state
-  }
-
-  toggleCamera() {
-    if (!this.api) return;
-    console.log('[MTNG] Toggling camera, currently:', this.isCameraOn ? 'ON' : 'OFF');
-    this.api.executeCommand('toggleVideo');
-    // The videoMuteStatusChanged event will update the state
-  }
-
-  toggleScreenShare() {
-    if (!this.api) return;
-    console.log('[MTNG] Toggling screen share');
-    this.api.executeCommand('toggleShareScreen');
-    // The screenSharingStatusChanged event will update the state
-  }
-
-  openSettings() {
-    if (!this.api) return;
-    console.log('[MTNG] Opening Jitsi settings');
-    // Execute the Jitsi settings command
-    this.api.executeCommand('toggleTileView');
-  }
-
-  hangup() {
-    if (!this.api) return;
-    console.log('[MTNG] Hanging up');
-    this.api.executeCommand('hangup');
-  }
-
-  dispose() {
-    if (this.api) {
-      this.api.dispose();
-      this.api = null;
-    }
-    if (this.timerInterval) clearInterval(this.timerInterval);
-    if (this.chatPollInterval) clearInterval(this.chatPollInterval);
-    if (this.statsPollInterval) clearInterval(this.statsPollInterval);
-    console.log('[MTNG] Wrapper disposed');
-  }
-
-  // ═══════════════════════════════════════════════
-  // UI UPDATE METHODS
-  // ═══════════════════════════════════════════════
-
-  _updateMicButton() {
-    const btn = document.getElementById('micBtn');
-    if (!btn) return;
-    if (this.isMicOn) {
-      btn.classList.add('active');
-      btn.classList.remove('muted');
-      btn.textContent = '🎙';
-      btn.title = 'Mute Microphone';
-    } else {
-      btn.classList.remove('active');
-      btn.classList.add('muted');
-      btn.textContent = '🔇';
-      btn.title = 'Unmute Microphone';
-    }
-  }
-
-  _updateCameraButton() {
-    const btn = document.getElementById('cameraBtn');
-    if (!btn) return;
-    if (this.isCameraOn) {
-      btn.classList.add('active');
-      btn.classList.remove('muted');
-      btn.textContent = '📷';
-      btn.title = 'Turn Off Camera';
-    } else {
-      btn.classList.remove('active');
-      btn.classList.add('muted');
-      btn.textContent = '📹';
-      btn.title = 'Turn On Camera';
-    }
-  }
-
-  _updateScreenButton() {
-    const btn = document.getElementById('screenBtn');
-    if (!btn) return;
-    if (this.isScreenSharing) {
-      btn.classList.add('active');
-      btn.title = 'Stop Screen Share';
-    } else {
-      btn.classList.remove('active');
-      btn.title = 'Share Screen';
-    }
-  }
-
-  _updateParticipantCount() {
-    if (!this.api) return;
+  // ── 1a. Web Audio Noise Processing ───────────────────────────────
+  async _setupAudioProcessing() {
+    if (!this.localStream) return;
     try {
-      const count = this.api.getNumberOfParticipants();
-      this.participantCount = count;
-      const el = document.getElementById('inMeetingCount');
-      if (el) el.textContent = count;
-      this._updateParticipantsList();
-    } catch (e) {
-      console.warn('[MTNG] Error getting participant count:', e);
-    }
-  }
+      this._audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-  _updateParticipantsList() {
-    const list = document.getElementById('participantsList');
-    if (!list || !this.api) return;
-
-    try {
-      // Get participants from Jitsi API
-      const participants = this.api.getParticipantsInfo();
-      if (!participants || participants.length === 0) {
-        list.innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">No participants yet</div>';
+      // ★ CRITICAL: AudioContext starts "suspended" on mobile (and sometimes desktop).
+      //   MUST await resume — otherwise the processed stream produces SILENCE,
+      //   meaning the remote peer hears nothing from this user.
+      if (this._audioCtx.state === 'suspended') {
+        try {
+          await this._audioCtx.resume();
+          console.log('[MTNG] AudioContext resumed OK, state:', this._audioCtx.state);
+        } catch (e) {
+          console.warn('[MTNG] AudioContext resume failed:', e);
+          // Fallback: use raw stream directly (no noise filter but audio works)
+          this.processedStream = this.localStream;
+          return;
+        }
+      }
+      // Double-check it actually resumed
+      if (this._audioCtx.state !== 'running') {
+        console.warn('[MTNG] AudioContext state still:', this._audioCtx.state, '— using raw stream');
+        this.processedStream = this.localStream;
         return;
       }
 
-      list.innerHTML = participants.map(p => {
-        const name = p.displayName || p.formattedDisplayName || 'Unknown';
-        const audioMuted = p.muted ? '🔇' : '🎙';
-        const videoMuted = p.videoMuted ? '📹' : '📷';
-        return `<div class="participant-item">
-          <span class="participant-name">${this._escapeHtml(name)}</span>
-          <span>${audioMuted} ${videoMuted} <span class="participant-status">In Meeting</span></span>
-        </div>`;
-      }).join('');
-    } catch (e) {
-      console.warn('[MTNG] Error updating participants list:', e);
+      const src = this._audioCtx.createMediaStreamSource(this.localStream);
+
+      // ① High-pass filter – cuts rumble below 80 Hz (keyboard, desk vibrations)
+      this._highpassNode = this._audioCtx.createBiquadFilter();
+      this._highpassNode.type      = 'highpass';
+      this._highpassNode.frequency.value = 80;
+      this._highpassNode.Q.value   = 0.7;
+
+      // ② Low-pass filter – cuts hiss above 8 kHz (beyond voice range)
+      this._lowpassNode = this._audioCtx.createBiquadFilter();
+      this._lowpassNode.type      = 'lowpass';
+      this._lowpassNode.frequency.value = 8000;
+      this._lowpassNode.Q.value   = 0.7;
+
+      // ③ Dynamics Compressor – noise gate behaviour (squashes low-level noise)
+      this._compressorNode = this._audioCtx.createDynamicsCompressor();
+      this._compressorNode.threshold.value = -55; // Start compressing at -55 dB
+      this._compressorNode.knee.value      = 15;
+      this._compressorNode.ratio.value     = 8;   // 8:1 ratio = strong noise gate
+      this._compressorNode.attack.value    = 0.003;
+      this._compressorNode.release.value   = 0.2;
+
+      // ④ Gain – slight boost after processing
+      this._gainNode = this._audioCtx.createGain();
+      this._gainNode.gain.value = 1.3;
+
+      // ⑤ Analyser for local waveform visualisation
+      this._analyserLocal = this._audioCtx.createAnalyser();
+      this._analyserLocal.fftSize            = 256;
+      this._analyserLocal.smoothingTimeConstant = 0.75;
+
+      // ⑥ Destination streams
+      this._processedDest  = this._audioCtx.createMediaStreamDestination(); // → WebRTC
+      this._recordingMixer = this._audioCtx.createGain();                    // Recording mix
+      this._recordingDest  = this._audioCtx.createMediaStreamDestination(); // → MediaRecorder
+
+      // Connect chain:  src → hp → lp → compressor → gain → analyser → processedDest
+      src.connect(this._highpassNode);
+      this._highpassNode.connect(this._lowpassNode);
+      this._lowpassNode.connect(this._compressorNode);
+      this._compressorNode.connect(this._gainNode);
+      this._gainNode.connect(this._analyserLocal);
+      this._analyserLocal.connect(this._processedDest);
+
+      // Also feed into recording mixer
+      this._gainNode.connect(this._recordingMixer);
+      this._recordingMixer.connect(this._recordingDest);
+
+      // The processed stream is what we send to peers
+      this.processedStream = this._processedDest.stream;
+      console.log('[MTNG] ✅ Audio processing chain active');
+    } catch (err) {
+      console.warn('[MTNG] Web Audio setup failed, using raw stream:', err.message);
+      this.processedStream = this.localStream; // fallback
     }
   }
 
-  _updateUI() {
-    document.getElementById('noMeetingScreen').style.display = 'none';
-    document.getElementById('meetingRoom').style.display = 'flex';
-    this._updateMicButton();
-    this._updateCameraButton();
-    this._updateScreenButton();
-    this._updateParticipantCount();
+  // ── 2. STOMP Signaling ───────────────────────────────────────────
+  _connectSignaling() {
+    const self = this;
+    const sock = new SockJS('/ws');
+    this.stompClient = Stomp.over(sock);
+    this.stompClient.debug = null;
+
+    this.stompClient.connect({}, function () {
+      console.log('[MTNG] ✅ WS connected');
+      self.stompClient.subscribe('/topic/room/' + self.roomName, function (msg) {
+        try { self._handleSignal(JSON.parse(msg.body)); } catch (e) {}
+      });
+      // Announce: existing members will send us offers
+      self._sendSignal({ type: 'join', from: self.currentUser });
+    }, function (err) {
+      console.error('[MTNG] WS error:', err);
+      showAlert('🔄 Reconnecting...', 'error');
+      setTimeout(function () { self._connectSignaling(); }, 3000);
+    });
   }
 
-  // ═══════════════════════════════════════════════
-  // TIMER
-  // ═══════════════════════════════════════════════
+  _sendSignal(signal) {
+    if (this.stompClient && this.stompClient.connected) {
+      this.stompClient.send('/app/signal/' + this.roomName, {}, JSON.stringify(signal));
+    }
+  }
 
-  _startTimer() {
-    const self = this;
-    this.timerInterval = setInterval(() => {
-      if (!self.meetingStartTime) return;
-      const diff = Math.floor((new Date() - self.meetingStartTime) / 1000);
-      const h = String(Math.floor(diff / 3600)).padStart(2, '0');
-      const m = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
-      const s = String(diff % 60).padStart(2, '0');
-      const el = document.getElementById('timer');
-      if (el) el.textContent = h + ':' + m + ':' + s;
+  // ── 3. Signal Dispatcher (Perfect Negotiation) ──────────────────
+  async _handleSignal(signal) {
+    if (signal.from === this.currentUser) return;
+
+    // Polite peer = lexicographically smaller username.
+    // When glare (both offer at once), polite peer rolls back its own offer.
+    const polite = this.currentUser < signal.from;
+
+    switch (signal.type) {
+
+      case 'join':
+        // A new peer entered – we (existing member) create an offer to them
+        await this._createOffer(signal.from);
+        break;
+
+      case 'offer':
+        if (!signal.to || signal.to === this.currentUser) {
+          await this._handleOffer(signal, polite);
+        }
+        break;
+
+      case 'answer':
+        if (!signal.to || signal.to === this.currentUser) {
+          await this._handleAnswer(signal);
+        }
+        break;
+
+      case 'ice-candidate':
+        if (!signal.to || signal.to === this.currentUser) {
+          await this._handleIce(signal);
+        }
+        break;
+
+      case 'mute-state':
+        // Remote peer toggled their mic – update their tile badge
+        try {
+          const d = JSON.parse(signal.data);
+          this.peerMuteState[signal.from] = d;
+          this._setTileMicBadge(signal.from, d.micOn);
+          this._updateParticipantsList();
+        } catch (e) {}
+        break;
+
+      case 'audio-confirmed':
+        // Remote peer confirmed they can hear our audio → mutual handshake complete
+        if (!signal.to || signal.to === this.currentUser) {
+          const hsBadge = document.getElementById('hs-' + signal.from);
+          if (hsBadge) hsBadge.classList.add('active');
+          const stEl = document.getElementById('vstatus-' + signal.from);
+          if (stEl) stEl.textContent = '🔊 ↔ 🎙 Mutual Audio';
+          console.log('[MTNG] ✅ Mutual audio handshake complete with:', signal.from);
+        }
+        break;
+
+      case 'leave':
+        this._removePeer(signal.from);
+        break;
+    }
+  }
+
+  // ── 4. WebRTC Core ───────────────────────────────────────────────
+  async _createOffer(peerId) {
+    const pc = this._getOrCreatePC(peerId);
+    if (this.makingOffer[peerId]) return; // already in progress
+    try {
+      this.makingOffer[peerId] = true;
+      const offer = await pc.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: true });
+      if (pc.signalingState !== 'stable') return; // state changed during async gap
+      await pc.setLocalDescription(offer);
+      this._sendSignal({ type: 'offer', from: this.currentUser, to: peerId, data: JSON.stringify(pc.localDescription) });
+    } catch (e) {
+      console.error('[MTNG] createOffer:', e);
+    } finally {
+      this.makingOffer[peerId] = false;
+    }
+  }
+
+  async _handleOffer(signal, polite) {
+    const pc = this._getOrCreatePC(signal.from);
+    const offerCollision = this.makingOffer[signal.from] || pc.signalingState !== 'stable';
+
+    if (offerCollision) {
+      if (!polite) {
+        // Impolite peer: ignore incoming offer, keep our own
+        console.log('[MTNG] Glare ignored (impolite) from:', signal.from);
+        return;
+      }
+      // Polite peer: rollback our offer, accept theirs
+      console.log('[MTNG] Glare rollback (polite) for:', signal.from);
+      try {
+        await pc.setLocalDescription({ type: 'rollback' });
+      } catch (e) { /* rollback not always supported */ }
+      this.makingOffer[signal.from] = false;
+    }
+
+    try {
+      await pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(signal.data)));
+
+      // Flush buffered ICE candidates now that remote-desc is set
+      await this._flushIceQueue(signal.from, pc);
+
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      this._sendSignal({ type: 'answer', from: this.currentUser, to: signal.from, data: JSON.stringify(pc.localDescription) });
+    } catch (e) {
+      console.error('[MTNG] handleOffer:', e);
+    }
+  }
+
+  async _handleAnswer(signal) {
+    const pc = this.peers[signal.from];
+    if (!pc) return;
+    if (pc.signalingState === 'stable') return; // already applied
+    try {
+      await pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(signal.data)));
+      // Flush buffered ICE candidates
+      await this._flushIceQueue(signal.from, pc);
+    } catch (e) {
+      console.error('[MTNG] handleAnswer:', e);
+    }
+  }
+
+  async _handleIce(signal) {
+    const pc = this.peers[signal.from];
+    const candidate = new RTCIceCandidate(JSON.parse(signal.data));
+
+    if (pc && pc.remoteDescription && pc.remoteDescription.type) {
+      // Remote description already set – add immediately
+      try { await pc.addIceCandidate(candidate); } catch (e) { /* stale – ignore */ }
+    } else {
+      // Buffer until remote description is set
+      if (!this.pendingIce[signal.from]) this.pendingIce[signal.from] = [];
+      this.pendingIce[signal.from].push(candidate);
+    }
+  }
+
+  async _flushIceQueue(peerId, pc) {
+    const queue = this.pendingIce[peerId] || [];
+    this.pendingIce[peerId] = [];
+    for (const c of queue) {
+      try { await pc.addIceCandidate(c); } catch (e) { /* stale – ignore */ }
+    }
+  }
+
+  _getOrCreatePC(peerId) {
+    if (this.peers[peerId]) return this.peers[peerId];
+
+    const pc = new RTCPeerConnection(this.iceConfig);
+    this.peers[peerId] = pc;
+    this.pendingIce[peerId] = [];
+    this.makingOffer[peerId] = false;
+
+    // Add processed (noise-filtered) audio tracks so peers hear clean audio
+    // ★ FIX: verify the stream has live audio tracks; fall back to raw mic if not
+    let streamToSend = this.processedStream || this.localStream;
+    if (streamToSend) {
+      const liveTracks = streamToSend.getAudioTracks().filter(t => t.readyState === 'live' && t.enabled);
+      if (liveTracks.length === 0 && this.localStream && this.localStream !== streamToSend) {
+        console.warn('[MTNG] Processed stream has no live tracks, falling back to raw mic');
+        streamToSend = this.localStream;
+      }
+    }
+    if (streamToSend) {
+      streamToSend.getTracks().forEach(t => pc.addTrack(t, streamToSend));
+    }
+
+    // ★ CRITICAL: Play remote audio through speakers.
+    //   WebRTC delivers the audio track but it must be attached to an <audio>
+    //   element to actually be heard.  Without this nobody hears anyone.
+    const remoteStream = new MediaStream();
+    pc.ontrack = (ev) => {
+      if (ev.streams && ev.streams[0]) {
+        ev.streams[0].getTracks().forEach(t => {
+          if (!remoteStream.getTracks().find(x => x.id === t.id)) {
+            remoteStream.addTrack(t);
+          }
+        });
+      } else {
+        remoteStream.addTrack(ev.track);
+      }
+
+      // Create/update hidden <audio> element so the remote voice is heard
+      let audioEl = document.getElementById('audio-' + peerId);
+      if (!audioEl) {
+        audioEl = document.createElement('audio');
+        audioEl.id       = 'audio-' + peerId;
+        audioEl.autoplay = true;
+        audioEl.playsInline = true;
+        audioEl.setAttribute('playsinline', '');   // iOS Safari needs attribute
+        audioEl.setAttribute('webkit-playsinline', ''); // older iOS
+        audioEl.volume = 1.0;
+        audioEl.style.display = 'none';
+        document.body.appendChild(audioEl);
+      }
+      audioEl.srcObject = remoteStream;
+      // ★ FIX: robust play with retry — mobile browsers may reject first play()
+      audioEl.play().catch(e => {
+        console.warn('[MTNG] audio.play() blocked, retrying on user interaction:', e.message);
+        // Retry play on next user interaction (tap/click anywhere)
+        const retryPlay = () => {
+          audioEl.play().then(() => {
+            console.log('[MTNG] ✅ Remote audio playing for:', peerId);
+          }).catch(() => {});
+          document.removeEventListener('click', retryPlay);
+          document.removeEventListener('touchstart', retryPlay);
+        };
+        document.addEventListener('click', retryPlay, { once: true });
+        document.addEventListener('touchstart', retryPlay, { once: true });
+      });
+
+      this._addAudioTile(peerId, peerId, false);
+      this._routeRemoteStreamToRecorder(peerId, remoteStream);
+      // Apply stored mute state
+      const ms = this.peerMuteState[peerId];
+      if (ms) this._setTileMicBadge(peerId, ms.micOn);
+    };
+
+    // ICE → signaling
+    pc.onicecandidate = (ev) => {
+      if (ev.candidate) {
+        this._sendSignal({ type: 'ice-candidate', from: this.currentUser, to: peerId, data: JSON.stringify(ev.candidate) });
+      }
+    };
+
+    pc.oniceconnectionstatechange = () => {
+      const s = pc.iceConnectionState;
+      console.log('[MTNG] ICE ' + peerId + ':', s);
+      if (s === 'failed') { pc.restartIce(); this._createOffer(peerId); }
+      if (s === 'closed')  this._removePeer(peerId);
+    };
+
+    pc.onsignalingstatechange = () => {
+      console.log('[MTNG] Signaling ' + peerId + ':', pc.signalingState);
+    };
+
+    return pc;
+  }
+
+  // Route a remote participant's audio stream into the recording mix
+  _routeRemoteStreamToRecorder(peerId, remoteStream) {
+    if (!this._audioCtx || !this._recordingMixer) return;
+    try {
+      const src = this._audioCtx.createMediaStreamSource(remoteStream);
+      // Per-peer analyser for waveform visualization
+      const analyser = this._audioCtx.createAnalyser();
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.75;
+      src.connect(analyser);
+      analyser.connect(this._recordingMixer);
+      this._analyserNodes[peerId] = analyser;
+      // ── Start handshake detector: watch for real audio activity ──
+      this._startAudioHandshakeCheck(peerId, analyser);
+      console.log('[MTNG] Remote audio from ' + peerId + ' routed to recorder');
+    } catch (e) {
+      console.warn('[MTNG] Could not route remote audio for recording:', e.message);
+    }
+  }
+
+  // ── Audio Handshake: detect when remote audio is actually flowing ─
+  // Polls the analyser node every second; when average frequency energy > threshold,
+  // the remote peer's audio is confirmed live. Sends 'audio-confirmed' back so
+  // the remote peer's tile also shows the "🔊 ↔ 🎙" mutual audio badge.
+  _startAudioHandshakeCheck(peerId, analyser) {
+    if (this._audioHandshake[peerId]) return; // already confirmed
+    let checks = 0;
+    const maxChecks = 45; // give up after ~45 s (peer may be muted)
+    const interval = setInterval(() => {
+      checks++;
+      if (this._audioHandshake[peerId]) { clearInterval(interval); return; }
+      const buf = new Uint8Array(analyser.frequencyBinCount);
+      analyser.getByteFrequencyData(buf);
+      const avg = buf.reduce((a, b) => a + b, 0) / buf.length;
+      if (avg > 1.5) {
+        // Audio is flowing – handshake confirmed
+        this._audioHandshake[peerId] = true;
+        clearInterval(interval);
+        // Show handshake badge on their tile
+        const hsBadge = document.getElementById('hs-' + peerId);
+        if (hsBadge) hsBadge.classList.add('active');
+        // Update their status text
+        const stEl = document.getElementById('vstatus-' + peerId);
+        if (stEl) stEl.textContent = '🔊 ↔ 🎙 Mutual Audio';
+        // Notify remote peer that we can hear them
+        this._sendSignal({ type: 'audio-confirmed', from: this.currentUser, to: peerId });
+        console.log('[MTNG] ✅ Mutual audio confirmed (local→' + peerId + ')');
+        showAlert('🔊 ↔ 🎙 Mutual audio connected with ' + peerId, 'success');
+      }
+      if (checks >= maxChecks) clearInterval(interval);
     }, 1000);
   }
 
-  // ═══════════════════════════════════════════════
-  // CHAT (server-side polling for persistence)
-  // ═══════════════════════════════════════════════
+  // ── 5. Audio Tile (replaces Video Tile) ──────────────────────────
+  _addAudioTile(userId, label, isLocal) {
+    const grid = document.getElementById('videoGrid');
+    if (!grid) return;
 
+    const old = document.getElementById('vtile-' + userId);
+    if (old) old.remove();
+
+    const tile = document.createElement('div');
+    tile.id        = 'vtile-' + userId;
+    tile.className = 'audio-tile' + (isLocal ? ' local-tile' : '');
+
+    // Noise badge (local tile only)
+    if (isLocal) {
+      const nb = document.createElement('div');
+      nb.className = 'noise-badge';
+      nb.id = 'noiseBadge';
+      nb.textContent = '🔇 NOISE FILTER ON';
+      tile.appendChild(nb);
+    }
+
+    // Avatar
+    const av = document.createElement('div');
+    av.className = 'audio-avatar';
+    av.id = 'avatar-' + userId;
+    av.textContent = (label || '?').charAt(0).toUpperCase();
+    tile.appendChild(av);
+
+    // Name label
+    const nm = document.createElement('div');
+    nm.className = 'audio-name';
+    nm.id = 'vlbl-' + userId;
+    nm.textContent = isLocal ? '🎙 You (' + label + ')' : '👤 ' + label;
+    tile.appendChild(nm);
+
+    // Status
+    const st = document.createElement('div');
+    st.className = 'audio-status';
+    st.id = 'vstatus-' + userId;
+    st.textContent = isLocal ? '🟢 Connected' : '🔗 Connecting...';
+    tile.appendChild(st);
+
+    // Waveform bars (8 bars)
+    const wf = document.createElement('div');
+    wf.className = 'waveform';
+    wf.id = 'waveform-' + userId;
+    for (let i = 0; i < 8; i++) {
+      const bar = document.createElement('div');
+      bar.className = 'waveform-bar';
+      bar.style.height = '3px';
+      wf.appendChild(bar);
+    }
+    tile.appendChild(wf);
+
+    // Mic mute badge (hidden by default)
+    const badge = document.createElement('div');
+    badge.className = 'mic-indicator';
+    badge.id = 'vmic-' + userId;
+    badge.textContent = '🔇';
+    tile.appendChild(badge);
+
+    // Mutual audio handshake badge (remote tiles only – appears once both sides confirm audio)
+    if (!isLocal) {
+      const hsBadge = document.createElement('div');
+      hsBadge.className = 'handshake-badge';
+      hsBadge.id = 'hs-' + userId;
+      hsBadge.textContent = '🔊 ↔ 🎙 Audio OK';
+      tile.appendChild(hsBadge);
+    }
+
+    grid.appendChild(tile);
+    this._rebalanceGrid();
+    this._updateParticipantsList();
+  }
+
+  // Update waveform bars for an audio tile
+  _updateWaveform(userId, analyser) {
+    if (!analyser) return;
+    const wf = document.getElementById('waveform-' + userId);
+    if (!wf) return;
+    const bars = wf.querySelectorAll('.waveform-bar');
+    const buf  = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(buf);
+    // Use 8 evenly spaced frequency bands (voice range 80–3000 Hz)
+    const step = Math.floor(buf.length / 8);
+    bars.forEach((bar, i) => {
+      const val = buf[i * step + 2] || 0; // skip DC offset
+      const h   = Math.max(3, Math.min(24, val / 5));
+      bar.style.height = h + 'px';
+    });
+    // Show speaking state
+    const avg = buf.slice(0, 20).reduce((a, b) => a + b, 0) / 20;
+    const tile = document.getElementById('vtile-' + userId);
+    if (tile) tile.classList.toggle('speaking', avg > 15);
+  }
+
+  // Waveform animation loop for all participants
+  _startWaveformAnimation() {
+    const self = this;
+    const loop = () => {
+      // Local
+      if (self._analyserLocal) self._updateWaveform('local', self._analyserLocal);
+      // Remote peers
+      Object.keys(self._analyserNodes).forEach(pid => {
+        self._updateWaveform(pid, self._analyserNodes[pid]);
+      });
+      self._waveAnimId = requestAnimationFrame(loop);
+    };
+    loop();
+  }
+
+  _setTileMicBadge(userId, micOn) {
+    const badge = document.getElementById('vmic-' + userId);
+    if (badge) badge.classList.toggle('show', !micOn);
+    const tile = document.getElementById('vtile-' + userId);
+    if (tile) tile.classList.toggle('muted-tile', !micOn);
+    const lbl = document.getElementById('vlbl-' + userId);
+    if (lbl && userId !== 'local') {
+      const base = '👤 ' + userId;
+      lbl.textContent = micOn ? base : base + ' 🔇';
+    }
+  }
+
+  _removePeer(peerId) {
+    if (this.peers[peerId]) { try { this.peers[peerId].close(); } catch (e) {} delete this.peers[peerId]; }
+    delete this.pendingIce[peerId];
+    delete this.makingOffer[peerId];
+    delete this.peerMuteState[peerId];
+    delete this._analyserNodes[peerId];
+    // Remove hidden audio element
+    const audioEl = document.getElementById('audio-' + peerId);
+    if (audioEl) { audioEl.srcObject = null; audioEl.remove(); }
+    const tile = document.getElementById('vtile-' + peerId);
+    if (tile) tile.remove();
+    this._rebalanceGrid();
+    this._updateParticipantsList();
+    showAlert('👤 ' + peerId + ' left the meeting', 'info');
+  }
+
+  _rebalanceGrid() {
+    const grid = document.getElementById('videoGrid');
+    if (!grid) return;
+    const n = grid.children.length;
+    // Audio tiles are compact – use more columns
+    const cols = n <= 1 ? 1 : n <= 2 ? 2 : n <= 6 ? 3 : 4;
+    grid.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
+    // Also update status for connected peers
+    Object.keys(this.peers).forEach(pid => {
+      const st = document.getElementById('vstatus-' + pid);
+      if (st) st.textContent = '🟢 Connected';
+    });
+  }
+
+  // ── 6. Controls ──────────────────────────────────────────────────
+
+  /**
+   * Toggle mic ON/OFF.
+   * Sender: disables audio track (no audio sent to peers).
+   * Receiver: gets mute-state signal → 🔇 badge shown on sender's tile.
+   */
+  toggleMic() {
+    this.isMicOn = !this.isMicOn;
+
+    // 1. Mute/unmute via gainNode (most reliable way with Web Audio chain)
+    if (this._gainNode && this._audioCtx) {
+      this._gainNode.gain.setValueAtTime(
+        this.isMicOn ? 1.3 : 0,
+        this._audioCtx.currentTime
+      );
+    }
+
+    // 2. Also disable the raw mic track (belt-and-suspenders; stops getUserMedia track)
+    if (this.localStream) {
+      this.localStream.getAudioTracks().forEach(t => { t.enabled = this.isMicOn; });
+    }
+    // Disable processed stream tracks too (ensures WebRTC sender sees silence)
+    if (this.processedStream && this.processedStream !== this.localStream) {
+      this.processedStream.getAudioTracks().forEach(t => { t.enabled = this.isMicOn; });
+    }
+
+    // 3. Update local control button
+    const btn = document.getElementById('micBtn');
+    if (btn) {
+      btn.textContent = this.isMicOn ? '🎙' : '🔇';
+      btn.className = 'control-button ' + (this.isMicOn ? 'active' : 'muted');
+    }
+
+    // 4. Show/hide mute badge on LOCAL tile
+    this._setTileMicBadge('local', this.isMicOn);
+
+    // 5. Broadcast mute state to ALL peers so they update their UI
+    this._sendSignal({
+      type: 'mute-state',
+      from: this.currentUser,
+      data: JSON.stringify({ micOn: this.isMicOn })
+    });
+
+    showAlert(this.isMicOn ? '🎙 Mic ON' : '🔇 Mic MUTED', this.isMicOn ? 'success' : 'error');
+  }
+
+  // ── Toggle Noise Filter ──────────────────────────────────────────
+  toggleNoiseFilter() {
+    this._noiseFilterOn = !this._noiseFilterOn;
+    const btn = document.getElementById('noiseBtn');
+    const badge = document.getElementById('noiseBadge');
+
+    if (this._noiseFilterOn) {
+      // Re-enable compressor and filters
+      if (this._compressorNode) this._compressorNode.ratio.value = 8;
+      if (this._highpassNode)   this._highpassNode.frequency.value = 80;
+      if (this._lowpassNode)    this._lowpassNode.frequency.value  = 8000;
+      if (btn) { btn.textContent = '🔇'; btn.className = 'control-button active'; }
+      if (badge) { badge.textContent = '🔇 NOISE FILTER ON'; badge.style.display = 'block'; }
+      showAlert('🔇 Noise filter ON', 'success');
+    } else {
+      // Bypass filters (pass all frequencies)
+      if (this._compressorNode) this._compressorNode.ratio.value = 1;
+      if (this._highpassNode)   this._highpassNode.frequency.value = 20;
+      if (this._lowpassNode)    this._lowpassNode.frequency.value  = 20000;
+      if (btn) { btn.textContent = '🔈'; btn.className = 'control-button'; }
+      if (badge) { badge.textContent = '🔈 NOISE FILTER OFF'; badge.style.display = 'block'; }
+      showAlert('🔈 Noise filter OFF', 'info');
+    }
+  }
+
+  // ── Recording ────────────────────────────────────────────────────
+  toggleRecording() {
+    if (!this._isRecording) {
+      // Manual start overrides auto mode
+      this._autoRecording = false;
+      this._startRecording();
+      // Hide auto-rec badge if shown
+      const ab = document.getElementById('autoRecBadge');
+      if (ab) ab.classList.remove('active');
+    } else {
+      // If it was auto-recording, switch to manual mode so save modal appears
+      this._autoRecording = false;
+      this._stopRecording();
+    }
+  }
+
+  _startRecording() {
+    const recStream = this._recordingDest ? this._recordingDest.stream
+                     : (this.processedStream || this.localStream);
+    if (!recStream) { showAlert('No audio stream available for recording', 'error'); return; }
+
+    this._recordingChunks  = [];
+    this._recordingBlob    = null;
+    this._recEndTime       = null;     // reset end time
+    this._recDurationSecs  = 0;        // reset stored duration
+
+    // Choose best available codec – prefer Opus which gives the cleanest audio
+    const mimeTypes = [
+      'audio/webm;codecs=opus',
+      'audio/webm',
+      'audio/ogg;codecs=opus',
+      'audio/ogg',
+      ''
+    ];
+    let mime = '';
+    for (const m of mimeTypes) {
+      if (!m || MediaRecorder.isTypeSupported(m)) { mime = m; break; }
+    }
+
+    // High-quality audio options: 128kbps Opus — CD-quality voice, very clear
+    const recOptions = {};
+    if (mime) recOptions.mimeType = mime;
+    if (mime.indexOf('opus') !== -1 || mime.indexOf('webm') !== -1) {
+      recOptions.audioBitsPerSecond = 128000; // 128 kbps – clear, noise-free audio
+    }
+
+    try {
+      this._recorder = new MediaRecorder(recStream, recOptions);
+    } catch (e) {
+      console.warn('[MTNG] MediaRecorder with options failed, retrying without options:', e.message);
+      this._recorder = new MediaRecorder(recStream); // fallback: no options
+    }
+
+    this._recorder.ondataavailable = (ev) => {
+      if (ev.data && ev.data.size > 0) this._recordingChunks.push(ev.data);
+    };
+
+    this._recorder.onstop = () => {
+      this._recEndTime = Date.now(); // capture exact stop time for duration calc
+      const type = (this._recorder && this._recorder.mimeType) || 'audio/webm';
+      this._recordingBlob = new Blob(this._recordingChunks, { type });
+      console.log('[MTNG] Recording blob ready. Size:', this._recordingBlob.size, 'type:', type);
+
+      // _suppressOnStop: set true by endMeeting/leaveMeeting before _stopRecordingAndWait()
+      // to prevent this handler from double-saving (the caller handles the save).
+      if (this._suppressOnStop) {
+        this._suppressOnStop = false;
+        return; // caller handles save
+      }
+
+      if (this._autoRecording) {
+        // Auto-recording was stopped manually mid-meeting (user clicked ⏺).
+        // Auto-save to DB silently without the save modal.
+        this._saveToDb(this._buildFileName()).then(ok => {
+          const ab = document.getElementById('autoRecBadge');
+          if (ab) ab.classList.remove('active');
+          showAlert(ok ? '✅ Session recording saved to database' : '⚠️ Auto-save failed – check console', ok ? 'success' : 'error');
+        });
+      } else {
+        // Manual recording – show the save options modal
+        this._showSaveModal();
+      }
+    };
+
+    this._recorder.onerror = (ev) => {
+      console.error('[MTNG] MediaRecorder error:', ev.error);
+      showAlert('Recording error: ' + (ev.error?.message || 'unknown'), 'error');
+    };
+
+    this._recorder.start(250); // Collect chunks every 250 ms – minimises data loss on stop
+    this._isRecording   = true;
+    this._recStartTime  = Date.now();
+
+    // ★ Capture meetingId NOW (before meeting might get stopped).
+    //   _saveToDb will use this cached value instead of querying /api/meeting/active.
+    if (!this._recMeetingId) {
+      fetch('/api/meeting/active').then(r => {
+        if (r.ok) return r.json();
+        return null;
+      }).then(m => {
+        if (m && m.id) this._recMeetingId = m.id;
+      }).catch(() => {});
+    }
+
+    // Update UI
+    const btn = document.getElementById('recordBtn');
+    const lbl = document.getElementById('recordBtnLabel');
+    if (btn) {
+      btn.textContent  = '⏹';
+      btn.className    = 'control-button muted';
+      btn.title        = this._autoRecording
+        ? 'Stop Auto-Recording (session is being recorded automatically)'
+        : 'Stop Recording';
+    }
+    if (lbl) lbl.textContent = this._autoRecording ? 'Stop Rec' : 'Stop';
+    const ind = document.getElementById('recIndicator');
+    if (ind) ind.classList.add('active');
+
+    // Start recording timer
+    this._recTimerInterval = setInterval(() => this._updateRecTimer(), 1000);
+    showAlert(this._autoRecording ? '⏺ Auto-recording started' : '⏺ Recording started', 'success');
+  }
+
+  _stopRecording() {
+    if (this._recorder && this._recorder.state === 'recording') {
+      this._recorder.stop();
+    }
+    this._isRecording = false;
+    clearInterval(this._recTimerInterval);
+
+    // Update UI
+    const btn = document.getElementById('recordBtn');
+    const lbl = document.getElementById('recordBtnLabel');
+    if (btn) { btn.textContent = '⏺'; btn.className = 'control-button'; btn.title = 'Record Meeting'; }
+    if (lbl) lbl.textContent = 'Record';
+    const ind = document.getElementById('recIndicator');
+    if (ind) ind.classList.remove('active');
+    const rt = document.getElementById('recTimer');
+    if (rt) rt.textContent = '00:00';
+    showAlert('⏹ Recording stopped – choose save option', 'info');
+  }
+
+  /**
+   * Stop recording and return a Promise that resolves when the blob is ready.
+   * Use this when you need the recording data before navigating away.
+   * ★ FIX: Does NOT call the original onstop — builds blob directly.
+   *   Caller must set _suppressOnStop=true before calling this so the
+   *   original onstop (if it fires anyway) is a no-op.
+   */
+  _stopRecordingAndWait() {
+    return new Promise((resolve) => {
+      if (!this._recorder || this._recorder.state !== 'recording') {
+        resolve(this._recordingBlob || null);
+        return;
+      }
+
+      // Replace onstop entirely — don't chain to old handler
+      this._recorder.onstop = () => {
+        this._recEndTime = this._recEndTime || Date.now();
+        const type = (this._recorder && this._recorder.mimeType) || 'audio/webm';
+        this._recordingBlob = new Blob(this._recordingChunks, { type });
+        console.log('[MTNG] _stopRecordingAndWait: blob ready, size:', this._recordingBlob.size);
+        resolve(this._recordingBlob);
+      };
+
+      this._isRecording = false;
+      clearInterval(this._recTimerInterval);
+      try { this._recorder.stop(); } catch(e) { resolve(null); }
+
+      // Update UI
+      const btn = document.getElementById('recordBtn');
+      const lbl = document.getElementById('recordBtnLabel');
+      if (btn) { btn.textContent = '⏺'; btn.className = 'control-button'; }
+      if (lbl) lbl.textContent = 'Record';
+      const ind = document.getElementById('recIndicator');
+      if (ind) ind.classList.remove('active');
+      const rt = document.getElementById('recTimer');
+      if (rt) rt.textContent = '00:00';
+    });
+  }
+
+  _updateRecTimer() {
+    if (!this._recStartTime) return;
+    const elapsed = Math.floor((Date.now() - this._recStartTime) / 1000);
+    const m = Math.floor(elapsed / 60), s = elapsed % 60;
+    const rt = document.getElementById('recTimer');
+    if (rt) rt.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  }
+
+  // ── Save Recording Modal ─────────────────────────────────────────
+  _showSaveModal() {
+    if (!this._recordingBlob || this._recordingBlob.size === 0) {
+      console.warn('[MTNG] _showSaveModal: no blob or empty blob');
+      return;
+    }
+
+    // Duration: calculated from when recording started until now (or stop time)
+    const endMs  = this._recEndTime || Date.now();
+    const startMs = this._recStartTime || endMs;
+    const secs   = Math.max(1, Math.floor((endMs - startMs) / 1000));
+    this._recDurationSecs = secs; // store for _saveToDb
+
+    const m = Math.floor(secs / 60), s = secs % 60;
+    const size = this._recordingBlob.size;
+    const sizeStr = size > 1024 * 1024
+        ? (size / 1024 / 1024).toFixed(2) + ' MB'
+        : (size / 1024).toFixed(0) + ' KB';
+
+    const d = document.getElementById('savedRecDuration');
+    if (d) d.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    const sz = document.getElementById('savedRecSize');
+    if (sz) sz.textContent = sizeStr;
+    const nm = document.getElementById('savedRecName');
+    if (nm) nm.textContent = this.currentUser;
+
+    const modal = document.getElementById('saveRecordingModal');
+    if (modal) modal.style.display = 'flex';
+
+    // Show/hide end-meeting warning note
+    const note = document.getElementById('saveRecNote');
+    if (note) note.style.display = (typeof _navigateAfterSave !== 'undefined' && _navigateAfterSave) ? 'block' : 'none';
+
+    console.log('[MTNG] Save modal shown – duration:', secs, 's, size:', sizeStr);
+  }
+
+  /** Build a recording file name */
+  _buildFileName() {
+    const now = new Date();
+    const ts = now.toISOString().replace(/[:.]/g, '-').substring(0, 19);
+    return 'mtng-recording-' + ts + '.webm';
+  }
+
+  /** Trigger browser download of the recording blob */
+  _downloadFile() {
+    if (!this._recordingBlob) return null;
+    const url = URL.createObjectURL(this._recordingBlob);
+    const a   = document.createElement('a');
+    a.href     = url;
+    a.download = this._buildFileName();
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    return a.download;
+  }
+
+  /** POST recording metadata to database, then upload the audio blob */
+  async _saveToDb(fileName) {
+    // ★ FIX: Always compute duration from timestamps (not relying on _showSaveModal)
+    if (!this._recDurationSecs || this._recDurationSecs <= 0) {
+      const endMs   = this._recEndTime || Date.now();
+      const startMs = this._recStartTime || endMs;
+      this._recDurationSecs = Math.max(1, Math.floor((endMs - startMs) / 1000));
+    }
+    const secs = this._recDurationSecs;
+
+    const body = {
+      participantName: this.currentUser,
+      durationSeconds: secs,
+      fileName:        fileName || this._buildFileName(),
+      fileSize:        this._recordingBlob ? this._recordingBlob.size : 0,
+      participantType: (typeof isAdmin !== 'undefined' && isAdmin) ? 'HOST' : 'PARTICIPANT'
+    };
+
+    // ★ FIX: Use the meetingId cached at recording-start time.
+    //   The meeting may already be stopped by the time we get here (endMeeting calls /stop first).
+    if (this._recMeetingId) {
+      body.meetingId = this._recMeetingId;
+    } else {
+      // Fallback: try to fetch active meeting (works if meeting is still running)
+      try {
+        const r = await fetch('/api/meeting/active');
+        if (r.ok) { const m = await r.json(); if (m && m.id) body.meetingId = m.id; }
+      } catch (e) {}
+    }
+    console.log('[MTNG] Saving to DB:', JSON.stringify(body));
+
+    let savedId = null;
+    try {
+      // Step 1: Save metadata
+      const resp = await fetch('/api/recordings/save-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (resp.ok) {
+        const saved = await resp.json();
+        savedId = saved.id;
+        console.log('[MTNG] DB metadata save OK, id:', savedId);
+      } else {
+        console.error('[MTNG] DB save HTTP error:', resp.status, await resp.text());
+        return false;
+      }
+    } catch (e) { console.error('[MTNG] Save to DB failed:', e); return false; }
+
+    // Step 2: Upload audio blob (if we have it and the metadata was saved)
+    if (savedId && this._recordingBlob && this._recordingBlob.size > 0) {
+      try {
+        const form = new FormData();
+        const ext  = (this._recorder && this._recorder.mimeType || '').indexOf('ogg') !== -1 ? '.ogg' : '.webm';
+        const fn   = fileName || this._buildFileName();
+        form.append('audio', this._recordingBlob, fn);
+        const upResp = await fetch('/api/recordings/' + savedId + '/upload-audio', {
+          method: 'POST',
+          body: form
+        });
+        if (upResp.ok) {
+          const upResult = await upResp.json();
+          console.log('[MTNG] Audio blob uploaded, size:', upResult.size);
+        } else {
+          console.warn('[MTNG] Audio upload HTTP error:', upResp.status);
+          // Metadata was saved successfully even if audio upload failed
+        }
+      } catch (e) { console.warn('[MTNG] Audio upload failed (metadata was saved):', e.message); }
+    }
+    return true;
+  }
+
+  async toggleScreenShare() {
+    if (!this.isScreenSharing) {
+      try {
+        this.screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+        const sTrack = this.screenStream.getVideoTracks()[0];
+        for (const pc of Object.values(this.peers)) {
+          const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
+          if (sender) sender.replaceTrack(sTrack);
+        }
+        const lv = document.querySelector('#vtile-local video');
+        if (lv) { lv.srcObject = this.screenStream; lv.style.transform = 'none'; }
+        sTrack.onended = () => this._stopScreenShare();
+        this.isScreenSharing = true;
+        const btn = document.getElementById('screenBtn');
+        if (btn) btn.classList.add('active');
+        showAlert('🖥 Screen sharing ON', 'success');
+      } catch (e) { showAlert('Screen share: ' + e.message, 'error'); }
+    } else {
+      this._stopScreenShare();
+    }
+  }
+
+  _stopScreenShare() {
+    if (this.screenStream) { this.screenStream.getTracks().forEach(t => t.stop()); this.screenStream = null; }
+    if (this.localStream) {
+      const camTrack = this.localStream.getVideoTracks()[0];
+      if (camTrack) {
+        for (const pc of Object.values(this.peers)) {
+          const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
+          if (sender) sender.replaceTrack(camTrack);
+        }
+        const lv = document.querySelector('#vtile-local video');
+        if (lv) { lv.srcObject = this.localStream; lv.style.transform = 'scaleX(-1)'; }
+      }
+    }
+    this.isScreenSharing = false;
+    const btn = document.getElementById('screenBtn');
+    if (btn) btn.classList.remove('active');
+    showAlert('Screen sharing OFF', 'info');
+  }
+
+  // ── 7. Chat ──────────────────────────────────────────────────────
   _startChatPolling() {
     this._loadChatMessages();
     this.chatPollInterval = setInterval(() => this._loadChatMessages(), 3000);
@@ -999,225 +1782,706 @@ class MtngJitsiWrapper {
     try {
       const res = await fetch('/api/chat/messages');
       if (!res.ok) return;
-      const messages = await res.json();
+      const msgs = await res.json();
       const box = document.getElementById('chatMessages');
       if (!box) return;
-
-      if (messages.length === 0) {
-        box.innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">💬 No messages yet. Start a conversation!</div>';
+      if (!msgs.length) {
+        box.innerHTML = '<div style="padding:20px;text-align:center;color:#555">💬 No messages yet.</div>';
         return;
       }
-
-      const self = this;
-      box.innerHTML = messages.map(m => {
-        const isOwn = m.sender === self.currentUser;
-        const time = m.sentAt ? new Date(m.sentAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '';
-        return '<div class="chat-message' + (isOwn ? ' own' : '') + '">' +
-               '<div class="chat-message-sender">' + self._escapeHtml(m.sender) + '</div>' +
-               '<div>' + self._escapeHtml(m.content) + '</div>' +
-               '<div class="chat-message-time">' + time + '</div>' +
-               '</div>';
+      const me = this.currentUser;
+      box.innerHTML = msgs.map(m => {
+        const isOwn = m.sender === me;
+        const t = m.sentAt ? new Date(m.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+        return '<div class="chat-message' + (isOwn ? ' own' : '') + '"><div class="chat-bubble ' +
+          (isOwn ? 'mine' : 'theirs') + '"><div class="bubble-sender">' + this._esc(m.sender) +
+          '</div>' + this._esc(m.content) + '<div class="bubble-time">' + t + '</div></div></div>';
       }).join('');
-
       box.scrollTop = box.scrollHeight;
-    } catch (e) {
-      console.warn('[MTNG] Chat load error:', e);
-    }
+    } catch (e) {}
   }
 
-  // ═══════════════════════════════════════════════
-  // STATS POLLING (participant counts)
-  // ═══════════════════════════════════════════════
-
+  // ── 8. Stats ─────────────────────────────────────────────────────
   _startStatsPolling() {
-    this.statsPollInterval = setInterval(() => {
-      this._updateParticipantCount();
-    }, 5000);
+    const doUpdate = async () => {
+      try {
+        const r = await fetch('/api/students/online');
+        if (r.ok) {
+          const d = await r.json();
+          const el = document.getElementById('onlineCount');   if (el) el.textContent = d.online || 0;
+          const im = document.getElementById('inMeetingCount'); if (im) im.textContent = d.online || 0;
+        }
+      } catch (e) {}
+    };
+    doUpdate();
+    this.statsPollInterval = setInterval(doUpdate, 5000);
   }
 
-  // ═══════════════════════════════════════════════
-  // API CALLS (server-side join/leave tracking)
-  // ═══════════════════════════════════════════════
+  // ── 9. Timer ─────────────────────────────────────────────────────
+  _startTimer() {
+    this.timerInterval = setInterval(() => {
+      const e = Math.floor((Date.now() - this.meetingStartTime) / 1000);
+      const h = Math.floor(e / 3600), m = Math.floor((e % 3600) / 60), s = e % 60;
+      const el = document.getElementById('timer');
+      if (el) el.textContent = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    }, 1000);
+  }
 
-  async _joinMeetingAPI() {
-    try {
-      const res = await fetch('/api/meeting/join', { method: 'POST' });
-      const data = await res.json();
-      if (!data.error) {
-        console.log('[MTNG] Server join confirmed: meetingId=' + data.meetingId);
-      }
-    } catch (e) {
-      console.error('[MTNG] Error joining meeting via API:', e);
+  // ── 10. Participants list (shows mute state) ─────────────────────
+  _updateParticipantsList() {
+    const list = document.getElementById('participantsList');
+    if (!list) return;
+    const all = [this.currentUser, ...Object.keys(this.peers)];
+    const self = this;
+    list.innerHTML = all.map(name => {
+      const isMe = name === self.currentUser;
+      const muteState = isMe ? { micOn: self.isMicOn } : (self.peerMuteState[name] || { micOn: true });
+      const micBadge = muteState.micOn ? '<span style="color:#22C55E;font-size:11px">🎙 Live</span>'
+                                        : '<span class="p-muted">🔇 Muted</span>';
+      return '<div class="participant-item">' +
+        '<div class="p-avatar">' + name.charAt(0).toUpperCase() + '</div>' +
+        '<div style="flex:1"><div class="p-name">' + self._esc(name) + (isMe ? ' <span style="font-size:10px;color:#888">(You)</span>' : '') + '</div>' +
+        '<div class="p-status" style="display:flex;gap:6px;align-items:center">● Connected &nbsp;' + micBadge + '</div>' +
+        '</div></div>';
+    }).join('');
+  }
+
+  // ── 11. Cleanup ──────────────────────────────────────────────────
+  dispose() {
+    try { this._sendSignal({ type: 'leave', from: this.currentUser }); } catch (e) {}
+
+    // NOTE: Do NOT stop recorder here – caller handles it before dispose()
+    clearInterval(this._recTimerInterval);
+
+    // Stop animation loop
+    if (this._waveAnimId) cancelAnimationFrame(this._waveAnimId);
+
+    // Stop all intervals
+    [this.timerInterval, this.chatPollInterval, this.statsPollInterval].forEach(i => { if (i) clearInterval(i); });
+
+    // Close all peer connections and remove their audio elements
+    for (const pid of Object.keys(this.peers)) {
+      try { this.peers[pid].close(); } catch (e) {}
+      const audioEl = document.getElementById('audio-' + pid);
+      if (audioEl) { audioEl.srcObject = null; audioEl.remove(); }
     }
-  }
+    this.peers      = {};
+    this.pendingIce = {};
+    this._analyserNodes = {};
 
-  async _leaveMeetingAPI() {
-    try {
-      await fetch('/api/meeting/leave', { method: 'POST' });
-      console.log('[MTNG] Server leave confirmed');
-    } catch (e) {
-      console.error('[MTNG] Error leaving meeting via API:', e);
+    // Stop media streams
+    if (this.localStream)    this.localStream.getTracks().forEach(t => t.stop());
+    if (this.screenStream)   this.screenStream.getTracks().forEach(t => t.stop());
+    if (this.processedStream && this.processedStream !== this.localStream) {
+      try { this.processedStream.getTracks().forEach(t => t.stop()); } catch (e) {}
     }
+
+    // Close AudioContext
+    if (this._audioCtx) { try { this._audioCtx.close(); } catch (e) {} this._audioCtx = null; }
+
+    // Disconnect STOMP
+    if (this.stompClient) { try { this.stompClient.disconnect(); } catch (e) {} }
   }
 
-  // ═══════════════════════════════════════════════
-  // UTILITY
-  // ═══════════════════════════════════════════════
-
-  _escapeHtml(text) {
-    if (!text) return '';
-    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-    return String(text).replace(/[&<>"']/g, m => map[m]);
+  _esc(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 }
 
-// ═══════════════════════════════════════════════
-//  PAGE-LEVEL FUNCTIONS
-// ═══════════════════════════════════════════════
+/* ── Page-level state ─────────────────────────────────────────── */
+let room = null;
+const currentUser      = /*[[${currentUser}]]*/ 'Guest';
+const roomName         = /*[[${roomName}]]*/ '';
+const meetingTitle     = /*[[${meeting?.title}]]*/ 'MTNG Meeting';
+const hasActiveMeeting = /*[[${hasActiveMeeting}]]*/ false;
+const isAdmin = /*[[${#authorization.expression('hasRole(''ADMIN'')')}]]*/ false;
 
-let mtngWrapper = null;
+/* ── Mic Permission Helpers ──────────────────────────────────── */
+function showMicBlockedOverlay(reason, noDevice) {
+  const overlay = document.getElementById('micBlockedOverlay');
+  if (!overlay) return;
+  const reasonEl = document.getElementById('micBlockedReason');
+  if (reasonEl) reasonEl.textContent = reason || 'Microphone access was denied.';
+  // Hide retry button if no hardware found
+  const retryBtn = document.getElementById('retryMicBtn');
+  if (retryBtn) retryBtn.style.display = noDevice ? 'none' : 'block';
+  overlay.style.display = 'flex';
+}
 
-// ─── Initialize on page load ───
-document.addEventListener('DOMContentLoaded', () => {
-  mtngWrapper = new MtngJitsiWrapper();
+function hideMicBlockedOverlay() {
+  const overlay = document.getElementById('micBlockedOverlay');
+  if (overlay) overlay.style.display = 'none';
+  const st = document.getElementById('micRetryStatus');
+  if (st) st.textContent = '';
+}
 
-  if (mtngWrapper.hasActiveMeeting) {
-    if (mtngWrapper.isAdmin) {
-      // Admin goes directly into meeting
-      startMeetingUI();
+async function retryMicAccess() {
+  const st     = document.getElementById('micRetryStatus');
+  const btn    = document.getElementById('retryMicBtn');
+  if (st)  st.textContent  = '⏳ Requesting microphone...';
+  if (btn) btn.disabled    = true;
+
+  const audioConstraints = {
+    echoCancellation: true,
+    noiseSuppression: true,
+    autoGainControl: true,
+    channelCount: 1,
+    sampleRate: 44100
+  };
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: audioConstraints, video: false });
+    if (st) st.textContent = '✅ Microphone granted!';
+
+    if (room) {
+      // Inject the new stream into the room
+      room.localStream = stream;
+      await room._setupAudioProcessing();
+      room.isMicOn = true;
+
+      // Update all existing peer connections to add/replace audio track
+      let streamToSend = room.processedStream || room.localStream;
+      // Verify tracks are live
+      const liveTracks = streamToSend.getAudioTracks().filter(t => t.readyState === 'live');
+      if (liveTracks.length === 0 && room.localStream !== streamToSend) {
+        streamToSend = room.localStream; // fallback to raw
+      }
+      const audioTrack = streamToSend ? streamToSend.getAudioTracks()[0] : null;
+      if (audioTrack) {
+        for (const pc of Object.values(room.peers || {})) {
+          const senders    = pc.getSenders();
+          const audioSender = senders.find(s => s.track && s.track.kind === 'audio');
+          try {
+            if (audioSender) {
+              await audioSender.replaceTrack(audioTrack);
+            } else {
+              pc.addTrack(audioTrack, streamToSend);
+            }
+          } catch (e) { console.warn('[MTNG] retryMic replaceTrack:', e.message); }
+        }
+      }
+
+      // Refresh local tile and mic button
+      room._addAudioTile('local', room.currentUser, true);
+      const micBtn = document.getElementById('micBtn');
+      if (micBtn) { micBtn.textContent = '🎙'; micBtn.className = 'control-button active'; }
+      // Broadcast updated mute state to peers
+      room._sendSignal({ type: 'mute-state', from: room.currentUser, data: JSON.stringify({ micOn: true }) });
+      room._startWaveformAnimation();
+    }
+
+    hideMicBlockedOverlay();
+    showAlert('🎙 Microphone access granted! You can now speak.', 'success');
+  } catch (err) {
+    console.error('[MTNG] retryMicAccess failed:', err.name, err.message);
+    if (btn) btn.disabled = false;
+    if (st) st.textContent = '❌ ' + (err.name === 'NotAllowedError'
+        ? 'Still blocked. Please update browser settings first.'
+        : err.message);
+  }
+}
+
+function continueWithoutMic() {
+  hideMicBlockedOverlay();
+  showAlert('👂 Joined as listener – others can speak but your mic is off.', 'info');
+  // Mark mic as muted in UI
+  const micBtn = document.getElementById('micBtn');
+  if (micBtn) { micBtn.textContent = '🔇'; micBtn.className = 'control-button muted'; }
+  // Make sure the local tile shows muted
+  if (room) {
+    room.isMicOn = false;
+    room._setTileMicBadge('local', false);
+    room._sendSignal({ type: 'mute-state', from: room.currentUser, data: JSON.stringify({ micOn: false }) });
+  }
+}
+
+/* ── Mobile / First-Visit Mic Permission Gate ──────────────────────────────
+   On mobile browsers (iOS Safari, Android Chrome) the Web API
+   navigator.mediaDevices.getUserMedia() REQUIRES a direct user gesture
+   (a real tap/click event) to succeed.  Calling it from DOMContentLoaded
+   (which is not a user gesture) fails silently on iOS.
+   This overlay gives users a clear "Tap to Allow" button that serves as
+   the required gesture, then proceeds to the prejoin test / incoming call.
+   ─────────────────────────────────────────────────────────────────────── */
+let _micPermCallback = null;
+
+function showMicPermOverlay(callback) {
+  _micPermCallback = callback;
+
+  const isIOS     = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const isAndroid = /Android/i.test(navigator.userAgent);
+  const isMobile  = isIOS || isAndroid;
+
+  // Subtitle – tailor to context
+  const subEl = document.getElementById('micPermSub');
+  if (subEl) {
+    subEl.textContent = isMobile
+      ? 'Tap "Allow Microphone & Join" below, then tap "Allow" in the browser popup. This enables two-way audio so you can talk and hear everyone in the meeting.'
+      : 'Click the button below. Your browser will show a microphone permission popup — click "Allow". This enables bidirectional audio so both sides can talk and hear each other.';
+  }
+
+  // Browser-specific step-by-step instructions
+  const stepsEl = document.getElementById('micPermSteps');
+  if (stepsEl) {
+    let html = '<strong>📋 How to enable your microphone:</strong>';
+    if (isIOS) {
+      html += '📱 <b>Step 1</b> – Tap the button below<br>' +
+              '📱 <b>Step 2</b> – Tap <em>"Allow"</em> in the browser dialog<br>' +
+              '🍎 <b>Still blocked?</b> Settings app → Safari → Microphone → Allow<br>' +
+              '🔄 Return here and tap "Allow Microphone" again';
+    } else if (isAndroid) {
+      html += '📱 <b>Step 1</b> – Tap the button below<br>' +
+              '📱 <b>Step 2</b> – Tap <em>"Allow"</em> in the Chrome popup<br>' +
+              '⚙️ <b>Still blocked?</b> Tap ⋮ menu → Site Settings → Microphone → Allow<br>' +
+              '🔄 Return here and tap the button again';
     } else {
-      // Student sees incoming call dialog
-      setTimeout(showIncomingCall, 500);
+      html += '🌐 <b>Chrome/Edge</b>: Click "Allow" in the address-bar popup<br>' +
+              '🦊 <b>Firefox</b>: Click "Allow" in the permission prompt<br>' +
+              '🧭 <b>Safari</b>: Click "Allow" when asked<br>' +
+              '🔒 <b>Already dismissed?</b> Click the 🔒 lock icon → Microphone → Allow';
+    }
+    stepsEl.innerHTML = html;
+  }
+
+  const overlay = document.getElementById('micPermOverlay');
+  if (overlay) overlay.style.display = 'flex';
+}
+
+function hideMicPermOverlay() {
+  const el = document.getElementById('micPermOverlay');
+  if (el) el.style.display = 'none';
+  const st = document.getElementById('micPermStatus');
+  if (st) st.textContent = '';
+}
+
+/**
+ * Called when user taps/clicks the "Allow Microphone & Join" button.
+ * This IS a user gesture, so getUserMedia will work on all browsers.
+ * ★ FIX: Keep the stream alive as _previewStream so room.init() reuses it
+ *   instead of calling getUserMedia again (which fails on mobile).
+ */
+async function grantMicPermission() {
+  const btn = document.getElementById('grantMicBtn');
+  const st  = document.getElementById('micPermStatus');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Requesting access…'; }
+  if (st)  st.textContent = '⏳ Respond to the browser permission popup…';
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl:  true,
+        channelCount: 1,
+        sampleRate: 44100
+      },
+      video: false
+    });
+    // ★ Keep stream alive — room.init() will consume _previewStream directly
+    _previewStream = stream;
+    window._micPermGranted = true;
+
+    if (st) st.textContent = '✅ Microphone access granted!';
+    setTimeout(() => {
+      hideMicPermOverlay();
+      if (_micPermCallback) {
+        const cb = _micPermCallback;
+        _micPermCallback = null;
+        cb(true);
+      }
+    }, 500);
+  } catch (err) {
+    window._micPermGranted = false;
+    if (btn) { btn.disabled = false; btn.textContent = '🎙 Try Again'; }
+    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+      if (st) st.textContent = '❌ Permission denied. Follow the steps above, then tap Try Again.';
+    } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+      if (st) st.textContent = '❌ No microphone found. Connect a mic/headset and try again.';
+    } else {
+      if (st) st.textContent = '❌ ' + (err.message || 'Unknown error. Please try again.');
+    }
+    console.error('[MTNG] grantMicPermission error:', err.name, err.message);
+  }
+}
+
+/** User chose to join without a mic (listen-only mode). */
+function skipMicPermission() {
+  window._micPermGranted = false;
+  hideMicPermOverlay();
+  if (_micPermCallback) {
+    const cb = _micPermCallback;
+    _micPermCallback = null;
+    cb(false); // false = listen-only
+  }
+}
+
+/* ── Page Init ───────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  if (hasActiveMeeting) {
+    const _isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (isAdmin) {
+      if (_isMobile) {
+        // Mobile admin: mic permission MUST be triggered by user gesture.
+        // Show permission gate first; after granting, open prejoin modal.
+        showMicPermOverlay(function(granted) {
+          document.getElementById('prejoinModal').style.display = 'flex';
+          if (granted) {
+            runPrejoinTest();
+          } else {
+            _setDeviceStatus('mic', 'error', '👂 Listener mode (no mic)');
+            document.getElementById('spkStatus').textContent = 'Click Test to verify';
+          }
+        });
+      } else {
+        // Desktop admin: standard flow
+        document.getElementById('prejoinModal').style.display = 'flex';
+        runPrejoinTest();
+      }
+    } else {
+      // Student flow
+      setTimeout(function() {
+        if (_isMobile) {
+          // Mobile student: show permission gate before incoming call,
+          // so mic is granted by user gesture before room.init() runs.
+          showMicPermOverlay(function(granted) {
+            showIncomingCall();
+          });
+        } else {
+          showIncomingCall();
+        }
+      }, 600);
     }
   } else {
     document.getElementById('noMeetingScreen').style.display = 'flex';
-    document.getElementById('meetingRoom').style.display = 'none';
+    // Poll for meeting start → reload automatically
+    const waitPoll = setInterval(async () => {
+      try { const r = await fetch('/api/meeting/active'); if (r.status === 200) { clearInterval(waitPoll); location.reload(); } } catch(e) {}
+    }, 5000);
   }
 });
 
+/* ── Start meeting UI + WebRTC ────────────────────────────────── */
 function startMeetingUI() {
   document.getElementById('noMeetingScreen').style.display = 'none';
-  document.getElementById('meetingRoom').style.display = 'flex';
-  mtngWrapper.init();
+  document.getElementById('meetingRoom').style.display     = 'flex';
+  const t = document.getElementById('meetingTitleText');
+  if (t) t.textContent = meetingTitle;
+  room = new MtngMeetingRoom(roomName, currentUser);
+  room.init().then(() => {
+    // ── AUTO-RECORDING ────────────────────────────────────────────────
+    // Recording starts automatically 2.5 s after the room is ready so the
+    // audio chain has time to stabilise and peer connections can begin.
+    // Users no longer need to press the ⏺ Record button manually.
+    setTimeout(() => {
+      if (room && !room._isRecording) {
+        room._autoRecording = true;
+        room._startRecording();
+        // Show AUTO REC badge in the header
+        const ab = document.getElementById('autoRecBadge');
+        if (ab) ab.classList.add('active');
+        showAlert('⏺ Session is being auto-recorded', 'info');
+      }
+    }, 2500);
+  });
 }
 
-// ─── Incoming Call ───
-function showIncomingCall() {
-  document.getElementById('incomingCallModal').style.display = 'flex';
-  playNotificationSound();
-  const titleEl = document.getElementById('incomingMeetingTitle');
-  if (titleEl) titleEl.textContent = mtngWrapper.meetingTitle;
+/* ── Pre-Join Test ───────────────────────────────────────────── */
+let _previewStream = null, _audioCtx = null, _animFrame = null;
+
+function runPrejoinTest() {
+  // ★ FIX: If _previewStream is already live (from grantMicPermission), reuse it
+  if (_previewStream && _previewStream.getAudioTracks().some(t => t.readyState === 'live')) {
+    _setDeviceStatus('mic', 'ok', '✅ Microphone ready');
+    _startAudioMeter(_previewStream);
+    return;
+  }
+  // Audio-only check – no camera
+  navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+    .then(stream => {
+      _previewStream = stream;
+      _setDeviceStatus('mic', 'ok', '✅ Microphone ready');
+      _startAudioMeter(stream);
+    })
+    .catch(err => {
+      _setDeviceStatus('mic', 'error', '❌ ' + err.message);
+    });
 }
 
-function acceptCall() {
-  document.getElementById('incomingCallModal').style.display = 'none';
-  startMeetingUI();
+function _setDeviceStatus(dev, cls, msg) {
+  const ind = document.getElementById(dev + 'Indicator');
+  const st  = document.getElementById(dev + 'Status');
+  if (ind) ind.className = 'device-indicator ' + cls;
+  if (st)  st.textContent = msg;
 }
 
-function rejectCall() {
-  document.getElementById('incomingCallModal').style.display = 'none';
-  window.location.href = '/';
-}
-
-function playNotificationSound() {
+function _startAudioMeter(stream) {
   try {
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    // First beep
-    const osc1 = audioContext.createOscillator();
-    const gain1 = audioContext.createGain();
-    osc1.connect(gain1);
-    gain1.connect(audioContext.destination);
-    osc1.frequency.setValueAtTime(800, audioContext.currentTime);
-    gain1.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gain1.gain.setValueAtTime(0, audioContext.currentTime + 0.15);
-    osc1.start(audioContext.currentTime);
-    osc1.stop(audioContext.currentTime + 0.15);
-    // Second beep
-    const osc2 = audioContext.createOscillator();
-    const gain2 = audioContext.createGain();
-    osc2.connect(gain2);
-    gain2.connect(audioContext.destination);
-    osc2.frequency.setValueAtTime(1000, audioContext.currentTime + 0.2);
-    gain2.gain.setValueAtTime(0.3, audioContext.currentTime + 0.2);
-    gain2.gain.setValueAtTime(0, audioContext.currentTime + 0.35);
-    osc2.start(audioContext.currentTime + 0.2);
-    osc2.stop(audioContext.currentTime + 0.35);
-  } catch(e) {
-    console.warn('[MTNG] Could not play notification sound:', e);
+    _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const src = _audioCtx.createMediaStreamSource(stream);
+    const an  = _audioCtx.createAnalyser(); an.fftSize = 256;
+    src.connect(an);
+    const buf = new Uint8Array(an.frequencyBinCount);
+    const bar = document.getElementById('audioLevel');
+    const tick = () => {
+      an.getByteFrequencyData(buf);
+      const avg = buf.reduce((a,b)=>a+b,0)/buf.length;
+      if (bar) bar.style.width = Math.min(100, avg * 2) + '%';
+      _animFrame = requestAnimationFrame(tick);
+    };
+    tick();
+  } catch(e) {}
+}
+
+function testSpeaker() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [523.25, 659.25, 783.99].forEach((f, i) => {
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value=f; const t=ctx.currentTime+i*0.18;
+      g.gain.setValueAtTime(0.3,t); g.gain.setValueAtTime(0,t+0.15);
+      o.start(t); o.stop(t+0.15);
+    });
+    document.getElementById('spkStatus').textContent = '✅ Speaker test played';
+  } catch(e) { document.getElementById('spkStatus').textContent = '❌ Speaker test failed'; }
+}
+
+function proceedToMeeting() { _cleanPrejoin(false); document.getElementById('prejoinModal').style.display='none'; startMeetingUI(); }
+function skipPrejoinTest()   { _cleanPrejoin(false); document.getElementById('prejoinModal').style.display='none'; startMeetingUI(); }
+
+/**
+ * Clean up prejoin test resources.
+ * ★ KEY: Do NOT stop _previewStream — pass it to the room so room.init()
+ * can reuse the already-granted mic instead of calling getUserMedia again
+ * (which fails on mobile and some desktop browsers).
+ */
+function _cleanPrejoin(stopStream) {
+  if (_animFrame) cancelAnimationFrame(_animFrame);
+  if (_audioCtx) { try { _audioCtx.close(); } catch(e) {} _audioCtx=null; }
+  if (stopStream && _previewStream) {
+    _previewStream.getTracks().forEach(t=>t.stop());
+    _previewStream = null;
+  }
+  // If not stopping, _previewStream stays alive for startMeetingUI to pick up
+}
+
+/* ── Recording Save Actions ─────────────────────────────────── */
+function _closeSaveModal() {
+  const modal = document.getElementById('saveRecordingModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function _afterSaveAction(ok, msg) {
+  _closeSaveModal();
+  showAlert(msg, ok ? 'success' : 'error');
+  if (_navigateAfterSave) {
+    _navigateAfterSave = false;
+    _fullEndAfterSave();
   }
 }
 
-// ─── Leave / End Meeting ───
+async function saveRecordingBoth() {
+  if (!room) { _closeSaveModal(); return; }
+  const fileName = room._downloadFile();
+  const ok = await room._saveToDb(fileName);
+  _afterSaveAction(true, ok
+    ? '✅ Downloaded & saved to database!'
+    : '✅ Downloaded (database save failed – check console)');
+}
+
+async function downloadRecordingOnly() {
+  if (!room) { _closeSaveModal(); return; }
+  room._downloadFile();
+  _afterSaveAction(true, '⬇️ Recording downloaded to your disk');
+}
+
+async function saveRecordingDbOnly() {
+  if (!room) { _closeSaveModal(); return; }
+  const ok = await room._saveToDb(room._buildFileName());
+  _afterSaveAction(ok, ok
+    ? '🗄️ Recording session saved to database'
+    : '❌ Database save failed – check console');
+}
+
+function discardRecording() {
+  if (room) { room._recordingBlob = null; room._recordingChunks = []; }
+  _afterSaveAction(true, '🗑️ Recording discarded');
+}
+
+/* ── Incoming Call ───────────────────────────────────────────── */
+function showIncomingCall() {
+  const m = document.getElementById('incomingCallModal'); if (m) m.style.display='flex';
+  const t = document.getElementById('incomingMeetingTitle'); if (t) t.textContent=meetingTitle;
+  _playRing();
+}
+function acceptCall() {
+  document.getElementById('incomingCallModal').style.display='none';
+  var _isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  // On mobile, if mic permission gate hasn't run, show it now.
+  // Ensures getUserMedia fires inside a real user-gesture handler.
+  if (_isMobile && !window._micPermGranted) {
+    showMicPermOverlay(function(granted) {
+      document.getElementById('prejoinModal').style.display='flex';
+      if (granted) {
+        runPrejoinTest();
+      } else {
+        _setDeviceStatus('mic', 'error', '👂 Listener mode (no mic)');
+      }
+    });
+  } else {
+    document.getElementById('prejoinModal').style.display='flex';
+    runPrejoinTest();
+  }
+}
+function rejectCall() { document.getElementById('incomingCallModal').style.display='none'; window.location.href='/'; }
+function _playRing() {
+  try {
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    [800,1000,800,1000].forEach((f,i)=>{ const o=ctx.createOscillator(),g=ctx.createGain(); o.connect(g);g.connect(ctx.destination); o.frequency.value=f; const t=ctx.currentTime+i*0.2; g.gain.setValueAtTime(0.25,t);g.gain.setValueAtTime(0,t+0.15); o.start(t);o.stop(t+0.15); });
+  } catch(e) {}
+}
+
+/* ── Leave / End ─────────────────────────────────────────────── */
+// Global flag used by save actions to know they should navigate away after saving
+let _navigateAfterSave = false;
+
 function leaveMeeting() {
-  if (mtngWrapper) mtngWrapper.dispose();
-  fetch('/api/meeting/leave', { method: 'POST' }).catch(e => console.error(e));
-  window.location.href = '/';
+  if (room && room._isRecording) {
+    const wasAutoRecording = room._autoRecording;
+    room._suppressOnStop = true;
+    room._recEndTime = Date.now();   // ★ FIX: set end time BEFORE stopping
+    room._stopRecordingAndWait().then(async blob => {
+      if (blob && blob.size > 0) {
+        if (wasAutoRecording) {
+          showAlert('💾 Saving session recording…', 'info');
+          const ab = document.getElementById('autoRecBadge');
+          if (ab) ab.classList.remove('active');
+          // Auto-save: download to local disk + save to database
+          const fileName = room._downloadFile();
+          const ok = await room._saveToDb(fileName || room._buildFileName());
+          console.log('[MTNG] leaveMeeting auto-save result:', ok);
+          _fullLeave();
+        } else {
+          _navigateAfterSave = true;
+          room._showSaveModal();
+          _partialDispose();
+        }
+      } else {
+        _fullLeave();
+      }
+    });
+  } else {
+    _fullLeave();
+  }
 }
 
 async function endMeeting() {
   if (!confirm('End meeting for all participants?')) return;
-  if (mtngWrapper) mtngWrapper.dispose();
-  try {
-    const res = await fetch('/api/meeting/stop', { method: 'POST' });
-    if (res.ok) {
-      alert('Meeting ended. Recordings saved.');
-      window.location.href = '/';
+
+  // ★ FIX: Save the recording FIRST (before stopping the meeting API),
+  //   so _saveToDb can still fetch /api/meeting/active if needed.
+  if (room && room._isRecording) {
+    showAlert('⏺ Finalizing recording…', 'info');
+    const wasAutoRecording = room._autoRecording;
+    room._suppressOnStop = true;
+    room._recEndTime = Date.now();
+    const blob = await room._stopRecordingAndWait();
+    console.log('[MTNG] endMeeting: recording blob size=', blob ? blob.size : 0);
+
+    if (blob && blob.size > 0) {
+      if (wasAutoRecording) {
+        showAlert('💾 Auto-saving session recording…', 'info');
+        const ab = document.getElementById('autoRecBadge');
+        if (ab) ab.classList.remove('active');
+        // Auto-save: download to local disk + save to database automatically
+        const fileName = room._downloadFile();
+        await room._saveToDb(fileName || room._buildFileName());
+        // NOW stop the meeting API
+        try { await fetch('/api/meeting/stop', { method: 'POST' }); } catch(e) {}
+        _fullEndAfterSave();
+      } else {
+        // Manual recording: let user choose save option (meeting stops after save)
+        _navigateAfterSave = true;
+        room._showSaveModal();
+        _partialDispose();
+        // Stop meeting API in background
+        try { fetch('/api/meeting/stop', { method: 'POST' }); } catch(e) {}
+      }
+      return;
     }
-  } catch(e) {
-    console.error('[MTNG] Error ending meeting:', e);
   }
-}
 
-// ─── Chat (our server-side chat) ───
-async function sendChatMessage() {
-  const input = document.getElementById('chatInput');
-  const message = input.value.trim();
-  if (!message) return;
-  input.value = '';
-
+  // No recording — stop meeting API and end
   try {
-    const res = await fetch('/api/chat/send', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: message })
-    });
-    if (res.ok) {
-      // Immediately refresh chat
-      if (mtngWrapper) mtngWrapper._loadChatMessages();
-    }
-  } catch (e) {
-    console.error('[MTNG] Error sending chat message:', e);
-  }
+    await fetch('/api/meeting/stop', { method: 'POST' });
+    console.log('[MTNG] Meeting stopped in backend');
+  } catch(e) { console.warn('[MTNG] stop API error:', e); }
+  _fullEndAfterSave();
 }
 
-function handleChatKeyPress(event) {
-  if (event.key === 'Enter') {
-    event.preventDefault();
-    sendChatMessage();
+/** Dispose peers/timers/streams but keep room object alive for saving */
+function _partialDispose() {
+  if (!room) return;
+  try { room._sendSignal({ type: 'leave', from: room.currentUser }); } catch(e) {}
+  clearInterval(room.timerInterval);
+  clearInterval(room.chatPollInterval);
+  clearInterval(room.statsPollInterval);
+  clearInterval(room._recTimerInterval);
+  if (room._waveAnimId) cancelAnimationFrame(room._waveAnimId);
+  for (const pid of Object.keys(room.peers || {})) {
+    try { room.peers[pid].close(); } catch(e) {}
+    const audioEl = document.getElementById('audio-' + pid);
+    if (audioEl) { audioEl.srcObject = null; audioEl.remove(); }
   }
+  room.peers = {};
+  if (room.localStream) room.localStream.getTracks().forEach(t => t.stop());
+  if (room.screenStream) room.screenStream.getTracks().forEach(t => t.stop());
+  if (room.stompClient) { try { room.stompClient.disconnect(); } catch(e) {} }
 }
 
-// ─── Tab Switching ───
-function showTab(tab) {
-  const chatTab = document.getElementById('chatTab');
-  const participantsTab = document.getElementById('participantsTab');
-  const chatBtn = document.getElementById('chatTabBtn');
-  const participantsBtn = document.getElementById('participantsTabBtn');
+/** Full cleanup and navigate home */
+function _fullLeave() {
+  if (room) { try { room.dispose(); } catch(e) {} room = null; }
+  fetch('/api/meeting/leave', { method:'POST' }).catch(()=>{});
+  window.location.href = '/';
+}
 
-  if (tab === 'chat') {
-    chatTab.style.display = 'flex';
-    participantsTab.style.display = 'none';
-    chatBtn.classList.add('active');
-    participantsBtn.classList.remove('active');
+/** Called after user saves recording on an end-meeting flow */
+function _fullEndAfterSave() {
+  if (room) { try { room.dispose(); } catch(e) {} room = null; }
+  showAlert('✅ Meeting ended', 'success');
+  setTimeout(() => window.location.href = '/', 1400);
+}
+
+/* ── Sidebar Tab Switch ──────────────────────────────────────── */
+function showSidebarTab(tab) {
+  const cp=document.getElementById('chatPanel'), pp=document.getElementById('participantsPanel');
+  const cb=document.getElementById('chatTabBtn'), pb=document.getElementById('participantsTabBtn');
+  if (tab==='chat') {
+    cp.style.display='flex'; pp.style.display='none'; cb.classList.add('active'); pb.classList.remove('active');
   } else {
-    chatTab.style.display = 'none';
-    participantsTab.style.display = 'flex';
-    chatBtn.classList.remove('active');
-    participantsBtn.classList.add('active');
-    if (mtngWrapper) mtngWrapper._updateParticipantsList();
+    cp.style.display='none'; pp.style.display='flex'; cb.classList.remove('active'); pb.classList.add('active');
+    if (room) room._updateParticipantsList();
   }
 }
+
+/* ── Chat ────────────────────────────────────────────────────── */
+async function sendChatMessage() {
+  const inp = document.getElementById('chatInput');
+  const txt = inp.value.trim(); if (!txt) return; inp.value='';
+  try {
+    await fetch('/api/chat/send', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ sender: currentUser, content: txt }) });
+    if (room) room._loadChatMessages();
+  } catch(e) {}
+}
+
+function handleChatKeyPress(e) { if (e.key==='Enter') sendChatMessage(); }
+
 </script>
+
+<!-- mtng.js: settings dropdown, change-password, toggleMeeting from header -->
+<script th:src="@{/js/mtng.js}"></script>
 
 </body>
 </html>

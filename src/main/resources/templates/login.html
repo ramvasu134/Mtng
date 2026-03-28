@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MTNG – Teacher Login</title>
+  <title>MTNG – Login</title>
+  <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}" />
   <link rel="stylesheet" th:href="@{/css/login.css}" />
 </head>
 <body>
@@ -20,8 +21,8 @@
   <div class="login-card">
 
     <div class="login-card-title">
-      <span>👨‍🏫</span>
-      <span>Teacher Login</span>
+      <span>🏫</span>
+      <span>MTNG Login</span>
     </div>
 
     <!-- Error alert -->
@@ -99,8 +100,12 @@
         &nbsp;&nbsp;&nbsp;Username: <strong>admin</strong> &nbsp;/&nbsp; Password: <strong>admin123</strong>
       </div>
       <div style="margin-top:6px">
-        <strong style="color:#60A5FA">👤 User</strong> – View-only (dashboard, chat, students list, recordings – no edits)<br/>
+        <strong style="color:#60A5FA">👤 Teacher/User</strong> – View dashboard, chat, students, recordings<br/>
         &nbsp;&nbsp;&nbsp;Username: <strong>user</strong> &nbsp;/&nbsp; Password: <strong>user123</strong>
+      </div>
+      <div style="margin-top:6px">
+        <strong style="color:#FBBF24">🎓 Students</strong> – Login with credentials shared by admin<br/>
+        &nbsp;&nbsp;&nbsp;e.g. Username: <strong>HARI34</strong> &nbsp;/&nbsp; Password: <strong>pass1234</strong>
       </div>
     </div>
 

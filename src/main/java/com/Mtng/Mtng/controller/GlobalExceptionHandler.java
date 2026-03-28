@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /**
  * GlobalExceptionHandler – catches all unhandled exceptions from controllers
@@ -16,6 +17,17 @@ import org.springframework.web.servlet.ModelAndView;
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    /**
+     * Handle missing static resources (e.g. /favicon.ico) silently.
+     * Logs at DEBUG only – no scary ERROR stack trace in the log.
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Void> handleNoResource(NoResourceFoundException ex,
+                                                 jakarta.servlet.http.HttpServletRequest request) {
+        log.debug("Static resource not found: {}", request.getRequestURI());
+        return ResponseEntity.notFound().build();
+    }
 
     /** Catch-all for view-rendering errors – returns simple HTML with the message */
     @ExceptionHandler(Exception.class)

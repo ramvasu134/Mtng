@@ -1,0 +1,86 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.3)
+
+21:12:32.131 [main] INFO  com.Mtng.Mtng.MtngApplication - Starting MtngApplication v0.0.1-SNAPSHOT using Java 21.0.10 with PID 13032 (D:\IntelliJ Projects Trainings\Mtng\target\Mtng-0.0.1-SNAPSHOT.jar started by user in D:\IntelliJ Projects Trainings\Mtng)
+21:12:32.141 [main] INFO  com.Mtng.Mtng.MtngApplication - No active profile set, falling back to 1 default profile: "default"
+21:12:44.231 [main] INFO  com.Mtng.Mtng.MtngApplication - Started MtngApplication in 13.434 seconds (process running for 15.161)
+21:12:46.519 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Teachers seeded:
+21:12:46.524 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   ADMIN  →  username: admin  /  password: admin123
+21:12:46.525 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   USER   →  username: user   /  password: user123
+21:12:46.529 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Seeding sample students ...
+21:12:47.270 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Sample data seeded: 3 students
+21:19:39.451 [http-nio-8080-exec-7] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+21:19:45.200 [http-nio-8080-exec-3] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting start requested: title=Mtng Session
+21:19:45.201 [http-nio-8080-exec-3] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Mtng Session
+21:19:45.203 [http-nio-8080-exec-3] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=1, roomName=mtng-2ae7ba26
+21:19:45.300 [http-nio-8080-exec-1] INFO  c.M.M.c.MeetingApiController - [AUDIT] Students notified for meeting: id=1, title=Mtng Session
+21:20:45.478 [http-nio-8080-exec-10] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting stop requested
+21:20:45.488 [http-nio-8080-exec-10] INFO  c.Mtng.Mtng.service.MeetingService - Stopping meeting: id=1, title=Mtng Session
+21:20:45.490 [http-nio-8080-exec-10] INFO  c.Mtng.Mtng.service.MeetingService - Meeting stopped: id=1
+21:21:08.200 [http-nio-8080-exec-3] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting start requested: title=Mtng Session
+21:21:08.202 [http-nio-8080-exec-3] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Mtng Session
+21:21:08.208 [http-nio-8080-exec-3] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=2, roomName=mtng-f2f7e952
+21:21:08.219 [http-nio-8080-exec-1] INFO  c.M.M.c.MeetingApiController - [AUDIT] Students notified for meeting: id=2, title=Mtng Session
+21:21:50.256 [http-nio-8080-exec-1] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting stop requested
+21:21:50.260 [http-nio-8080-exec-1] INFO  c.Mtng.Mtng.service.MeetingService - Stopping meeting: id=2, title=Mtng Session
+21:21:50.260 [http-nio-8080-exec-1] INFO  c.Mtng.Mtng.service.MeetingService - Meeting stopped: id=2
+21:21:55.788 [http-nio-8080-exec-9] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting start requested: title=Mtng Session
+21:21:55.790 [http-nio-8080-exec-9] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Mtng Session
+21:21:55.793 [http-nio-8080-exec-9] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=3, roomName=mtng-b279abf0
+21:21:55.803 [http-nio-8080-exec-2] INFO  c.M.M.c.MeetingApiController - [AUDIT] Students notified for meeting: id=3, title=Mtng Session
+21:22:22.111 [http-nio-8080-exec-5] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting stop requested
+21:22:22.115 [http-nio-8080-exec-5] INFO  c.Mtng.Mtng.service.MeetingService - Stopping meeting: id=3, title=Mtng Session
+21:22:22.116 [http-nio-8080-exec-5] INFO  c.Mtng.Mtng.service.MeetingService - Meeting stopped: id=3
+21:23:04.010 [http-nio-8080-exec-8] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting start requested: title=Mtng Session
+21:23:04.010 [http-nio-8080-exec-8] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Mtng Session
+21:23:04.018 [http-nio-8080-exec-8] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=4, roomName=mtng-1a7ee3ee
+21:23:04.027 [http-nio-8080-exec-7] INFO  c.M.M.c.MeetingApiController - [AUDIT] Students notified for meeting: id=4, title=Mtng Session
+21:24:15.348 [http-nio-8080-exec-8] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting stop requested
+21:24:15.351 [http-nio-8080-exec-8] INFO  c.Mtng.Mtng.service.MeetingService - Stopping meeting: id=4, title=Mtng Session
+21:24:15.354 [http-nio-8080-exec-8] INFO  c.Mtng.Mtng.service.MeetingService - Meeting stopped: id=4
+21:47:44.934 [http-nio-8080-exec-1] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting start requested: title=Mtng Session
+21:47:44.935 [http-nio-8080-exec-1] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Mtng Session
+21:47:44.940 [http-nio-8080-exec-1] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=5, roomName=mtng-2809ab6d
+21:47:44.951 [http-nio-8080-exec-9] INFO  c.M.M.c.MeetingApiController - [AUDIT] Students notified for meeting: id=5, title=Mtng Session
+21:48:11.206 [http-nio-8080-exec-8] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting stop requested
+21:48:11.210 [http-nio-8080-exec-8] INFO  c.Mtng.Mtng.service.MeetingService - Stopping meeting: id=5, title=Mtng Session
+21:48:11.210 [http-nio-8080-exec-8] INFO  c.Mtng.Mtng.service.MeetingService - Meeting stopped: id=5
+21:48:13.698 [http-nio-8080-exec-2] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+21:48:33.675 [http-nio-8080-exec-8] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting start requested: title=Mtng Session
+21:48:33.677 [http-nio-8080-exec-8] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Mtng Session
+21:48:33.682 [http-nio-8080-exec-8] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=6, roomName=mtng-a2a0c634
+21:48:33.693 [http-nio-8080-exec-5] INFO  c.M.M.c.MeetingApiController - [AUDIT] Students notified for meeting: id=6, title=Mtng Session
+21:49:48.903 [http-nio-8080-exec-8] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting stop requested
+21:49:48.906 [http-nio-8080-exec-8] INFO  c.Mtng.Mtng.service.MeetingService - Stopping meeting: id=6, title=Mtng Session
+21:49:48.909 [http-nio-8080-exec-8] INFO  c.Mtng.Mtng.service.MeetingService - Meeting stopped: id=6
+22:25:46.320 [http-nio-8080-exec-8] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+22:25:59.225 [http-nio-8080-exec-10] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting start requested: title=Mtng Session
+22:25:59.225 [http-nio-8080-exec-10] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Mtng Session
+22:25:59.228 [http-nio-8080-exec-10] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=7, roomName=mtng-0fc05fbf
+22:25:59.235 [http-nio-8080-exec-4] INFO  c.M.M.c.MeetingApiController - [AUDIT] Students notified for meeting: id=7, title=Mtng Session
+22:27:13.906 [http-nio-8080-exec-3] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting stop requested
+22:27:13.907 [http-nio-8080-exec-3] INFO  c.Mtng.Mtng.service.MeetingService - Stopping meeting: id=7, title=Mtng Session
+22:27:13.909 [http-nio-8080-exec-3] INFO  c.Mtng.Mtng.service.MeetingService - Meeting stopped: id=7
+22:27:41.861 [http-nio-8080-exec-4] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting start requested: title=Mtng Session
+22:27:41.862 [http-nio-8080-exec-4] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Mtng Session
+22:27:41.864 [http-nio-8080-exec-4] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=8, roomName=mtng-8f24972d
+22:27:41.871 [http-nio-8080-exec-5] INFO  c.M.M.c.MeetingApiController - [AUDIT] Students notified for meeting: id=8, title=Mtng Session
+22:29:01.536 [http-nio-8080-exec-8] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting stop requested
+22:29:01.538 [http-nio-8080-exec-8] INFO  c.Mtng.Mtng.service.MeetingService - Stopping meeting: id=8, title=Mtng Session
+22:29:01.540 [http-nio-8080-exec-8] INFO  c.Mtng.Mtng.service.MeetingService - Meeting stopped: id=8
+22:29:16.139 [http-nio-8080-exec-7] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'RAM22' leaving meeting
+22:42:44.673 [http-nio-8080-exec-8] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting start requested: title=Mtng Session
+22:42:44.674 [http-nio-8080-exec-8] INFO  c.Mtng.Mtng.service.MeetingService - Starting new meeting: title=Mtng Session
+22:42:44.678 [http-nio-8080-exec-8] INFO  c.Mtng.Mtng.service.MeetingService - Meeting started: id=9, roomName=mtng-bcc3bbbd
+22:42:44.688 [http-nio-8080-exec-2] INFO  c.M.M.c.MeetingApiController - [AUDIT] Students notified for meeting: id=9, title=Mtng Session
+22:43:11.515 [http-nio-8080-exec-10] INFO  c.M.M.c.MeetingApiController - [AUDIT] Meeting stop requested
+22:43:11.517 [http-nio-8080-exec-10] INFO  c.Mtng.Mtng.service.MeetingService - Stopping meeting: id=9, title=Mtng Session
+22:43:11.519 [http-nio-8080-exec-10] INFO  c.Mtng.Mtng.service.MeetingService - Meeting stopped: id=9
+22:43:20.741 [http-nio-8080-exec-5] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'RAM22' leaving meeting

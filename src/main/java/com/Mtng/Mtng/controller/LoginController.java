@@ -27,12 +27,14 @@ public class LoginController {
     /** GET /login – render login page */
     @GetMapping("/login")
     public String loginPage(
-            @RequestParam(value = "error",  required = false) String error,
-            @RequestParam(value = "logout", required = false) String logout,
+            @RequestParam(value = "error",    required = false) String error,
+            @RequestParam(value = "logout",   required = false) String logout,
+            @RequestParam(value = "disabled", required = false) String disabled,
             Model model) {
 
-        if (error  != null) model.addAttribute("errorMsg",  "Invalid username or password.");
-        if (logout != null) model.addAttribute("logoutMsg", "You have been logged out successfully.");
+        if (error    != null) model.addAttribute("errorMsg",  "Invalid username or password.");
+        if (disabled != null) model.addAttribute("errorMsg",  "⛔ Your account has been blocked. Contact admin.");
+        if (logout   != null) model.addAttribute("logoutMsg", "You have been logged out successfully.");
 
         return "login";
     }

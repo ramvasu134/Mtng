@@ -249,15 +249,29 @@ a:hover { color: #FFF; }
 }
 
 .status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
   display: inline-block;
-  margin-right: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
 }
 
-.status-online  { background: var(--green-online); }
-.status-offline { background: #9CA3AF; }
+.status-online {
+  background: var(--green-online);
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+  animation: onlinePulse 1.8s infinite;
+}
+
+.status-offline {
+  background: #555;
+}
+
+@keyframes onlinePulse {
+  0%   { box-shadow: 0 0 0 0 rgba(34,197,94,0.6); }
+  70%  { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
+  100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+}
 
 .student-meta {
   font-size: 11px;
@@ -711,10 +725,77 @@ a:hover { color: #FFF; }
 ::-webkit-scrollbar-thumb:hover{ background: var(--orange-primary); }
 
 /* ── Responsive ──────────────────────────────────────── */
-@media (max-width: 640px) {
+
+/* ── Tablet (max 768px) ──────────────────────────────── */
+@media (max-width: 768px) {
   .app-name     { font-size: 20px; letter-spacing: 2px; }
-  .meeting-stats{ display: none; }
+  .meeting-stats{ gap: 4px; }
+  .stat-badge   { padding: 3px 8px; font-size: 10px; }
+  .stat-badge .count { font-size: 13px; }
   .main-content { padding: 12px; }
+  .nav-tabs     { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .nav-tab      { padding: 10px 14px; font-size: 12px; white-space: nowrap; }
   .form-row     { flex-direction: column; }
+  .student-card { flex-direction: column; align-items: flex-start; }
+  .student-actions { width: 100%; justify-content: flex-start; }
+  .card         { padding: 14px; }
+  .search-bar   { flex-wrap: wrap; }
+  .search-input { max-width: 100%; flex: 1 1 100%; }
+  .btn-start-meeting { padding: 6px 12px; font-size: 11px; }
+  .header-right { gap: 8px; }
+  .app-header   { padding: 0 12px; height: 52px; }
+  .meeting-panel { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .meeting-stat-card { padding: 14px; }
+  .meeting-stat-card .big-num { font-size: 28px; }
+  .settings-dropdown { right: 8px; width: 200px; }
+  .modal-box { padding: 20px; max-width: 95vw; }
 }
 
+/* ── Mobile (max 640px) ──────────────────────────────── */
+@media (max-width: 640px) {
+  .app-name     { font-size: 18px; letter-spacing: 1px; }
+  .meeting-stats{ display: none; }
+  .main-content { padding: 10px 8px; }
+  .form-row     { flex-direction: column; }
+  .app-header   { padding: 0 8px; height: 48px; }
+  .header-right { gap: 6px; }
+  .btn-start-meeting { padding: 5px 10px; font-size: 10px; }
+  .btn-settings { padding: 6px 8px; font-size: 14px; }
+  .nav-tab      { padding: 8px 10px; font-size: 11px; gap: 4px; }
+  .student-card { padding: 10px 12px; }
+  .student-name { font-size: 14px; }
+  .meeting-panel { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .meeting-stat-card { padding: 10px; }
+  .meeting-stat-card .big-num { font-size: 24px; }
+  .meeting-stat-card .label { font-size: 10px; }
+  .card-header  { flex-direction: column; gap: 8px; align-items: flex-start; }
+  .rec-group-header { padding: 10px 12px; }
+  .rec-group-name { font-size: 13px; }
+  .rec-item-header { padding: 8px 10px; flex-wrap: wrap; }
+  .rec-meta-chips { gap: 4px; }
+  .rec-chip     { font-size: 10px; padding: 1px 6px; }
+  .rec-player-section { padding: 8px 10px; }
+  .rec-player-btns { flex-direction: column; gap: 6px; }
+  .btn-play-stop, .btn-dl-audio { width: 100%; justify-content: center; }
+  .docs-table th, .docs-table td { padding: 6px 8px; font-size: 11px; }
+  .app-footer { flex-direction: column; gap: 4px; text-align: center; padding: 8px 12px; }
+}
+
+body.has-meeting-banner .app-header {
+  top: 46px;
+}
+
+/* ── Audio level bar (used in pre-join test) ─────────── */
+.audio-meter {
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+.audio-meter-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50, #8BC34A);
+  transition: width 0.1s ease-out;
+  border-radius: 2px;
+}

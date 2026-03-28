@@ -89,7 +89,9 @@ public class SecurityConfig {
             .authenticationProvider(authProvider())
             .authorizeHttpRequests(auth -> auth
                 // Public resources
-                .requestMatchers("/login", "/css/**", "/js/**").permitAll()
+                .requestMatchers("/login", "/css/**", "/js/**", "/favicon.ico", "/favicon.svg").permitAll()
+                // WebSocket signaling endpoint (SockJS + STOMP)
+                .requestMatchers("/ws/**", "/ws").permitAll()
 
                 // ADMIN-only pages
                 .requestMatchers("/create-student").hasRole("ADMIN")
@@ -116,6 +118,14 @@ public class SecurityConfig {
                 .defaultSuccessUrl("/", true)
                 .failureUrl("/login?error=true")
                 .successHandler(authSuccessHandler)
+                .failureHandler((request, response, exception) -> {
+                    // DisabledException → blocked student
+                    if (exception instanceof org.springframework.security.authentication.DisabledException) {
+                        response.sendRedirect("/login?disabled=true");
+                    } else {
+                        response.sendRedirect("/login?error=true");
+                    }
+                })
                 .permitAll()
             )
             .logout(logout -> logout
@@ -127,11 +137,15 @@ public class SecurityConfig {
             )
             .csrf(csrf -> csrf
                 .ignoringRequestMatchers(PathRequest.toH2Console())
-                .ignoringRequestMatchers("/api/**"))
+                .ignoringRequestMatchers("/api/**")
+                .ignoringRequestMatchers("/ws/**"))
             .headers(headers -> headers
                 .frameOptions(frame -> frame.sameOrigin()))
             .exceptionHandling(ex -> ex
-                .accessDeniedHandler(accessDeniedHandler()));
+                .accessDeniedHandler(accessDeniedHandler()))
+            // Force HTTP → HTTPS redirect
+            .requiresChannel(channel -> channel
+                .anyRequest().requiresSecure());
         return http.build();
     }
 }

@@ -44,6 +44,12 @@ public class StudentService {
         return studentRepository.findById(id);
     }
 
+    /** Find student by username */
+    @Transactional(readOnly = true)
+    public Optional<Student> findByUsername(String username) {
+        return studentRepository.findByUsername(username);
+    }
+
     /** Search students by name or username */
     @Transactional(readOnly = true)
     public List<Student> search(String keyword) {

@@ -1,0 +1,40 @@
+# Files/directories to exclude from the Docker build context
+# This keeps the image build fast and the final image small
+
+# Maven build output
+target/
+
+# IDE files
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.classpath
+.project
+.factorypath
+.springBeans
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+app.log
+app-debug.log
+
+# Git
+.git/
+.gitattributes
+.gitignore
+
+# Windows batch scripts (not needed in the container)
+*.bat
+*.cmd
+*.ps1
+
+# Markdown docs (not needed in the container)
+*.md
+docs/

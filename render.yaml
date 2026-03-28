@@ -1,0 +1,19 @@
+# render.yaml – Render.com Blueprint (one-click free deployment)
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: mtng-meeting-app
+    runtime: docker          # Use our Dockerfile
+    plan: free               # Free tier (no credit card required)
+    region: oregon           # or: frankfurt, ohio, singapore, virginia
+
+    # Render automatically injects the PORT variable at runtime.
+    # The Dockerfile ENTRYPOINT reads $PORT and defaults to 8080 when absent.
+
+    # Health-check so Render knows when the app is ready.
+    # GET /login returns HTTP 200 for unauthenticated users (the login form page).
+    healthCheckPath: /login
+
+    # Auto-deploy every time you push to the main/master branch
+    autoDeploy: true

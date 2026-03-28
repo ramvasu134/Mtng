@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { auth as authApi } from '../api';
+import { auth as authApi, students as studentsApi } from '../api';
 
 const AuthContext = createContext(null);
 
@@ -14,6 +14,19 @@ export function AuthProvider({ children }) {
       .catch(() => setUser(null))
       .finally(() => setLoading(false));
   }, []);
+
+  // Heartbeat: keep online status fresh every 15 seconds
+  useEffect(() => {
+    if (!user) return;
+    // Send heartbeat immediately on login
+    studentsApi.heartbeat().catch(() => {});
+    // Send another heartbeat after 2 seconds to ensure it's registered
+    const initial = setTimeout(() => studentsApi.heartbeat().catch(() => {}), 2000);
+    const interval = setInterval(() => {
+      studentsApi.heartbeat().catch(() => {});
+    }, 15000);
+    return () => { clearTimeout(initial); clearInterval(interval); };
+  }, [user]);
 
   const login = useCallback(async (username, password) => {
     const data = await authApi.login(username, password);

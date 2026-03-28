@@ -8,6 +8,11 @@ const ICE_SERVERS = [
   { urls: 'stun:stun1.l.google.com:19302' },
   { urls: 'stun:stun2.l.google.com:19302' },
   { urls: 'stun:stun3.l.google.com:19302' },
+  // TURN servers for NAT traversal (when STUN alone fails)
+  { urls: 'turn:relay1.expressturn.com:3478', username: 'efBURNSQGW3DNHYD', credential: 'j07STleDNSHOzUkj' },
+  { urls: 'turn:a.relay.metered.ca:80', username: 'b0930ef2afd81e2c4e1a3b6a', credential: 'mhHMnhOzp9CKONBS' },
+  { urls: 'turn:a.relay.metered.ca:443', username: 'b0930ef2afd81e2c4e1a3b6a', credential: 'mhHMnhOzp9CKONBS' },
+  { urls: 'turn:a.relay.metered.ca:443?transport=tcp', username: 'b0930ef2afd81e2c4e1a3b6a', credential: 'mhHMnhOzp9CKONBS' },
 ];
 
 /* ── Page shell – OUTSIDE component so it's a stable reference ── */
@@ -89,6 +94,8 @@ export default function MeetingRoomPage() {
   const listenOnlyRef = useRef(false);
   const recordingRef = useRef(false);
   const participantNames = useRef({}); // NEW: Track display names by peerId
+  const audioContainerRef = useRef(null); // DOM container for audio elements
+  const autoRecordStarted = useRef(false); // Track if auto-recording was started
 
   // Keep refs in sync with latest values
   useEffect(() => { meetingDataRef.current = meetingData; }, [meetingData]);
@@ -140,6 +147,22 @@ export default function MeetingRoomPage() {
     return () => clearInterval(timerRef.current);
   }, [pageState]);
 
+  // ── Auto-start recording when meeting becomes active ─────────────────────
+  useEffect(() => {
+    if (pageState !== 'active') return;
+    if (autoRecordStarted.current) return;
+    // Delay to allow WebRTC connections to establish first
+    const timer = setTimeout(() => {
+      if (!recordingRef.current && !autoRecordStarted.current) {
+        console.log('🎙️ Auto-starting recording...');
+        autoRecordStarted.current = true;
+        // Start recording (will pick up local + remote streams)
+        try { toggleRecording(); } catch (e) { console.warn('Auto-record start failed:', e); }
+      }
+    }, 4000); // 4 second delay
+    return () => clearTimeout(timer);
+  }, [pageState]); // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => { chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatMsgs]);
 
   useEffect(() => {
@@ -172,7 +195,11 @@ export default function MeetingRoomPage() {
     const pc = peers.current[peerId];
     if (pc) { try { pc.close(); } catch {} delete peers.current[peerId]; }
     const a = remoteAudios.current[peerId];
-    if (a) { a.srcObject = null; delete remoteAudios.current[peerId]; }
+    if (a) {
+      a.srcObject = null;
+      try { a.parentNode?.removeChild(a); } catch {} // Remove from DOM
+      delete remoteAudios.current[peerId];
+    }
     setParticipants(prev => prev.filter(p => p.id !== peerId));
   };
 
@@ -181,23 +208,51 @@ export default function MeetingRoomPage() {
     const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
 
     pc.onicecandidate = e => {
-      if (e.candidate) sendSignal({ type: 'candidate', sender: userRef.current?.username, target: peerId, candidate: e.candidate });
+      if (e.candidate) sendSignal({ type: 'ice-candidate', from: userRef.current?.username, to: peerId, data: JSON.stringify(e.candidate) });
     };
 
     pc.ontrack = e => {
-      console.log('🔊 ontrack event received from', peerId, 'streams:', e.streams?.length);
+      console.log('🔊 ontrack event received from', peerId, 'streams:', e.streams?.length, 'track kind:', e.track?.kind);
       let audio = remoteAudios.current[peerId];
       if (!audio) {
-        audio = new Audio();
+        audio = document.createElement('audio');
         audio.autoplay = true;
-        audio.playsInline = true;  // Better mobile support
+        audio.playsInline = true;
         audio.controls = false;
+        audio.id = `remote-audio-${peerId}`;
+        audio.setAttribute('data-peer', peerId);
+        // Append to DOM - critical for browser autoplay policy
+        const container = audioContainerRef.current || document.body;
+        container.appendChild(audio);
         remoteAudios.current[peerId] = audio;
+        console.log('✓ Created and appended audio element to DOM for', peerId);
       }
       if (e.streams?.[0]) {
-        console.log('✓ Setting audio srcObject for', peerId);
+        console.log('✓ Setting audio srcObject for', peerId, 'tracks:', e.streams[0].getAudioTracks().length);
         audio.srcObject = e.streams[0];
-        audio.play().catch(err => console.warn('Audio play error:', err));
+        // Ensure volume is up
+        audio.volume = 1.0;
+        audio.muted = false;
+        // Play with retry logic
+        const tryPlay = (attempt = 0) => {
+          audio.play().then(() => {
+            console.log('✅ Audio playing successfully for', peerId);
+          }).catch(err => {
+            console.warn(`Audio play attempt ${attempt + 1} failed for ${peerId}:`, err.message);
+            if (attempt < 3) {
+              setTimeout(() => tryPlay(attempt + 1), 500 * (attempt + 1));
+            }
+          });
+        };
+        tryPlay();
+      } else if (e.track) {
+        // Fallback: create stream from individual track
+        console.log('⚠ No stream in ontrack, creating from track for', peerId);
+        const stream = new MediaStream([e.track]);
+        audio.srcObject = stream;
+        audio.volume = 1.0;
+        audio.muted = false;
+        audio.play().catch(err => console.warn('Fallback audio play error:', err));
       }
     };
 
@@ -214,12 +269,14 @@ export default function MeetingRoomPage() {
     if (localStream.current?.getTracks().length > 0) {
       console.log('Adding', localStream.current.getTracks().length, 'local tracks to peer', peerId);
       localStream.current.getTracks().forEach(t => {
-        console.log('Adding track:', t.kind, 'enabled:', t.enabled);
+        // Ensure track is enabled before adding
+        if (t.kind === 'audio') t.enabled = true;
+        console.log('Adding track:', t.kind, 'enabled:', t.enabled, 'readyState:', t.readyState);
         pc.addTrack(t, localStream.current);
       });
     } else {
       console.log('No local stream, adding audio transceiver in recvonly mode for', peerId);
-      try { pc.addTransceiver('audio', { direction: 'recvonly' }); } catch {}
+      try { pc.addTransceiver('audio', { direction: 'recvonly' }); } catch (e) { console.warn('addTransceiver error:', e); }
     }
 
     peers.current[peerId] = pc;
@@ -378,11 +435,17 @@ const createPeerAndOffer = async (peerId) => {
   // ── Cleanup ───────────────────────────────────────────────────────────────
   const doCleanup = () => {
     if (recordingRef.current && recorder.current?.state !== 'inactive') try { recorder.current.stop(); } catch {}
-    sendSignal({ type: 'leave', sender: userRef.current?.username });
+    sendSignal({ type: 'leave', from: userRef.current?.username });
     Object.keys(peers.current).forEach(id => removePeer(id));
+    // Clean up all audio DOM elements
+    Object.values(remoteAudios.current).forEach(a => {
+      try { a.srcObject = null; a.parentNode?.removeChild(a); } catch {}
+    });
+    remoteAudios.current = {};
     if (localStream.current) { localStream.current.getTracks().forEach(t => t.stop()); localStream.current = null; }
     try { stompRef.current?.disconnect(); } catch {}
     clearInterval(timerRef.current);
+    autoRecordStarted.current = false;
   };
 
   useEffect(() => () => {
@@ -460,7 +523,7 @@ const createPeerAndOffer = async (peerId) => {
   const toggleMic = () => {
     if (!localStream.current) return;
     const t = localStream.current.getAudioTracks()[0];
-    if (t) { t.enabled = !t.enabled; setMicOn(t.enabled); sendSignal({ type: 'mic-toggle', sender: userRef.current?.username, micOn: t.enabled }); }
+    if (t) { t.enabled = !t.enabled; setMicOn(t.enabled); sendSignal({ type: 'mic-toggle', from: userRef.current?.username, micOn: t.enabled }); }
   };
 
   const toggleRecording = () => {
@@ -470,17 +533,55 @@ const createPeerAndOffer = async (peerId) => {
       recordingRef.current = false;
       return;
     }
-    if (!localStream.current) return;
+    // Can record if we have local mic OR remote audio streams
+    const hasRemoteAudio = Object.values(remoteAudios.current).some(a => a?.srcObject);
+    if (!localStream.current && !hasRemoteAudio) {
+      console.warn('No audio sources available for recording yet, will retry...');
+      // Retry after a delay if auto-recording
+      if (autoRecordStarted.current) {
+        setTimeout(() => {
+          if (!recordingRef.current) {
+            console.log('Retrying auto-recording...');
+            try { toggleRecording(); } catch {}
+          }
+        }, 3000);
+      }
+      return;
+    }
     recordedChunks.current = [];
     try {
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const dest = audioCtx.createMediaStreamDestination();
-      audioCtx.createMediaStreamSource(localStream.current).connect(dest);
-      Object.values(remoteAudios.current).forEach(a => {
+      let sourcesAdded = 0;
+      // Add local mic if available
+      if (localStream.current) {
         try {
-          if (a.srcObject) audioCtx.createMediaStreamSource(a.srcObject).connect(dest);
-        } catch {}
+          audioCtx.createMediaStreamSource(localStream.current).connect(dest);
+          sourcesAdded++;
+          console.log('✓ Added local mic to recording');
+        } catch (e) { console.warn('Could not add local stream to recording:', e); }
+      }
+      // Add all remote audio streams
+      Object.entries(remoteAudios.current).forEach(([pid, a]) => {
+        try {
+          if (a?.srcObject) {
+            audioCtx.createMediaStreamSource(a.srcObject).connect(dest);
+            sourcesAdded++;
+            console.log('✓ Added remote audio from', pid, 'to recording');
+          }
+        } catch (e) { console.warn('Could not add remote stream from', pid, ':', e); }
       });
+      // If no real sources, add a silent oscillator so MediaRecorder has something
+      if (sourcesAdded === 0) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        gain.gain.value = 0; // silent
+        osc.connect(gain);
+        gain.connect(dest);
+        osc.start();
+        console.log('⚠ No audio sources, added silent track for recording');
+      }
+      console.log(`Recording with ${sourcesAdded} audio source(s)`);
       const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
       const mr = new MediaRecorder(dest.stream, { mimeType: mime });
       mr.ondataavailable = e => {
@@ -549,7 +650,7 @@ const createPeerAndOffer = async (peerId) => {
     if (!chatInput.trim()) return;
     const u = userRef.current;
     setChatMsgs(prev => [...prev, { sender: u?.displayName || u?.username, content: chatInput.trim(), time: new Date().toLocaleTimeString() }]);
-    sendSignal({ type: 'chat', sender: u?.username, displayName: u?.displayName || u?.username, message: chatInput.trim() });
+    sendSignal({ type: 'chat', from: u?.username, displayName: u?.displayName || u?.username, data: chatInput.trim() });
     chatApi.send(chatInput.trim()).catch(() => {});
     setChatInput('');
   };
@@ -682,6 +783,8 @@ const createPeerAndOffer = async (peerId) => {
   try {
     return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: '#0d0d1a', overflow: 'hidden', fontFamily: "'Poppins',sans-serif", color: '#e8e8e8' }}>
+      {/* Hidden container for remote audio elements - MUST be in DOM for autoplay */}
+      <div ref={audioContainerRef} style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden', pointerEvents: 'none' }} />
       {/* Header */}
       <div style={{ background: 'linear-gradient(135deg,#1e1e2e,#2d1b69)', padding: '10px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(102,126,234,0.3)', flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -752,7 +855,7 @@ const createPeerAndOffer = async (peerId) => {
           <div style={{ background: '#000', padding: '12px 20px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 16, borderTop: '1px solid rgba(255,255,255,0.1)', flexShrink: 0 }}>
             {[
               { icon: listenOnly ? '🔇' : micOn ? '🎤' : '🔇', label: listenOnly ? 'No Mic' : micOn ? 'Mic On' : 'Mic Off', action: listenOnly ? null : toggleMic, active: !listenOnly && micOn, danger: !micOn },
-              { icon: recording ? '⏹️' : '⏺️', label: recording ? 'Stop Rec' : 'Record', action: listenOnly ? null : toggleRecording, danger: recording },
+              { icon: recording ? '⏹️' : '⏺️', label: recording ? 'Stop Rec' : 'Record', action: toggleRecording, danger: recording },
               { icon: '💬', label: 'Chat', action: () => setSidebarOpen(v => !v) },
               { icon: '📞', label: 'Leave', action: leaveMeeting, danger: true, end: true },
               ...(isAdmin ? [{ icon: '⏹️', label: 'End Room', action: endMeeting, danger: true }] : []),

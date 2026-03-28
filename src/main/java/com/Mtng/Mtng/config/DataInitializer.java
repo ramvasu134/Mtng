@@ -34,15 +34,22 @@ public class DataInitializer implements CommandLineRunner {
     public DataInitializer(StudentRepository studentRepo,
                            RecordingRepository recordingRepo,
                            TeacherRepository teacherRepo,
-                           PasswordEncoder passwordEncoder) {
+                           PasswordEncoder passwordEncoder,
+                           com.Mtng.Mtng.service.StudentService studentService) {
         this.studentRepo     = studentRepo;
         this.recordingRepo   = recordingRepo;
         this.teacherRepo     = teacherRepo;
         this.passwordEncoder = passwordEncoder;
+        this.studentService  = studentService;
     }
+
+    private final com.Mtng.Mtng.service.StudentService studentService;
 
     @Override
     public void run(String... args) {
+
+        // Reset all students to OFFLINE on startup (they need to login again to be ONLINE)
+        try { studentService.resetAllToOffline(); } catch (Exception e) { log.debug("Reset offline: {}", e.getMessage()); }
 
         // ── Seed admin teacher ──────────────────────────────────────────────
         if (teacherRepo.count() == 0) {
@@ -88,7 +95,7 @@ public class DataInitializer implements CommandLineRunner {
         priya.setRawPassword("pass1234");
         priya.setPassword(passwordEncoder.encode("pass1234"));
         priya.setShowRecordings(true);
-        priya.setStatus("ONLINE");
+        priya.setStatus("OFFLINE");
         studentRepo.save(priya);
 
         Student ram = new Student();

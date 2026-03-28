@@ -1,174 +1,15 @@
-
-  .   ____          _            __ _ _
- /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
- \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-  '  |____| .__|_| |_|_| |_\__, | / / / /
- =========|_|==============|___/=/_/_/_/
-
- :: Spring Boot ::                (v3.4.3)
-
-14:24:16.145 [main] INFO  com.Mtng.Mtng.MtngApplication - Starting MtngApplication v0.0.1-SNAPSHOT using Java 21.0.10 with PID 3844 (D:\IntelliJ Projects Trainings\Mtng\target\Mtng-0.0.1-SNAPSHOT.jar started by user in D:\IntelliJ Projects Trainings\Mtng)
-14:24:16.155 [main] INFO  com.Mtng.Mtng.MtngApplication - No active profile set, falling back to 1 default profile: "default"
-14:24:32.203 [main] INFO  com.Mtng.Mtng.MtngApplication - Started MtngApplication in 17.391 seconds (process running for 24.564)
-14:24:33.228 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Teachers seeded:
-14:24:33.228 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   ADMIN  →  username: admin  /  password: admin123
-14:24:33.229 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   USER   →  username: user   /  password: user123
-14:24:33.233 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Seeding sample students ...
-14:24:33.639 [https-jsse-nio-8443-exec-2] INFO  c.M.M.controller.AuthApiController - [AUTH] Login success: admin
-14:24:33.637 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Sample data seeded: 3 students
-14:24:33.907 [https-jsse-nio-8443-exec-8] INFO  c.M.M.c.MeetingApiController - [AUDIT] Room start requested: title=TestRoom, createdBy=admin, participants=null
-14:24:33.908 [https-jsse-nio-8443-exec-8] INFO  c.Mtng.Mtng.service.MeetingService - Starting new room: title=TestRoom, createdBy=admin, participants=null
-14:24:33.912 [https-jsse-nio-8443-exec-8] INFO  c.Mtng.Mtng.service.MeetingService - Room started: id=1, roomName=mtng-937cc378, participants=null
-14:27:04.957 [https-jsse-nio-8443-exec-1] INFO  c.M.M.controller.AuthApiController - [AUTH] Login success: admin
-14:27:29.913 [https-jsse-nio-8443-exec-6] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
-14:27:29.928 [https-jsse-nio-8443-exec-6] INFO  c.M.M.controller.AuthApiController - [AUTH] Login success: RAM22
-14:27:46.680 [https-jsse-nio-8443-exec-9] INFO  c.M.M.c.MeetingApiController - [AUDIT] Room start requested: title=deepu-test, createdBy=admin, participants=[RAM22, PRIYA01]
-14:27:46.680 [https-jsse-nio-8443-exec-9] INFO  c.Mtng.Mtng.service.MeetingService - Starting new room: title=deepu-test, createdBy=admin, participants=[RAM22, PRIYA01]
-14:27:46.682 [https-jsse-nio-8443-exec-9] INFO  c.Mtng.Mtng.service.MeetingService - Room started: id=2, roomName=mtng-087a9896, participants=[RAM22, PRIYA01]
-14:27:46.689 [https-jsse-nio-8443-exec-9] INFO  c.M.M.c.MeetingApiController - [NOTIFY] Room invitation sent for room: mtng-087a9896
-14:28:01.889 [https-jsse-nio-8443-exec-1] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'admin' joining room 'mtng-087a9896' (id=2)
-14:28:01.914 [https-jsse-nio-8443-exec-1] INFO  c.Mtng.Mtng.service.MeetingService - User 'admin' joined room 2
-14:28:06.606 [https-jsse-nio-8443-exec-5] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'RAM22' joining room 'mtng-087a9896' (id=2)
-14:28:06.608 [https-jsse-nio-8443-exec-5] INFO  c.Mtng.Mtng.service.MeetingService - User 'RAM22' joined room 2
-14:28:06.613 [https-jsse-nio-8443-exec-5] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
-14:28:34.092 [https-jsse-nio-8443-exec-7] INFO  c.M.M.c.MeetingApiController - [AUDIT] Stop all rooms requested
-14:28:34.096 [https-jsse-nio-8443-exec-7] INFO  c.Mtng.Mtng.service.MeetingService - Stopping room: id=1, title=TestRoom
-14:28:34.097 [https-jsse-nio-8443-exec-7] INFO  c.Mtng.Mtng.service.MeetingService - Room stopped: id=1
-14:28:34.097 [https-jsse-nio-8443-exec-7] INFO  c.Mtng.Mtng.service.MeetingService - Stopping room: id=2, title=deepu-test
-14:28:34.098 [https-jsse-nio-8443-exec-7] INFO  c.Mtng.Mtng.service.MeetingService - Room stopped: id=2
-14:32:53.471 [https-jsse-nio-8443-exec-8] INFO  c.M.M.c.MeetingApiController - [AUDIT] Room start requested: title=test deepu, createdBy=admin, participants=[RAM22, PRIYA01]
-14:32:53.472 [https-jsse-nio-8443-exec-8] INFO  c.Mtng.Mtng.service.MeetingService - Starting new room: title=test deepu, createdBy=admin, participants=[RAM22, PRIYA01]
-14:32:53.477 [https-jsse-nio-8443-exec-8] INFO  c.Mtng.Mtng.service.MeetingService - Room started: id=3, roomName=mtng-7b5727e5, participants=[RAM22, PRIYA01]
-14:32:53.479 [https-jsse-nio-8443-exec-8] INFO  c.M.M.c.MeetingApiController - [NOTIFY] Room invitation sent for room: mtng-7b5727e5
-14:33:01.863 [https-jsse-nio-8443-exec-3] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'admin' joining room 'mtng-7b5727e5' (id=3)
-14:33:01.867 [https-jsse-nio-8443-exec-3] INFO  c.Mtng.Mtng.service.MeetingService - User 'admin' joined room 3
-14:33:05.608 [https-jsse-nio-8443-exec-5] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'RAM22' joining room 'mtng-7b5727e5' (id=3)
-14:33:05.611 [https-jsse-nio-8443-exec-5] INFO  c.Mtng.Mtng.service.MeetingService - User 'RAM22' joined room 3
-14:33:05.618 [https-jsse-nio-8443-exec-5] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
-14:47:34.592 [https-jsse-nio-8443-exec-1] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'RAM22' joining room 'mtng-7b5727e5' (id=3)
-14:47:34.597 [https-jsse-nio-8443-exec-1] INFO  c.Mtng.Mtng.service.MeetingService - User 'RAM22' joined room 3
-14:47:34.601 [https-jsse-nio-8443-exec-1] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
-14:47:37.102 [https-jsse-nio-8443-exec-5] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'admin' joining room 'mtng-7b5727e5' (id=3)
-14:47:37.297 [https-jsse-nio-8443-exec-5] INFO  c.Mtng.Mtng.service.MeetingService - User 'admin' joined room 3
-ntService - [AUDIT] Student 'RAM22' marked ONLINE
-2026-03-28 14:47:34.592 [https-jsse-nio-8443-exec-1] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'RAM22' joining room 'mtng-7b5727e5' (id=3)
-2026-03-28 14:47:34.597 [https-jsse-nio-8443-exec-1] INFO  c.Mtng.Mtng.service.MeetingService - User 'RAM22' joined room 3
-2026-03-28 14:47:34.601 [https-jsse-nio-8443-exec-1] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
-2026-03-28 14:47:37.102 [https-jsse-nio-8443-exec-5] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'admin' joining room 'mtng-7b5727e5' (id=3)
-2026-03-28 14:47:37.297 [https-jsse-nio-8443-exec-5] INFO  c.Mtng.Mtng.service.MeetingService - User 'admin' joined room 3
-2026-03-28 15:11:13.649 [main] INFO  com.Mtng.Mtng.MtngApplication - Starting MtngApplication v0.0.1-SNAPSHOT using Java 21.0.10 with PID 4432 (D:\IntelliJ Projects Trainings\Mtng\target\Mtng-0.0.1-SNAPSHOT.jar started by user in D:\IntelliJ Projects Trainings\Mtng)
-2026-03-28 15:11:13.658 [main] INFO  com.Mtng.Mtng.MtngApplication - No active profile set, falling back to 1 default profile: "default"
-2026-03-28 15:11:36.633 [main] INFO  com.Mtng.Mtng.MtngApplication - Started MtngApplication in 24.643 seconds (process running for 26.067)
-2026-03-28 15:11:37.786 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Teachers seeded:
-2026-03-28 15:11:37.790 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   ADMIN  →  username: admin  /  password: admin123
-2026-03-28 15:11:37.792 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   USER   →  username: user   /  password: user123
-2026-03-28 15:11:37.796 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Seeding sample students ...
-2026-03-28 15:11:38.722 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Sample data seeded: 3 students
-2026-03-28 15:13:14.657 [https-jsse-nio-8443-exec-1] INFO  c.M.M.controller.AuthApiController - [AUTH] Login success: admin
-2026-03-28 15:13:34.623 [https-jsse-nio-8443-exec-9] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
-2026-03-28 15:13:34.624 [https-jsse-nio-8443-exec-9] INFO  c.M.M.controller.AuthApiController - [AUTH] Login success: RAM22
-2026-03-28 15:13:55.103 [https-jsse-nio-8443-exec-4] INFO  c.M.M.c.MeetingApiController - [AUDIT] Room start requested: title=ram-admin, createdBy=admin, participants=[RAM22]
-2026-03-28 15:13:55.105 [https-jsse-nio-8443-exec-4] INFO  c.Mtng.Mtng.service.MeetingService - Starting new room: title=ram-admin, createdBy=admin, participants=[RAM22]
-2026-03-28 15:13:55.126 [https-jsse-nio-8443-exec-4] INFO  c.Mtng.Mtng.service.MeetingService - Room started: id=1, roomName=mtng-ca52952e, participants=[RAM22]
-2026-03-28 15:13:55.177 [https-jsse-nio-8443-exec-4] INFO  c.M.M.c.MeetingApiController - [NOTIFY] Room invitation sent for room: mtng-ca52952e
-2026-03-28 15:14:01.153 [https-jsse-nio-8443-exec-6] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'admin' joining room 'mtng-ca52952e' (id=1)
-2026-03-28 15:14:01.182 [https-jsse-nio-8443-exec-6] INFO  c.Mtng.Mtng.service.MeetingService - User 'admin' joined room 1
-2026-03-28 15:14:10.819 [https-jsse-nio-8443-exec-5] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'RAM22' joining room 'mtng-ca52952e' (id=1)
-2026-03-28 15:14:10.830 [https-jsse-nio-8443-exec-5] INFO  c.Mtng.Mtng.service.MeetingService - User 'RAM22' joined room 1
-2026-03-28 15:14:10.849 [https-jsse-nio-8443-exec-5] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
-2026-03-28 15:18:12.714 [main] INFO  com.Mtng.Mtng.MtngApplication - Starting MtngApplication v0.0.1-SNAPSHOT using Java 21.0.10 with PID 13108 (D:\IntelliJ Projects Trainings\Mtng\target\Mtng-0.0.1-SNAPSHOT.jar started by user in D:\IntelliJ Projects Trainings\Mtng)
-2026-03-28 15:18:12.722 [main] INFO  com.Mtng.Mtng.MtngApplication - No active profile set, falling back to 1 default profile: "default"
-2026-03-28 15:18:36.923 [main] INFO  com.Mtng.Mtng.MtngApplication - Started MtngApplication in 25.595 seconds (process running for 27.998)
-2026-03-28 15:18:37.597 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Teachers seeded:
-2026-03-28 15:18:37.597 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   ADMIN  →  username: admin  /  password: admin123
-2026-03-28 15:18:37.598 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   USER   →  username: user   /  password: user123
-2026-03-28 15:18:37.601 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Seeding sample students ...
-2026-03-28 15:18:37.912 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Sample data seeded: 3 students
-2026-03-28 15:21:24.157 [main] INFO  com.Mtng.Mtng.MtngApplication - Starting MtngApplication v0.0.1-SNAPSHOT using Java 21.0.10 with PID 10860 (D:\IntelliJ Projects Trainings\Mtng\target\Mtng-0.0.1-SNAPSHOT.jar started by user in D:\IntelliJ Projects Trainings\Mtng)
-2026-03-28 15:21:24.169 [main] INFO  com.Mtng.Mtng.MtngApplication - No active profile set, falling back to 1 default profile: "default"
-2026-03-28 15:21:41.208 [main] INFO  com.Mtng.Mtng.MtngApplication - Started MtngApplication in 18.43 seconds (process running for 20.407)
-2026-03-28 15:21:41.958 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Teachers seeded:
-2026-03-28 15:21:41.959 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   ADMIN  →  username: admin  /  password: admin123
-2026-03-28 15:21:41.960 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   USER   →  username: user   /  password: user123
-2026-03-28 15:21:41.964 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Seeding sample students ...
-2026-03-28 15:21:42.288 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Sample data seeded: 3 students
-2026-03-28 15:26:24.332 [https-jsse-nio-8443-exec-5] INFO  c.M.M.controller.AuthApiController - [AUTH] Login success: admin
-2026-03-28 15:26:53.157 [https-jsse-nio-8443-exec-7] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
-2026-03-28 15:26:53.159 [https-jsse-nio-8443-exec-7] INFO  c.M.M.controller.AuthApiController - [AUTH] Login success: RAM22
-2026-03-28 15:27:03.172 [https-jsse-nio-8443-exec-10] INFO  c.M.M.c.MeetingApiController - [AUDIT] Room start requested: title=test, createdBy=admin, participants=[RAM22]
-2026-03-28 15:27:03.173 [https-jsse-nio-8443-exec-10] INFO  c.Mtng.Mtng.service.MeetingService - Starting new room: title=test, createdBy=admin, participants=[RAM22]
-2026-03-28 15:27:03.192 [https-jsse-nio-8443-exec-10] INFO  c.Mtng.Mtng.service.MeetingService - Room started: id=1, roomName=mtng-51e390ed, participants=[RAM22]
-2026-03-28 15:27:03.267 [https-jsse-nio-8443-exec-10] INFO  c.M.M.c.MeetingApiController - [NOTIFY] Room invitation sent for room: mtng-51e390ed
-2026-03-28 15:27:05.884 [https-jsse-nio-8443-exec-1] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'admin' joining room 'mtng-51e390ed' (id=1)
-2026-03-28 15:27:05.921 [https-jsse-nio-8443-exec-1] INFO  c.Mtng.Mtng.service.MeetingService - User 'admin' joined room 1
-2026-03-28 15:27:09.545 [https-jsse-nio-8443-exec-6] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'RAM22' joining room 'mtng-51e390ed' (id=1)
-2026-03-28 15:27:09.551 [https-jsse-nio-8443-exec-6] INFO  c.Mtng.Mtng.service.MeetingService - User 'RAM22' joined room 1
-2026-03-28 15:27:09.561 [https-jsse-nio-8443-exec-6] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
-2026-03-28 15:33:01.753 [main] INFO  com.Mtng.Mtng.MtngApplication - Starting MtngApplication v0.0.1-SNAPSHOT using Java 21.0.10 with PID 14884 (D:\IntelliJ Projects Trainings\Mtng\target\Mtng-0.0.1-SNAPSHOT.jar started by user in D:\IntelliJ Projects Trainings\Mtng)
-2026-03-28 15:33:01.760 [main] INFO  com.Mtng.Mtng.MtngApplication - No active profile set, falling back to 1 default profile: "default"
-2026-03-28 15:33:26.287 [main] INFO  com.Mtng.Mtng.MtngApplication - Started MtngApplication in 26.059 seconds (process running for 28.743)
-2026-03-28 15:33:26.906 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Teachers seeded:
-2026-03-28 15:33:26.907 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   ADMIN  →  username: admin  /  password: admin123
-2026-03-28 15:33:26.907 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   USER   →  username: user   /  password: user123
-2026-03-28 15:33:26.910 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Seeding sample students ...
-2026-03-28 15:33:27.272 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Sample data seeded: 3 students
-2026-03-28 15:35:47.095 [https-jsse-nio-8443-exec-6] INFO  c.M.M.controller.AuthApiController - [AUTH] Login success: admin
-2026-03-28 15:36:08.712 [https-jsse-nio-8443-exec-4] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
-2026-03-28 15:36:08.713 [https-jsse-nio-8443-exec-4] INFO  c.M.M.controller.AuthApiController - [AUTH] Login success: RAM22
-2026-03-28 15:36:18.781 [https-jsse-nio-8443-exec-2] INFO  c.M.M.c.MeetingApiController - [AUDIT] Room start requested: title=test, createdBy=admin, participants=[RAM22, PRIYA01]
-2026-03-28 15:36:18.787 [https-jsse-nio-8443-exec-2] INFO  c.Mtng.Mtng.service.MeetingService - Starting new room: title=test, createdBy=admin, participants=[RAM22, PRIYA01]
-2026-03-28 15:36:18.808 [https-jsse-nio-8443-exec-2] INFO  c.Mtng.Mtng.service.MeetingService - Room started: id=1, roomName=mtng-d51dc868, participants=[RAM22, PRIYA01]
-2026-03-28 15:36:18.849 [https-jsse-nio-8443-exec-2] INFO  c.M.M.c.MeetingApiController - [NOTIFY] Room invitation sent for room: mtng-d51dc868
-2026-03-28 15:36:24.933 [https-jsse-nio-8443-exec-4] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'admin' joining room 'mtng-d51dc868' (id=1)
-2026-03-28 15:36:24.966 [https-jsse-nio-8443-exec-4] INFO  c.Mtng.Mtng.service.MeetingService - User 'admin' joined room 1
-2026-03-28 15:36:28.818 [https-jsse-nio-8443-exec-10] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'RAM22' joining room 'mtng-d51dc868' (id=1)
-2026-03-28 15:36:28.822 [https-jsse-nio-8443-exec-10] INFO  c.Mtng.Mtng.service.MeetingService - User 'RAM22' joined room 1
-2026-03-28 15:36:28.830 [https-jsse-nio-8443-exec-10] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
-2026-03-28 15:37:29.992 [https-jsse-nio-8443-exec-1] INFO  c.Mtng.Mtng.service.MeetingService - User 'admin' left room 1
-2026-03-28 15:37:29.995 [https-jsse-nio-8443-exec-1] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'admin' left room
-2026-03-28 15:37:30.012 [https-jsse-nio-8443-exec-10] INFO  c.M.M.c.MeetingApiController - [AUDIT] Room stop requested: roomName=mtng-d51dc868
-2026-03-28 15:37:30.017 [https-jsse-nio-8443-exec-10] INFO  c.Mtng.Mtng.service.MeetingService - Stopping room: id=1, title=test
-2026-03-28 15:37:30.020 [https-jsse-nio-8443-exec-10] INFO  c.Mtng.Mtng.service.MeetingService - Room stopped: id=1
-2026-03-28 15:42:16.981 [main] INFO  com.Mtng.Mtng.MtngApplication - Starting MtngApplication v0.0.1-SNAPSHOT using Java 21.0.10 with PID 11868 (D:\IntelliJ Projects Trainings\Mtng\target\Mtng-0.0.1-SNAPSHOT.jar started by user in D:\IntelliJ Projects Trainings\Mtng)
-2026-03-28 15:42:16.989 [main] INFO  com.Mtng.Mtng.MtngApplication - No active profile set, falling back to 1 default profile: "default"
-2026-03-28 15:42:37.671 [main] INFO  com.Mtng.Mtng.MtngApplication - Started MtngApplication in 22.812 seconds (process running for 24.476)
-2026-03-28 15:42:38.219 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Teachers seeded:
-2026-03-28 15:42:38.219 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   ADMIN  →  username: admin  /  password: admin123
-2026-03-28 15:42:38.220 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   USER   →  username: user   /  password: user123
-2026-03-28 15:42:38.223 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Seeding sample students ...
-2026-03-28 15:42:38.543 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Sample data seeded: 3 students
-2026-03-28 15:46:52.014 [https-jsse-nio-8443-exec-6] INFO  c.M.M.controller.AuthApiController - [AUTH] Login success: admin
-2026-03-28 15:47:13.231 [https-jsse-nio-8443-exec-5] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
-2026-03-28 15:47:13.232 [https-jsse-nio-8443-exec-5] INFO  c.M.M.controller.AuthApiController - [AUTH] Login success: RAM22
-2026-03-28 15:47:53.806 [https-jsse-nio-8443-exec-3] INFO  c.M.M.c.MeetingApiController - [AUDIT] Room start requested: title=test123, createdBy=admin, participants=[PRIYA01, RAM22]
-2026-03-28 15:47:53.808 [https-jsse-nio-8443-exec-3] INFO  c.Mtng.Mtng.service.MeetingService - Starting new room: title=test123, createdBy=admin, participants=[PRIYA01, RAM22]
-2026-03-28 15:47:53.823 [https-jsse-nio-8443-exec-3] INFO  c.Mtng.Mtng.service.MeetingService - Room started: id=1, roomName=mtng-06bd5bdf, participants=[PRIYA01, RAM22]
-2026-03-28 15:47:53.869 [https-jsse-nio-8443-exec-3] INFO  c.M.M.c.MeetingApiController - [NOTIFY] Room invitation sent for room: mtng-06bd5bdf
-2026-03-28 15:48:00.419 [https-jsse-nio-8443-exec-3] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'admin' joining room 'mtng-06bd5bdf' (id=1)
-2026-03-28 15:48:00.448 [https-jsse-nio-8443-exec-3] INFO  c.Mtng.Mtng.service.MeetingService - User 'admin' joined room 1
-2026-03-28 15:48:29.384 [https-jsse-nio-8443-exec-6] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'RAM22' joining room 'mtng-06bd5bdf' (id=1)
-2026-03-28 15:48:29.387 [https-jsse-nio-8443-exec-6] INFO  c.Mtng.Mtng.service.MeetingService - User 'RAM22' joined room 1
-2026-03-28 15:48:29.393 [https-jsse-nio-8443-exec-6] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
-2026-03-28 15:48:53.800 [https-jsse-nio-8443-exec-3] INFO  c.Mtng.Mtng.service.MeetingService - User 'RAM22' left room 1
-2026-03-28 15:48:53.804 [https-jsse-nio-8443-exec-3] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'RAM22' left room
-2026-03-28 15:49:14.555 [https-jsse-nio-8443-exec-6] INFO  c.Mtng.Mtng.service.MeetingService - User 'admin' left room 1
-2026-03-28 15:49:14.558 [https-jsse-nio-8443-exec-6] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'admin' left room
-2026-03-28 15:49:14.568 [https-jsse-nio-8443-exec-9] INFO  c.M.M.c.MeetingApiController - [AUDIT] Room stop requested: roomName=mtng-06bd5bdf
-2026-03-28 15:49:14.573 [https-jsse-nio-8443-exec-9] INFO  c.Mtng.Mtng.service.MeetingService - Stopping room: id=1, title=test123
-2026-03-28 15:49:14.574 [https-jsse-nio-8443-exec-9] INFO  c.Mtng.Mtng.service.MeetingService - Room stopped: id=1
-2026-03-28 15:56:40.489 [main] INFO  com.Mtng.Mtng.MtngApplication - Starting MtngApplication v0.0.1-SNAPSHOT using Java 21.0.10 with PID 9792 (D:\IntelliJ Projects Trainings\Mtng\target\Mtng-0.0.1-SNAPSHOT.jar started by user in D:\IntelliJ Projects Trainings\Mtng)
-2026-03-28 15:56:40.496 [main] INFO  com.Mtng.Mtng.MtngApplication - No active profile set, falling back to 1 default profile: "default"
-2026-03-28 15:57:01.674 [main] INFO  com.Mtng.Mtng.MtngApplication - Started MtngApplication in 22.704 seconds (process running for 24.922)
-2026-03-28 15:57:02.255 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Teachers seeded:
-2026-03-28 15:57:02.256 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   ADMIN  →  username: admin  /  password: admin123
-2026-03-28 15:57:02.257 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   USER   →  username: user   /  password: user123
-2026-03-28 15:57:02.262 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Seeding sample students ...
-2026-03-28 15:57:02.597 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Sample data seeded: 3 students
-2026-03-28 15:57:15.521 [main] INFO  com.Mtng.Mtng.MtngApplication - Starting MtngApplication v0.0.1-SNAPSHOT using Java 21.0.10 with PID 7832 (D:\IntelliJ Projects Trainings\Mtng\target\Mtng-0.0.1-SNAPSHOT.jar started by user in D:\IntelliJ Projects Trainings\Mtng)
-2026-03-28 15:57:15.529 [main] INFO  com.Mtng.Mtng.MtngApplication - No active profile set, falling back to 1 default profile: "default"
-2026-03-28 15:57:34.468 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
-2026-03-28 15:57:35.093 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+2026-03-28 18:41:52.784 [main] INFO  com.Mtng.Mtng.MtngApplication - Starting MtngApplication v0.0.1-SNAPSHOT using Java 21.0.10 with PID 3052 (D:\IntelliJ Projects Trainings\Mtng\target\Mtng-0.0.1-SNAPSHOT.jar started by user in D:\IntelliJ Projects Trainings\Mtng)
+2026-03-28 18:41:52.798 [main] INFO  com.Mtng.Mtng.MtngApplication - No active profile set, falling back to 1 default profile: "default"
+2026-03-28 18:42:22.897 [main] INFO  com.Mtng.Mtng.MtngApplication - Started MtngApplication in 32.003 seconds (process running for 35.046)
+2026-03-28 18:42:25.508 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Teachers seeded:
+2026-03-28 18:42:25.509 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   ADMIN  →  username: admin  /  password: admin123
+2026-03-28 18:42:25.510 [main] INFO  c.Mtng.Mtng.config.DataInitializer -   USER   →  username: user   /  password: user123
+2026-03-28 18:42:25.518 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Seeding sample students ...
+2026-03-28 18:42:25.903 [main] INFO  c.Mtng.Mtng.config.DataInitializer - Sample data seeded: 3 students
+2026-03-28 18:49:49.279 [main] INFO  com.Mtng.Mtng.MtngApplication - Starting MtngApplication using Java 21.0.10 with PID 2968 (D:\IntelliJ Projects Trainings\Mtng\target\classes started by user in D:\IntelliJ Projects Trainings\Mtng)
+2026-03-28 18:49:49.284 [main] INFO  com.Mtng.Mtng.MtngApplication - No active profile set, falling back to 1 default profile: "default"
+2026-03-28 18:50:05.557 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-03-28 18:50:05.637 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
 
 ***************************
 APPLICATION FAILED TO START
@@ -182,20 +23,50 @@ Action:
 
 Identify and stop the process that's listening on port 8443 or configure this application to listen on another port.
 
-2026-03-28 15:58:13.534 [https-jsse-nio-8443-exec-6] INFO  c.M.M.controller.AuthApiController - [AUTH] Login success: admin
-2026-03-28 15:58:36.953 [https-jsse-nio-8443-exec-9] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
-2026-03-28 15:58:36.954 [https-jsse-nio-8443-exec-9] INFO  c.M.M.controller.AuthApiController - [AUTH] Login success: RAM22
-2026-03-28 15:58:54.912 [https-jsse-nio-8443-exec-4] INFO  c.M.M.c.MeetingApiController - [AUDIT] Room start requested: title=test, createdBy=admin, participants=[RAM22]
-2026-03-28 15:58:54.914 [https-jsse-nio-8443-exec-4] INFO  c.Mtng.Mtng.service.MeetingService - Starting new room: title=test, createdBy=admin, participants=[RAM22]
-2026-03-28 15:58:54.935 [https-jsse-nio-8443-exec-4] INFO  c.Mtng.Mtng.service.MeetingService - Room started: id=1, roomName=mtng-3f49681d, participants=[RAM22]
-2026-03-28 15:58:54.982 [https-jsse-nio-8443-exec-4] INFO  c.M.M.c.MeetingApiController - [NOTIFY] Room invitation sent for room: mtng-3f49681d
-2026-03-28 15:59:00.960 [https-jsse-nio-8443-exec-3] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'admin' joining room 'mtng-3f49681d' (id=1)
-2026-03-28 15:59:00.994 [https-jsse-nio-8443-exec-3] INFO  c.Mtng.Mtng.service.MeetingService - User 'admin' joined room 1
-2026-03-28 15:59:06.665 [https-jsse-nio-8443-exec-5] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'RAM22' joining room 'mtng-3f49681d' (id=1)
-2026-03-28 15:59:06.673 [https-jsse-nio-8443-exec-5] INFO  c.Mtng.Mtng.service.MeetingService - User 'RAM22' joined room 1
-2026-03-28 15:59:06.692 [https-jsse-nio-8443-exec-5] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
-2026-03-28 15:59:28.816 [https-jsse-nio-8443-exec-10] INFO  c.Mtng.Mtng.service.MeetingService - User 'admin' left room 1
-2026-03-28 15:59:28.819 [https-jsse-nio-8443-exec-10] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'admin' left room
-2026-03-28 15:59:28.833 [https-jsse-nio-8443-exec-5] INFO  c.M.M.c.MeetingApiController - [AUDIT] Room stop requested: roomName=mtng-3f49681d
-2026-03-28 15:59:28.839 [https-jsse-nio-8443-exec-5] INFO  c.Mtng.Mtng.service.MeetingService - Stopping room: id=1, title=test
-2026-03-28 15:59:28.840 [https-jsse-nio-8443-exec-5] INFO  c.Mtng.Mtng.service.MeetingService - Room stopped: id=1
+2026-03-28 18:50:55.709 [https-jsse-nio-8443-exec-9] INFO  c.M.M.controller.AuthApiController - [AUTH] Login success: admin
+2026-03-28 18:51:13.314 [https-jsse-nio-8443-exec-9] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 18:51:13.316 [https-jsse-nio-8443-exec-9] INFO  c.M.M.controller.AuthApiController - [AUTH] Login success: RAM22
+2026-03-28 18:51:13.547 [https-jsse-nio-8443-exec-10] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 18:51:13.985 [clientOutboundChannel-1] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 18:51:13.985 [clientOutboundChannel-1] INFO  c.M.M.c.WebSocketPresenceListener - [PRESENCE] WebSocket connected: RAM22 → marked ONLINE
+2026-03-28 18:51:15.419 [https-jsse-nio-8443-exec-1] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 18:51:28.409 [https-jsse-nio-8443-exec-5] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 18:51:31.112 [https-jsse-nio-8443-exec-9] INFO  c.M.M.c.MeetingApiController - [AUDIT] Room start requested: title=test, createdBy=admin, participants=[RAM22]
+2026-03-28 18:51:31.112 [https-jsse-nio-8443-exec-9] INFO  c.Mtng.Mtng.service.MeetingService - Starting new room: title=test, createdBy=admin, participants=[RAM22]
+2026-03-28 18:51:31.128 [https-jsse-nio-8443-exec-9] INFO  c.Mtng.Mtng.service.MeetingService - Room started: id=1, roomName=mtng-70c0fc99, participants=[RAM22]
+2026-03-28 18:51:31.181 [https-jsse-nio-8443-exec-9] INFO  c.M.M.c.MeetingApiController - [NOTIFY] Room invitation sent for room: mtng-70c0fc99
+2026-03-28 18:51:31.358 [https-jsse-nio-8443-exec-2] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked OFFLINE
+2026-03-28 18:51:31.672 [https-jsse-nio-8443-exec-2] INFO  c.M.M.c.WebSocketPresenceListener - [PRESENCE] WebSocket disconnected: RAM22 → marked OFFLINE
+2026-03-28 18:51:31.680 [clientOutboundChannel-3] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 18:51:31.691 [clientOutboundChannel-3] INFO  c.M.M.c.WebSocketPresenceListener - [PRESENCE] WebSocket connected: RAM22 → marked ONLINE
+2026-03-28 18:51:33.893 [https-jsse-nio-8443-exec-10] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked OFFLINE
+2026-03-28 18:51:33.909 [https-jsse-nio-8443-exec-10] INFO  c.M.M.c.WebSocketPresenceListener - [PRESENCE] WebSocket disconnected: RAM22 → marked OFFLINE
+2026-03-28 18:51:43.403 [https-jsse-nio-8443-exec-1] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 18:51:45.023 [https-jsse-nio-8443-exec-3] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 18:51:47.048 [https-jsse-nio-8443-exec-10] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 18:51:50.179 [https-jsse-nio-8443-exec-5] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'RAM22' joining room 'mtng-70c0fc99' (id=1)
+2026-03-28 18:51:50.213 [https-jsse-nio-8443-exec-5] INFO  c.Mtng.Mtng.service.MeetingService - User 'RAM22' joined room 1
+2026-03-28 18:51:50.225 [https-jsse-nio-8443-exec-5] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 18:51:50.384 [clientOutboundChannel-8] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 18:51:50.385 [clientOutboundChannel-8] INFO  c.M.M.c.WebSocketPresenceListener - [PRESENCE] WebSocket connected: RAM22 → marked ONLINE
+2026-03-28 18:51:52.235 [https-jsse-nio-8443-exec-7] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'admin' joining room 'mtng-70c0fc99' (id=1)
+2026-03-28 18:51:52.243 [https-jsse-nio-8443-exec-7] INFO  c.Mtng.Mtng.service.MeetingService - User 'admin' joined room 1
+2026-03-28 18:51:52.329 [clientOutboundChannel-2] INFO  c.M.M.c.WebSocketPresenceListener - [PRESENCE] WebSocket connected: admin → marked ONLINE
+2026-03-28 18:52:00.039 [https-jsse-nio-8443-exec-10] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 18:52:05.222 [https-jsse-nio-8443-exec-7] INFO  c.M.M.c.WebSocketPresenceListener - [PRESENCE] WebSocket disconnected: admin → marked OFFLINE
+2026-03-28 18:52:05.234 [https-jsse-nio-8443-exec-2] INFO  c.Mtng.Mtng.service.MeetingService - User 'admin' left room 1
+2026-03-28 18:52:05.254 [https-jsse-nio-8443-exec-2] INFO  c.M.M.c.MeetingApiController - [AUDIT] User 'admin' left room
+2026-03-28 18:52:05.267 [https-jsse-nio-8443-exec-3] INFO  c.M.M.c.MeetingApiController - [AUDIT] Room stop requested: roomName=mtng-70c0fc99
+2026-03-28 18:52:05.272 [https-jsse-nio-8443-exec-3] INFO  c.Mtng.Mtng.service.MeetingService - Stopping room: id=1, title=test
+2026-03-28 18:52:05.273 [https-jsse-nio-8443-exec-3] INFO  c.Mtng.Mtng.service.MeetingService - Room stopped: id=1
+2026-03-28 18:52:15.044 [https-jsse-nio-8443-exec-2] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 18:52:30.043 [https-jsse-nio-8443-exec-9] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 18:52:45.060 [https-jsse-nio-8443-exec-5] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 18:53:00.118 [https-jsse-nio-8443-exec-7] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 18:53:15.035 [https-jsse-nio-8443-exec-9] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 18:53:30.055 [https-jsse-nio-8443-exec-4] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 18:53:45.052 [https-jsse-nio-8443-exec-1] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 18:54:00.295 [https-jsse-nio-8443-exec-7] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 18:54:15.072 [https-jsse-nio-8443-exec-2] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked ONLINE
+2026-03-28 18:54:16.553 [https-jsse-nio-8443-exec-3] INFO  c.Mtng.Mtng.service.StudentService - [AUDIT] Student 'RAM22' marked OFFLINE
+2026-03-28 18:54:16.555 [https-jsse-nio-8443-exec-3] INFO  c.M.M.c.WebSocketPresenceListener - [PRESENCE] WebSocket disconnected: RAM22 → marked OFFLINE

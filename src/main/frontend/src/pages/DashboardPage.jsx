@@ -77,6 +77,18 @@ export default function DashboardPage() {
     finally { setLoadingStudents(false); }
   };
 
+  // Auto-refresh student statuses while Create Room modal is open
+  useEffect(() => {
+    if (!showCreateModal) return;
+    const interval = setInterval(async () => {
+      try {
+        const all = await studentsApi.list();
+        if (all) setAllStudents(all);
+      } catch { /* ignore */ }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [showCreateModal]);
+
   // ── Toggle participant selection ──────────────────────────────────────────
   const toggleParticipant = (username) => {
     setSelectedParticipants(prev =>

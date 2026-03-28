@@ -155,5 +155,17 @@ public class StudentService {
             log.info("[AUDIT] Student '{}' marked OFFLINE", username);
         });
     }
+
+    /** Reset ALL students to OFFLINE – called on application startup */
+    public void resetAllToOffline() {
+        List<Student> onlineStudents = studentRepository.findByStatus("ONLINE");
+        for (Student s : onlineStudents) {
+            s.setStatus("OFFLINE");
+            studentRepository.save(s);
+        }
+        if (!onlineStudents.isEmpty()) {
+            log.info("[STARTUP] Reset {} students to OFFLINE", onlineStudents.size());
+        }
+    }
 }
 

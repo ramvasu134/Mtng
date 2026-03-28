@@ -48,6 +48,7 @@ export const students = {
   onlineCount: ()    => request('/api/students/online'),
   onlineList: ()     => request('/api/students/online-list'),
   whatsappLink: (id) => request(`/api/students/${id}/whatsapp-link`),
+  heartbeat: ()      => request('/api/students/heartbeat', { method: 'POST' }),
 };
 
 // ── Meeting (Multi-Room) ────────────────────────────────────────────────────

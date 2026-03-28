@@ -98,4 +98,16 @@ public class StudentApiController {
     public ResponseEntity<Student> mute(@PathVariable Long id) {
         return ResponseEntity.ok(studentService.toggleMute(id));
     }
+
+    /** POST /api/students/heartbeat – called by students periodically to stay ONLINE */
+    @PostMapping("/heartbeat")
+    public ResponseEntity<Map<String, Object>> heartbeat(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal
+            org.springframework.security.core.userdetails.UserDetails userDetails) {
+        if (userDetails != null) {
+            studentService.markOnline(userDetails.getUsername());
+            return ResponseEntity.ok(Map.of("status", "ONLINE"));
+        }
+        return ResponseEntity.ok(Map.of("status", "ignored"));
+    }
 }

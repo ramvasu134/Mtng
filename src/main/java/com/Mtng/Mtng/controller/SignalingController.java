@@ -54,10 +54,26 @@ public class SignalingController {
         if (username != null && (message.getFrom() == null || message.getFrom().isBlank())) {
             message.setFrom(username);
         }
+        // Keep 'sender' in sync with 'from' so frontend can read either
+        if (message.getFrom() != null && (message.getSender() == null || message.getSender().isBlank())) {
+            message.setSender(message.getFrom());
+        } else if (message.getSender() != null && (message.getFrom() == null || message.getFrom().isBlank())) {
+            message.setFrom(message.getSender());
+        }
         
         // Support both 'target' and 'to' fields
         if (message.getTarget() != null && message.getTo() == null) {
             message.setTo(message.getTarget());
+        }
+        
+        // Normalize 'message' → 'data' for chat messages
+        if (message.getMessage() != null && (message.getData() == null || message.getData().isBlank())) {
+            message.setData(message.getMessage());
+        }
+        
+        // Normalize 'candidate' → 'data' for ICE candidates
+        if (message.getCandidate() != null && (message.getData() == null || message.getData().isBlank())) {
+            message.setData(message.getCandidate());
         }
         
         // Add displayName if not provided
@@ -85,9 +101,9 @@ public class SignalingController {
         // Try to find in Teacher table
         Optional<Teacher> teacher = teacherRepository.findByUsername(username);
         if (teacher.isPresent()) {
-            // Teacher also has 'name' field
-            return teacher.get().getName() != null ? 
-                   teacher.get().getName() : 
+            // Teacher has 'displayName' field
+            return teacher.get().getDisplayName() != null ? 
+                   teacher.get().getDisplayName() : 
                    username;
         }
         

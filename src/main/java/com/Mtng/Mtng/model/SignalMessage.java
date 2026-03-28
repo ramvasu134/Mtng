@@ -14,12 +14,16 @@ package com.Mtng.Mtng.model;
  */
 public class SignalMessage {
 
-    private String type;   // join | offer | answer | ice-candidate | leave
+    private String type;   // join | offer | answer | ice-candidate | leave | chat | mic-toggle
     private String from;   // sender's username
     private String to;     // target username (null = broadcast to all)
-    private String data;   // SDP JSON or ICE candidate JSON
-    private String displayName;  // NEW: sender's display name
-    private String target;  // NEW: alias for 'to' for frontend compatibility
+    private String data;   // SDP JSON or ICE candidate JSON or chat text
+    private String displayName;  // sender's display name
+    private String target;  // alias for 'to' for frontend compatibility
+    private String sender;  // alias for 'from' for frontend compatibility
+    private String message; // alias for 'data' for chat messages
+    private String candidate; // ICE candidate JSON string
+    private Boolean micOn;  // mic toggle state
 
     public SignalMessage() {}
 
@@ -47,5 +51,17 @@ public class SignalMessage {
 
     public String getTarget()            { return target; }
     public void   setTarget(String target) { this.target = target; }
+
+    public String getSender()            { return sender; }
+    public void   setSender(String sender) { this.sender = sender; }
+
+    public String getMessage()           { return message; }
+    public void   setMessage(String message) { this.message = message; }
+
+    public String getCandidate()         { return candidate; }
+    public void   setCandidate(String candidate) { this.candidate = candidate; }
+
+    public Boolean getMicOn()            { return micOn; }
+    public void   setMicOn(Boolean micOn) { this.micOn = micOn; }
 }
 

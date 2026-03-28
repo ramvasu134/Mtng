@@ -746,6 +746,7 @@ class MtngMeetingRoom {
     if (typeof _previewStream !== 'undefined' && _previewStream) {
       const liveTracks = _previewStream.getAudioTracks().filter(t => t.readyState === 'live');
       if (liveTracks.length > 0) {
+        console.log('[MTNG] ✅ Reusing preview stream with', liveTracks.length, 'live audio track(s)');
         this.localStream = _previewStream;
         _previewStream = null; // consumed — room now owns it
         console.log('[MTNG] ✅ Reused prejoin mic stream (no 2nd getUserMedia needed)');
@@ -1432,9 +1433,20 @@ class MtngMeetingRoom {
   }
 
   _startRecording() {
+    console.log('[MTNG] _startRecording called, _recordingDest:', !!this._recordingDest);
+    console.log('[MTNG] processedStream:', !!this.processedStream, this.processedStream ? 'tracks:' + this.processedStream.getTracks().length : '');
+    console.log('[MTNG] localStream:', !!this.localStream, this.localStream ? 'tracks:' + this.localStream.getTracks().length : '');
+
     const recStream = this._recordingDest ? this._recordingDest.stream
                      : (this.processedStream || this.localStream);
-    if (!recStream) { showAlert('No audio stream available for recording', 'error'); return; }
+
+    console.log('[MTNG] Selected recording stream:', !!recStream, recStream ? 'tracks:' + recStream.getTracks().length : '');
+
+    if (!recStream) {
+      console.error('[MTNG] _startRecording: No audio stream available!');
+      showAlert('No audio stream available for recording', 'error');
+      return;
+    }
 
     this._recordingChunks  = [];
     this._recordingBlob    = null;
@@ -1454,6 +1466,8 @@ class MtngMeetingRoom {
       if (!m || MediaRecorder.isTypeSupported(m)) { mime = m; break; }
     }
 
+    console.log('[MTNG] Selected MIME type:', mime);
+
     // High-quality audio options: 128kbps Opus — CD-quality voice, very clear
     const recOptions = {};
     if (mime) recOptions.mimeType = mime;
@@ -1463,13 +1477,17 @@ class MtngMeetingRoom {
 
     try {
       this._recorder = new MediaRecorder(recStream, recOptions);
+      console.log('[MTNG] MediaRecorder created with MIME:', mime);
     } catch (e) {
       console.warn('[MTNG] MediaRecorder with options failed, retrying without options:', e.message);
       this._recorder = new MediaRecorder(recStream); // fallback: no options
     }
 
     this._recorder.ondataavailable = (ev) => {
-      if (ev.data && ev.data.size > 0) this._recordingChunks.push(ev.data);
+      if (ev.data && ev.data.size > 0) {
+        this._recordingChunks.push(ev.data);
+        console.log('[MTNG] Recording chunk available, size:', ev.data.size, 'bytes');
+      }
     };
 
     this._recorder.onstop = () => {
@@ -1481,20 +1499,29 @@ class MtngMeetingRoom {
       // _suppressOnStop: set true by endMeeting/leaveMeeting before _stopRecordingAndWait()
       // to prevent this handler from double-saving (the caller handles the save).
       if (this._suppressOnStop) {
+        console.log('[MTNG] Recording stopped but suppressing auto-save (meeting ending)');
         this._suppressOnStop = false;
         return; // caller handles save
       }
 
       if (this._autoRecording) {
-        // Auto-recording was stopped manually mid-meeting (user clicked ⏺).
+        // Auto-recording was stopped manually mid-meeting (user clicked ⏹).
         // Auto-save to DB silently without the save modal.
+        console.log('[MTNG] Auto-recording stopped manually — auto-saving to database');
         this._saveToDb(this._buildFileName()).then(ok => {
           const ab = document.getElementById('autoRecBadge');
           if (ab) ab.classList.remove('active');
-          showAlert(ok ? '✅ Session recording saved to database' : '⚠️ Auto-save failed – check console', ok ? 'success' : 'error');
+          if (ok) {
+            showAlert('✅ Session recording auto-saved to database', 'success');
+            // ★ NEW: Refresh recordings list after save
+            this._refreshRecordingsList();
+          } else {
+            showAlert('⚠️ Auto-save failed – check console', 'error');
+          }
         });
       } else {
         // Manual recording – show the save options modal
+        console.log('[MTNG] Manual recording stopped — showing save modal');
         this._showSaveModal();
       }
     };
@@ -1505,8 +1532,11 @@ class MtngMeetingRoom {
     };
 
     this._recorder.start(250); // Collect chunks every 250 ms – minimises data loss on stop
+    console.log('[MTNG] Recorder started, state:', this._recorder.state);
+
     this._isRecording   = true;
     this._recStartTime  = Date.now();
+    console.log('[MTNG] _isRecording set to true, startTime:', new Date(this._recStartTime).toISOString());
 
     // ★ Capture meetingId NOW (before meeting might get stopped).
     //   _saveToDb will use this cached value instead of querying /api/meeting/active.
@@ -1515,8 +1545,13 @@ class MtngMeetingRoom {
         if (r.ok) return r.json();
         return null;
       }).then(m => {
-        if (m && m.id) this._recMeetingId = m.id;
-      }).catch(() => {});
+        if (m && m.id) {
+          this._recMeetingId = m.id;
+          console.log('[MTNG] Captured meetingId for recording:', this._recMeetingId);
+        }
+      }).catch(e => {
+        console.warn('[MTNG] Failed to fetch active meeting:', e.message);
+      });
     }
 
     // Update UI
@@ -1535,7 +1570,9 @@ class MtngMeetingRoom {
 
     // Start recording timer
     this._recTimerInterval = setInterval(() => this._updateRecTimer(), 1000);
-    showAlert(this._autoRecording ? '⏺ Auto-recording started' : '⏺ Recording started', 'success');
+    const msg = this._autoRecording ? '⏺ Auto-recording started' : '⏺ Recording started';
+    console.log('[MTNG]', msg);
+    showAlert(msg, 'success');
   }
 
   _stopRecording() {
@@ -1661,11 +1698,14 @@ class MtngMeetingRoom {
 
   /** POST recording metadata to database, then upload the audio blob */
   async _saveToDb(fileName) {
+    console.log('[MTNG] _saveToDb called, fileName:', fileName);
+
     // ★ FIX: Always compute duration from timestamps (not relying on _showSaveModal)
     if (!this._recDurationSecs || this._recDurationSecs <= 0) {
       const endMs   = this._recEndTime || Date.now();
       const startMs = this._recStartTime || endMs;
       this._recDurationSecs = Math.max(1, Math.floor((endMs - startMs) / 1000));
+      console.log('[MTNG] Computed duration:', this._recDurationSecs, 's');
     }
     const secs = this._recDurationSecs;
 
@@ -1685,28 +1725,44 @@ class MtngMeetingRoom {
       // Fallback: try to fetch active meeting (works if meeting is still running)
       try {
         const r = await fetch('/api/meeting/active');
-        if (r.ok) { const m = await r.json(); if (m && m.id) body.meetingId = m.id; }
-      } catch (e) {}
+        if (r.ok) {
+          const m = await r.json();
+          if (m && m.id) {
+            body.meetingId = m.id;
+            console.log('[MTNG] Fetched active meetingId:', body.meetingId);
+          }
+        }
+      } catch (e) {
+        console.warn('[MTNG] Failed to fetch active meeting:', e.message);
+      }
     }
-    console.log('[MTNG] Saving to DB:', JSON.stringify(body));
+    console.log('[MTNG] Save body:', JSON.stringify(body));
 
     let savedId = null;
     try {
       // Step 1: Save metadata
+      console.log('[MTNG] Posting metadata to /api/recordings/save-session...');
       const resp = await fetch('/api/recordings/save-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
       });
+
+      console.log('[MTNG] Response status:', resp.status);
+
       if (resp.ok) {
         const saved = await resp.json();
         savedId = saved.id;
-        console.log('[MTNG] DB metadata save OK, id:', savedId);
+        console.log('[MTNG] ✅ Metadata saved OK, recording ID:', savedId);
       } else {
-        console.error('[MTNG] DB save HTTP error:', resp.status, await resp.text());
+        const errText = await resp.text();
+        console.error('[MTNG] Metadata save failed, HTTP', resp.status, ':', errText);
         return false;
       }
-    } catch (e) { console.error('[MTNG] Save to DB failed:', e); return false; }
+    } catch (e) {
+      console.error('[MTNG] Metadata save exception:', e.message, e);
+      return false;
+    }
 
     // Step 2: Upload audio blob (if we have it and the metadata was saved)
     if (savedId && this._recordingBlob && this._recordingBlob.size > 0) {
@@ -1715,19 +1771,32 @@ class MtngMeetingRoom {
         const ext  = (this._recorder && this._recorder.mimeType || '').indexOf('ogg') !== -1 ? '.ogg' : '.webm';
         const fn   = fileName || this._buildFileName();
         form.append('audio', this._recordingBlob, fn);
+
+        console.log('[MTNG] Uploading audio blob, size:', this._recordingBlob.size, 'to /api/recordings/' + savedId + '/upload-audio');
+
         const upResp = await fetch('/api/recordings/' + savedId + '/upload-audio', {
           method: 'POST',
           body: form
         });
+
+        console.log('[MTNG] Audio upload response status:', upResp.status);
+
         if (upResp.ok) {
           const upResult = await upResp.json();
-          console.log('[MTNG] Audio blob uploaded, size:', upResult.size);
+          console.log('[MTNG] ✅ Audio blob uploaded OK, size on server:', upResult.size);
         } else {
-          console.warn('[MTNG] Audio upload HTTP error:', upResp.status);
+          console.warn('[MTNG] Audio upload failed, HTTP', upResp.status);
           // Metadata was saved successfully even if audio upload failed
         }
-      } catch (e) { console.warn('[MTNG] Audio upload failed (metadata was saved):', e.message); }
+      } catch (e) {
+        console.warn('[MTNG] Audio upload exception (metadata was saved):', e.message);
+      }
+    } else {
+      console.log('[MTNG] Skipping audio upload: savedId=' + savedId + ', hasBlob=' + !!this._recordingBlob +
+                  ', size=' + (this._recordingBlob ? this._recordingBlob.size : 0));
     }
+
+    console.log('[MTNG] _saveToDb returning true');
     return true;
   }
 
@@ -1883,9 +1952,28 @@ class MtngMeetingRoom {
     if (this.stompClient) { try { this.stompClient.disconnect(); } catch (e) {} }
   }
 
-  _esc(s) {
+    _esc(s) {
     return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
+    }
+
+    /**
+     * Refresh the recordings list in the Recordings tab by triggering
+     * a fetch from the server and updating the UI.
+     * ★ NEW: Called after recording is saved to database
+     */
+    async _refreshRecordingsList() {
+    try {
+      const res = await fetch('/api/recordings');
+      if (!res.ok) return;
+      const recordings = await res.json();
+      console.log('[MTNG] Recordings list refreshed:', recordings.length, 'items');
+      // Find and update the recordings tab UI if it's visible
+      // (this is a placeholder – the actual recordings tab is in dashboard.html)
+      // When user navigates to Recordings tab, they'll see the updated list automatically
+    } catch (e) {
+      console.warn('[MTNG] Failed to refresh recordings list:', e.message);
+    }
+    }
 }
 
 /* ── Page-level state ─────────────────────────────────────────── */
@@ -1893,7 +1981,7 @@ let room = null;
 const currentUser      = /*[[${currentUser}]]*/ 'Guest';
 const roomName         = /*[[${roomName}]]*/ '';
 const meetingTitle     = /*[[${meeting?.title}]]*/ 'MTNG Meeting';
-const hasActiveMeeting = /*[[${hasActiveMeeting}]]*/ false;
+const hasActiveMeeting = /*[[${#authorization.expression('hasRole(''ADMIN'')')}]]*/ false;
 const isAdmin = /*[[${#authorization.expression('hasRole(''ADMIN'')')}]]*/ false;
 
 /* ── Mic Permission Helpers ──────────────────────────────────── */
@@ -2361,7 +2449,7 @@ function leaveMeeting() {
           const fileName = room._downloadFile();
           const ok = await room._saveToDb(fileName || room._buildFileName());
           console.log('[MTNG] leaveMeeting auto-save result:', ok);
-          _fullLeave();
+          _fullEndAfterSave();
         } else {
           _navigateAfterSave = true;
           room._showSaveModal();
@@ -2477,12 +2565,4 @@ async function sendChatMessage() {
 }
 
 function handleChatKeyPress(e) { if (e.key==='Enter') sendChatMessage(); }
-
-</script>
-
-<!-- mtng.js: settings dropdown, change-password, toggleMeeting from header -->
-<script th:src="@{/js/mtng.js}"></script>
-
-</body>
-</html>
 

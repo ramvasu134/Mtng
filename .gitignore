@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Runtime logs (do not commit) ###
+app.log
+app-debug.log
+*.log

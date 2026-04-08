@@ -1,0 +1,29 @@
+# render.yaml – Render.com Blueprint (one-click free deployment)
+# Docs: https://render.com/docs/blueprint-spec
+#
+# IMPORTANT: This app is Java/Spring Boot and MUST use Docker runtime.
+# Render does not have a native Java runtime — Docker is required.
+
+services:
+  - type: web
+    name: mtng-meeting-app
+    runtime: docker                    # MUST be docker (no native Java on Render)
+    plan: free                         # Free tier (no credit card required)
+    region: oregon                     # or: frankfurt, ohio, singapore
+
+    # Explicitly point to the Dockerfile so Render doesn't guess the runtime
+    dockerfilePath: ./Dockerfile
+    dockerCommand: ""                  # Use the ENTRYPOINT defined in the Dockerfile
+
+    # Deploy from the main branch (NOT from feature branches)
+    branch: main
+
+    # Render automatically injects the PORT variable at runtime.
+    # The Dockerfile ENTRYPOINT reads $PORT and defaults to 8080 when absent.
+
+    # Health-check so Render knows when the app is ready.
+    # GET /login returns HTTP 200 for unauthenticated users (the login form page).
+    healthCheckPath: /login
+
+    # Auto-deploy every time you push to the main branch
+    autoDeploy: true

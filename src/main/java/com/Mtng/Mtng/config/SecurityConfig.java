@@ -4,7 +4,6 @@ import com.Mtng.Mtng.service.MtngUserDetailsService;
 import com.Mtng.Mtng.service.StudentService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -113,8 +112,10 @@ public class SecurityConfig {
                 // ADMIN-only pages
                 .requestMatchers("/create-student").hasRole("ADMIN")
 
-                // H2 Console – must use PathRequest (plain string won't match the servlet)
-                .requestMatchers(PathRequest.toH2Console()).hasRole("ADMIN")
+                // H2 Console – use plain string paths (NOT PathRequest.toH2Console())
+                // PathRequest.toH2Console() triggers a lookup for H2ConsoleProperties bean
+                // which does not exist when spring.h2.console.enabled=false (Render profile)
+                .requestMatchers("/h2-console", "/h2-console/**").hasRole("ADMIN")
 
                 // ADMIN-only API endpoints (create, update, delete, block, mute)
                 .requestMatchers("/api/students/*/block").hasRole("ADMIN")
@@ -154,7 +155,7 @@ public class SecurityConfig {
                 .permitAll()
             )
             .csrf(csrf -> csrf
-                .ignoringRequestMatchers(PathRequest.toH2Console())
+                .ignoringRequestMatchers("/h2-console", "/h2-console/**")
                 .ignoringRequestMatchers("/api/**")
                 .ignoringRequestMatchers("/ws/**"))
             .headers(headers -> headers

@@ -1,8 +1,12 @@
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+### Node ###
+**/node_modules/
 
 ### STS ###
 .apt_generated
@@ -31,3 +35,14 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Logs ###
+*.log
+
+### APK ###
+*.apk
+
+### OS ###
+.DS_Store
+Thumbs.db
+

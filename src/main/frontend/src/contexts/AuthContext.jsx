@@ -15,7 +15,7 @@ export function AuthProvider({ children }) {
       .finally(() => setLoading(false));
   }, []);
 
-  // Heartbeat: keep online status fresh every 15 seconds
+  // Heartbeat: keep online status fresh every 8 seconds
   useEffect(() => {
     if (!user) return;
     // Send heartbeat immediately on login
@@ -24,7 +24,7 @@ export function AuthProvider({ children }) {
     const initial = setTimeout(() => studentsApi.heartbeat().catch(() => {}), 2000);
     const interval = setInterval(() => {
       studentsApi.heartbeat().catch(() => {});
-    }, 15000);
+    }, 8000);
     return () => { clearTimeout(initial); clearInterval(interval); };
   }, [user]);
 
@@ -53,4 +53,3 @@ export function useAuth() {
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
 }
-

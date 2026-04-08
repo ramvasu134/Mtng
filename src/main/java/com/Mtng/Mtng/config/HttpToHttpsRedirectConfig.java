@@ -5,6 +5,7 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 /**
  * Opens an additional HTTP listener on port 8080 alongside the primary HTTPS
@@ -13,8 +14,12 @@ import org.springframework.context.annotation.Configuration;
  *
  * <p>This is needed so that users who type {@code http://host:8080} are seamlessly
  * redirected to {@code https://host:8443}.</p>
+ *
+ * <p><strong>Disabled on Render.com</strong> – Render terminates TLS at the edge;
+ * the app runs plain HTTP behind Render's reverse proxy.</p>
  */
 @Configuration
+@Profile("!render")
 public class HttpToHttpsRedirectConfig {
 
     @Bean

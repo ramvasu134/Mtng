@@ -1,0 +1,44 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# .dockerignore – exclude build artifacts and IDE files from Docker context
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Build output
+target/
+*.jar
+*.jar.original
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+
+# Git
+.git/
+.gitignore
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Mobile / Capacitor (not needed in Docker)
+src/main/frontend/android/
+src/main/frontend/node_modules/
+MtngApp.apk
+
+# Docs (optional – remove this line if you want docs in the image)
+docs/
+
+# Build scripts (Windows-only)
+*.cmd
+*.ps1
+!mvnw.cmd
+
+# APK files
+*.apk
+

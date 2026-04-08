@@ -18,6 +18,14 @@ export default function StudentsPage() {
 
   useEffect(() => { load(); }, [load]);
 
+  // ★ Auto-refresh student list every 5s for live online status
+  useEffect(() => {
+    const interval = setInterval(() => {
+      api.list().then(data => setList(data)).catch(() => {});
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   const filtered = list.filter(s =>
     s.name?.toLowerCase().includes(search.toLowerCase()) ||
     s.username?.toLowerCase().includes(search.toLowerCase()) ||

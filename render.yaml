@@ -1,0 +1,45 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# render.yaml – Render.com Infrastructure-as-Code Blueprint
+# ═══════════════════════════════════════════════════════════════════════════════
+# Docs: https://docs.render.com/blueprint-spec
+#
+# Deploy:
+#   1. Push this file to your repo (must be in the root).
+#   2. Go to https://dashboard.render.com → New → Blueprint → select your repo.
+#   3. Render will detect render.yaml and set everything up automatically.
+#
+# OR deploy manually:
+#   1. Go to https://dashboard.render.com → New → Web Service
+#   2. Connect your repo, choose "Docker" runtime.
+#   3. Set the env-vars listed below.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+services:
+  - type: web
+    name: mtng-app
+    runtime: docker
+    # Render picks up the Dockerfile from the repo root automatically
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+
+    # ── Plan ────────────────────────────────────────────────────────────────
+    plan: free          # free | starter | standard | pro
+    region: oregon      # oregon | ohio | virginia | frankfurt | singapore
+
+    # ── Health Check ────────────────────────────────────────────────────────
+    healthCheckPath: /login
+
+    # ── Environment Variables ───────────────────────────────────────────────
+    envVars:
+      # Activate the Render Spring profile (disables SSL, uses PORT env)
+      - key: SPRING_PROFILES_ACTIVE
+        value: render
+
+      # Java tuning for container
+      - key: JAVA_TOOL_OPTIONS
+        value: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+
+      # (Optional) Override admin password for production
+      # - key: ADMIN_PASSWORD
+      #   value: <generate or set in Render dashboard>
+

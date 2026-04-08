@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -18,6 +19,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+
+import java.util.Arrays;
 
 /**
  * SecurityConfig – Role-based security for Mtng MVP.
@@ -36,6 +39,9 @@ public class SecurityConfig {
 
     @Autowired
     private MtngUserDetailsService userDetailsService;
+
+    @Autowired
+    private Environment environment;
 
 
     @Bean
@@ -154,10 +160,15 @@ public class SecurityConfig {
             .headers(headers -> headers
                 .frameOptions(frame -> frame.sameOrigin()))
             .exceptionHandling(ex -> ex
-                .accessDeniedHandler(accessDeniedHandler()))
-            // Force HTTP → HTTPS redirect
-            .requiresChannel(channel -> channel
-                .anyRequest().requiresSecure());
+                .accessDeniedHandler(accessDeniedHandler()));
+
+        // ★ Only force HTTPS channel on local dev (not behind Render's reverse-proxy)
+        boolean isRender = Arrays.asList(environment.getActiveProfiles()).contains("render");
+        if (!isRender) {
+            http.requiresChannel(channel -> channel
+                    .anyRequest().requiresSecure());
+        }
+
         return http.build();
     }
 }

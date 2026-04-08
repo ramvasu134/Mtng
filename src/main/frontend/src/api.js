@@ -2,13 +2,15 @@
  * api.js – Centralized API client for MTNG React SPA.
  * All REST calls go through these functions.
  * Session cookies handled automatically (same-origin).
+ * Mobile (Capacitor) builds use the configured server URL.
  */
+import { getBaseUrl } from './mobile-config.js';
 
-const BASE = '';  // same-origin
+const BASE = getBaseUrl();  // '' for web (same-origin), full URL for mobile
 
 async function request(url, options = {}) {
   const res = await fetch(BASE + url, {
-    credentials: 'same-origin',
+    credentials: 'include',
     headers: { 'Content-Type': 'application/json', ...options.headers },
     ...options,
   });
@@ -55,7 +57,7 @@ export const students = {
 export const meeting = {
   /** Get first active meeting (backward compat) */
   active: () =>
-    fetch(BASE + '/api/meeting/active', { credentials: 'same-origin' })
+    fetch(BASE + '/api/meeting/active', { credentials: 'include' })
       .then(r => r.status === 204 ? null : r.json()),
   /** Get ALL active rooms */
   rooms: () => request('/api/meeting/rooms'),
@@ -114,7 +116,7 @@ export const recordings = {
     const fd = new FormData();
     fd.append('audio', blob, 'recording.webm');
     return fetch(`${BASE}/api/recordings/${id}/upload-audio`, {
-      method: 'POST', body: fd, credentials: 'same-origin',
+      method: 'POST', body: fd, credentials: 'include',
     }).then(r => r.json());
   },
 };

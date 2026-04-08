@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { meeting as meetingApi, students as studentsApi } from '../api';
+import { getWsUrl } from '../mobile-config.js';
 import Modal from '../components/Modal';
 
 export default function DashboardPage() {
@@ -38,8 +39,7 @@ export default function DashboardPage() {
   // ── WebSocket listener for room invitations (students) ────────────────────
   useEffect(() => {
     if (isAdmin) return; // Admin doesn't need invitation notifications
-    const protocol = window.location.protocol === 'https:' ? 'https' : 'http';
-    const wsUrl = `${protocol}://${window.location.host}/ws`;
+    const wsUrl = getWsUrl();
     let stomp = null;
     try {
       const socket = new window.SockJS(wsUrl);

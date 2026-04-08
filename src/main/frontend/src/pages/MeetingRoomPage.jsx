@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { meeting as meetingApi, chat as chatApi, recordings as recApi } from '../api';
+import { getWsUrl } from '../mobile-config.js';
 
 const ICE_SERVERS = [
   { urls: 'stun:stun.l.google.com:19302' },
@@ -96,12 +97,60 @@ export default function MeetingRoomPage() {
   const participantNames = useRef({}); // NEW: Track display names by peerId
   const audioContainerRef = useRef(null); // DOM container for audio elements
   const autoRecordStarted = useRef(false); // Track if auto-recording was started
+  const audioCtxRef = useRef(null);        // AudioContext for noise filter pipeline
+  const rawMicTrackRef = useRef(null);     // Raw mic MediaStreamTrack for mute/unmute
+  const processedStreamRef = useRef(null); // Noise-filtered audio stream for WebRTC
 
   // Keep refs in sync with latest values
   useEffect(() => { meetingDataRef.current = meetingData; }, [meetingData]);
   useEffect(() => { userRef.current = user; }, [user]);
   useEffect(() => { listenOnlyRef.current = listenOnly; }, [listenOnly]);
   useEffect(() => { recordingRef.current = recording; }, [recording]);
+
+  // ── Noise-suppression audio processing pipeline ───────────────────────────
+  const createProcessedStream = (rawStream) => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 48000 });
+      audioCtxRef.current = ctx;
+      const source = ctx.createMediaStreamSource(rawStream);
+
+      // High-pass: remove rumble / hum below 85 Hz
+      const highpass = ctx.createBiquadFilter();
+      highpass.type = 'highpass'; highpass.frequency.value = 85; highpass.Q.value = 0.7;
+
+      // Low-pass: remove hiss above 14 kHz
+      const lowpass = ctx.createBiquadFilter();
+      lowpass.type = 'lowpass'; lowpass.frequency.value = 14000; lowpass.Q.value = 0.7;
+
+      // Notch: remove 50 Hz mains hum
+      const notch = ctx.createBiquadFilter();
+      notch.type = 'notch'; notch.frequency.value = 50; notch.Q.value = 10;
+
+      // Compressor: normalize loud/quiet voices
+      const compressor = ctx.createDynamicsCompressor();
+      compressor.threshold.value = -35; compressor.knee.value = 20;
+      compressor.ratio.value = 6; compressor.attack.value = 0.003; compressor.release.value = 0.15;
+
+      // Gain: boost processed signal
+      const gain = ctx.createGain();
+      gain.gain.value = 1.4;
+
+      const dest = ctx.createMediaStreamDestination();
+      source.connect(highpass);
+      highpass.connect(lowpass);
+      lowpass.connect(notch);
+      notch.connect(compressor);
+      compressor.connect(gain);
+      gain.connect(dest);
+
+      processedStreamRef.current = dest.stream;
+      console.log('✅ Noise-filter audio pipeline created (highpass→lowpass→notch→compressor→gain)');
+      return dest.stream;
+    } catch (e) {
+      console.warn('Audio processing pipeline failed, using raw stream:', e);
+      return rawStream;
+    }
+  };
 
   // ── Load meeting data ─────────────────────────────────────────────────────
   useEffect(() => {
@@ -146,22 +195,6 @@ export default function MeetingRoomPage() {
     timerRef.current = setInterval(() => setElapsed(e => e + 1), 1000);
     return () => clearInterval(timerRef.current);
   }, [pageState]);
-
-  // ── Auto-start recording when meeting becomes active ─────────────────────
-  useEffect(() => {
-    if (pageState !== 'active') return;
-    if (autoRecordStarted.current) return;
-    // Delay to allow WebRTC connections to establish first
-    const timer = setTimeout(() => {
-      if (!recordingRef.current && !autoRecordStarted.current) {
-        console.log('🎙️ Auto-starting recording...');
-        autoRecordStarted.current = true;
-        // Start recording (will pick up local + remote streams)
-        try { toggleRecording(); } catch (e) { console.warn('Auto-record start failed:', e); }
-      }
-    }, 4000); // 4 second delay
-    return () => clearTimeout(timer);
-  }, [pageState]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatMsgs]);
 
@@ -300,19 +333,26 @@ const createPeerAndOffer = async (peerId) => {
 
   const handleOffer = async (peerId, offer, displayName) => {
     try {
-      // Use provided displayName or retrieve from stored names or fallback to peerId
       const participantName = displayName || participantNames.current[peerId] || peerId;
       setParticipants(prev => {
         const exists = prev.find(p => p?.id === peerId);
         if (exists) return prev;
-        return [...prev, { id: peerId, name: participantName, isLocal: false, micOn: true }];
+        return [...prev, { id: peerId, name: participantName, isLocal: false, micOn: false }];
       });
       // Try to get mic if we don't have it yet and not in listen-only mode
       if (!localStream.current && !listenOnlyRef.current && navigator.mediaDevices?.getUserMedia) {
         try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-          localStream.current = stream;
-          setMicOn(true); setMicStatus('granted');
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, sampleRate: 48000, channelCount: 1 },
+            video: false
+          });
+          rawMicTrackRef.current = stream.getAudioTracks()[0];
+          const processed = createProcessedStream(stream);
+          localStream.current = processed;
+          // Default MUTED
+          rawMicTrackRef.current.enabled = false;
+          setMicOn(false);
+          setMicStatus('granted');
         } catch {}
       }
       const pc = createPeer(peerId);
@@ -367,7 +407,7 @@ const createPeerAndOffer = async (peerId) => {
               id: sender || 'unknown',
               name: data.displayName || sender || 'Guest',
               isLocal: false,
-              micOn: true
+              micOn: data.micOn === true ? true : false  // default muted
             }];
           });
           if (sender) createPeerAndOffer(sender);
@@ -377,44 +417,31 @@ const createPeerAndOffer = async (peerId) => {
             if (data.displayName) participantNames.current[sender] = data.displayName;
             try {
               const offer = typeof data.data === 'string' ? JSON.parse(data.data) : data.data;
-              console.log('✓ Received offer from:', sender);
               handleOffer(sender, offer, data.displayName);
-            } catch (e) {
-              console.error('Failed to parse offer data:', e);
-            }
+            } catch (e) { console.error('Failed to parse offer data:', e); }
           }
           break;
         case 'answer':
           if (sender && data.data) {
             try {
               const answer = typeof data.data === 'string' ? JSON.parse(data.data) : data.data;
-              console.log('✓ Received answer from:', sender);
               handleAnswer(sender, answer);
-            } catch (e) {
-              console.error('Failed to parse answer data:', e);
-            }
+            } catch (e) { console.error('Failed to parse answer data:', e); }
           }
           break;
         case 'ice-candidate':
           if (sender && data.data) {
             try {
               const candidate = typeof data.data === 'string' ? JSON.parse(data.data) : data.data;
-              console.log('✓ Received ICE candidate from:', sender);
               handleCandidate(sender, candidate);
-            } catch (e) {
-              console.error('Failed to parse candidate data:', e);
-            }
+            } catch (e) { console.error('Failed to parse candidate data:', e); }
           }
           break;
         case 'leave':
-          if (sender) {
-            console.log('✓ Participant left:', sender);
-            delete participantNames.current[sender];
-            removePeer(sender);
-          }
+          if (sender) { delete participantNames.current[sender]; removePeer(sender); }
           break;
         case 'mic-toggle':
-          setParticipants(prev => prev.map(p => p?.id === sender ? { ...p, micOn: data.micOn === true || data.micOn === false ? data.micOn : true } : p));
+          setParticipants(prev => prev.map(p => p?.id === sender ? { ...p, micOn: data.micOn === true } : p));
           break;
         case 'chat':
           if (data.data) setChatMsgs(prev => [...prev, { sender: data.displayName || sender || 'Anonymous', content: data.data, time: new Date().toLocaleTimeString() }]);
@@ -423,33 +450,41 @@ const createPeerAndOffer = async (peerId) => {
           doCleanup();
           navigate('/');
           break;
-        default:
-          console.log('Unknown signal type:', data.type);
-          break;
+        default: break;
       }
-    } catch (err) {
-      console.error('handleSignal error:', err, data);
-    }
+    } catch (err) { console.error('handleSignal error:', err, data); }
   };
 
   // ── Cleanup ───────────────────────────────────────────────────────────────
   const doCleanup = () => {
-    if (recordingRef.current && recorder.current?.state !== 'inactive') try { recorder.current.stop(); } catch {}
+    // Stop recording and trigger save
+    if (recordingRef.current && recorder.current?.state !== 'inactive') {
+      try { recorder.current.stop(); } catch {}
+    }
     sendSignal({ type: 'leave', from: userRef.current?.username });
     Object.keys(peers.current).forEach(id => removePeer(id));
-    // Clean up all audio DOM elements
     Object.values(remoteAudios.current).forEach(a => {
       try { a.srcObject = null; a.parentNode?.removeChild(a); } catch {}
     });
     remoteAudios.current = {};
+    // Stop raw mic track
+    if (rawMicTrackRef.current) {
+      try { rawMicTrackRef.current.stop(); } catch {}
+      rawMicTrackRef.current = null;
+    }
     if (localStream.current) { localStream.current.getTracks().forEach(t => t.stop()); localStream.current = null; }
+    if (processedStreamRef.current) { processedStreamRef.current.getTracks().forEach(t => t.stop()); processedStreamRef.current = null; }
+    // Close audio processing context
+    if (audioCtxRef.current) { try { audioCtxRef.current.close(); } catch {} audioCtxRef.current = null; }
     try { stompRef.current?.disconnect(); } catch {}
     clearInterval(timerRef.current);
     autoRecordStarted.current = false;
   };
 
   useEffect(() => () => {
+    if (rawMicTrackRef.current) try { rawMicTrackRef.current.stop(); } catch {}
     if (localStream.current) localStream.current.getTracks().forEach(t => t.stop());
+    if (audioCtxRef.current) try { audioCtxRef.current.close(); } catch {}
     Object.values(peers.current).forEach(pc => { try { pc.close(); } catch {} });
     try { stompRef.current?.disconnect(); } catch {}
     clearInterval(timerRef.current);
@@ -469,9 +504,24 @@ const createPeerAndOffer = async (peerId) => {
         isListenOnly = true;
       } else {
         try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-          localStream.current = stream;
-          setMicOn(true);
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              echoCancellation: true,
+              noiseSuppression: true,
+              autoGainControl: true,
+              sampleRate: 48000,
+              channelCount: 1,
+            },
+            video: false,
+          });
+          // Store raw track for mute/unmute control
+          rawMicTrackRef.current = stream.getAudioTracks()[0];
+          // Process through noise-filter pipeline
+          const processedStream = createProcessedStream(stream);
+          localStream.current = processedStream;
+          // ★ DEFAULT MUTED – user must click unmute to speak
+          rawMicTrackRef.current.enabled = false;
+          setMicOn(false);
           setMicStatus('granted');
         } catch (err) {
           if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError' || err.name === 'NotFoundError') {
@@ -491,8 +541,8 @@ const createPeerAndOffer = async (peerId) => {
 
     try {
       await meetingApi.join(m.roomName);
-      if (!window.SockJS || !window.Stomp) throw new Error('WebSocket libraries not loaded – please reload.');
-      const socket = new window.SockJS(`${window.location.protocol}//${window.location.host}/ws`);
+      if (!window.SockJS || !window.Stomp) throw new Error('WebSocket libraries not loaded \u2013 please reload.');
+      const socket = new window.SockJS(getWsUrl());
       const stomp = window.Stomp.over(socket);
       stomp.debug = null;
       stomp.connect({}, () => {
@@ -503,10 +553,17 @@ const createPeerAndOffer = async (peerId) => {
         sendSignal({
           type: 'join',
           from: userRef.current?.username,
-          displayName: userRef.current?.displayName || userRef.current?.username
+          displayName: userRef.current?.displayName || userRef.current?.username,
+          micOn: false,  // everyone joins muted
         });
         setElapsed(0);
-        setParticipants([{ id: userRef.current?.username, name: userRef.current?.displayName || userRef.current?.username, isLocal: true, micOn: !isListenOnly }]);
+        // ★ local participant starts MUTED
+        setParticipants([{
+          id: userRef.current?.username,
+          name: userRef.current?.displayName || userRef.current?.username,
+          isLocal: true,
+          micOn: false,
+        }]);
         setPageState('active');
       }, err => {
         console.error('STOMP error:', err);
@@ -521,9 +578,29 @@ const createPeerAndOffer = async (peerId) => {
 
   // ── Meeting controls ──────────────────────────────────────────────────────
   const toggleMic = () => {
-    if (!localStream.current) return;
-    const t = localStream.current.getAudioTracks()[0];
-    if (t) { t.enabled = !t.enabled; setMicOn(t.enabled); sendSignal({ type: 'mic-toggle', from: userRef.current?.username, micOn: t.enabled }); }
+    // Control the RAW mic track (not the processed stream track)
+    const rawTrack = rawMicTrackRef.current;
+    if (!rawTrack && !localStream.current) return;
+    if (rawTrack) {
+      const newState = !rawTrack.enabled;
+      rawTrack.enabled = newState;
+      setMicOn(newState);
+      setParticipants(prev => prev.map(p => p?.isLocal ? { ...p, micOn: newState } : p));
+      sendSignal({ type: 'mic-toggle', from: userRef.current?.username, micOn: newState });
+      // ★ Start recording on first unmute (only unmuted voice is recorded)
+      if (newState && !recordingRef.current) {
+        console.log('🎙️ Mic unmuted \u2013 starting recording...');
+        setTimeout(() => { if (!recordingRef.current) try { toggleRecording(); } catch (e) { console.warn('Rec start err:', e); } }, 500);
+      }
+    } else {
+      // Fallback: toggle processed stream track
+      const t = localStream.current?.getAudioTracks()[0];
+      if (t) {
+        t.enabled = !t.enabled;
+        setMicOn(t.enabled);
+        sendSignal({ type: 'mic-toggle', from: userRef.current?.username, micOn: t.enabled });
+      }
+    }
   };
 
   const toggleRecording = () => {
@@ -807,7 +884,7 @@ const createPeerAndOffer = async (peerId) => {
 
       {/* Room Switcher */}
       {showRoomSwitcher && isAdmin && (
-        <div style={{ background: 'linear-gradient(135deg,#1a1a2e,#2d2d3e)', borderBottom: '1px solid rgba(102,126,234,0.3)', padding: '12px 16px' }}>
+        <div style={{ background: 'linear-gradient(135deg,#1e1e2e,#2d2d3e)', borderBottom: '1px solid rgba(102,126,234,0.3)', padding: '12px 16px' }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: '#93c5fd', marginBottom: 8 }}>🔀 Switch Room</div>
           {allRooms.map(room => (
             <div key={room.id} onClick={() => switchRoom(room.roomName)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', background: room.roomName === currentRoom.current ? 'rgba(34,197,94,0.08)' : 'rgba(0,0,0,0.2)', borderRadius: 8, marginBottom: 6, cursor: 'pointer', border: `1px solid ${room.roomName === currentRoom.current ? '#22C55E' : 'transparent'}` }}>

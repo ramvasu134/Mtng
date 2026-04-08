@@ -47,15 +47,19 @@ This guide shows you how to deploy the **MTNG Meeting Platform** (Spring Boot + 
 
 ### Step 3 – Configure the Web Service
 
-Fill in the form exactly as shown below:
+Fill in the form **exactly** as shown below:
 
 | Field | Value |
 |-------|-------|
 | **Name** | `mtng-meeting-app` (or any name you like) |
 | **Region** | Oregon (US West) — free tier |
-| **Branch** | `main` |
-| **Runtime** | **Docker** |
+| **Branch** | `main` ⚠️ **Must be `main`** — do NOT select a feature branch |
+| **Runtime** | **Docker** ⚠️ **CRITICAL — you MUST select Docker** |
+| **Dockerfile Path** | `./Dockerfile` (should auto-fill) |
 | **Instance Type** | **Free** |
+
+> ⚠️ **IMPORTANT:** Render does **not** have a native Java runtime. If you do not select
+> **Docker**, the deploy will fail with `exit status 127`. See the Troubleshooting section below.
 
 > Render will automatically detect the `Dockerfile` in the root of the repository.
 
@@ -105,9 +109,11 @@ the app — **no manual action needed**.
 
 ---
 
-## 🔄 Using the render.yaml Blueprint (Optional — Even Easier)
+## 🔄 Using the render.yaml Blueprint (Recommended — Safest Way)
 
-The repository already contains a `render.yaml` file. You can use it for one-click deployment:
+The repository contains a `render.yaml` Blueprint file that **automatically configures
+everything** (Docker runtime, free plan, correct branch, health-check). This avoids
+misconfiguration errors like selecting the wrong runtime.
 
 1. Go to **https://dashboard.render.com/blueprints**
 2. Click **"New Blueprint Instance"**
@@ -192,6 +198,35 @@ resets on every restart (perfect for demos).
 
 ## 🔧 Troubleshooting
 
+### ❌ Deploy fails with "exit status 127" / "No such file or directory"
+
+**Full error:**
+```
+==> Running 'copilot/deploy-application-on-cloud-server'
+bash: line 1: copilot/deploy-application-on-cloud-server: No such file or directory
+==> Exited with status 127
+```
+
+**Cause:** Render did **not** use Docker. It detected a "native" runtime and tried to run
+the branch name as a shell command.
+
+**Fix — Delete and re-create the service with Docker runtime:**
+1. Go to your Render Dashboard → select the service → **Settings** → **Delete Service**
+2. Click **"New +"** → **"Web Service"**
+3. Connect the `Mtng` repo again
+4. **⚠️ Set "Runtime" to "Docker"** (this is the critical step)
+5. **⚠️ Set "Branch" to `main`** (not a feature branch)
+6. Set Instance Type to **Free**
+7. Click **"Create Web Service"**
+
+**Alternative — Use the Blueprint for one-click setup:**
+1. Go to **https://dashboard.render.com/blueprints**
+2. Click **"New Blueprint Instance"** → select the `Mtng` repo
+3. The `render.yaml` in the repo automatically sets everything correctly
+4. Click **"Apply"** — this guarantees Docker runtime is used
+
+---
+
 ### App shows 502 Bad Gateway
 - Wait **30–60 seconds** — the container may still be starting.
 - Check the **Logs** tab in the Render dashboard for errors.
@@ -223,7 +258,7 @@ resets on every restart (perfect for demos).
 |------|--------|
 | 1 | Sign up at https://render.com with GitHub |
 | 2 | New → Web Service → Connect `Mtng` repo |
-| 3 | Runtime: Docker, Plan: Free → Create |
+| 3 | **Runtime: Docker** ⚠️, Branch: `main`, Plan: Free → Create |
 | 4 | Wait 3–5 min for build |
 | 5 | Open `https://your-app.onrender.com` |
 | 6 | Login with `admin / admin123` |
